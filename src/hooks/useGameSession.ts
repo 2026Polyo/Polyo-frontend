@@ -1,0 +1,583 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
+import { DEFAULT_DECK, EMPTY_BOARD, getDeckPieces } from "../constants/gameData";
+import {
+  advanceAugmentSchedule,
+  chooseAugment,
+  createInitialAugmentState,
+  getAugmentLevel,
+  getComboCorrectionBias,
+  getNextAugmentStateAfterPlacement,
+  getTotalAugmentLevels,
+  shouldOfferAugmentChoice
+} from "../features/augments";
+import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
+import { GHOST_AUGMENT_INTERVAL } from "../features/ghosts";
+import { resolvePlacement } from "../features/resolvePlacement";
+import { clearSavedGame, loadSavedGame, saveCurrentGame } from "../features/savedGame";
+import { createRewardChoices } from "../features/specials";
+import {
+  getLoadoutPieces,
+  MAX_BASE_DECK,
+  MAX_LOADOUT
+} from "../features/specialStash";
+import { cloneBoard } from "../utils/boardUtils";
+import { createPieceInstance } from "../utils/pieceUtils";
+import { canPlace, getClosestPlacement, getPlacementDistanceSquared, hasMove } from "../utils/placement";
+import { nextTray } from "../utils/tray";
+import useBestScore from "./useBestScore";
+import { useComboEffect } from "./useComboEffect";
+import { useDeckBuilderState } from "./useDeckBuilderState";
+import { useGameAudio } from "./useGameAudio";
+import { useItemSystem } from "./useItemSystem";
+import { usePieceSelection } from "./usePieceSelection";
+import { usePulseLabel } from "./usePulseLabel";
+import type {
+  AugmentId,
+  AugmentState,
+  Board as BoardType,
+  PieceInstance,
+  PieceTemplate,
+  SpecialMarks,
+  Tray
+} from "../types";
+import type { Dispatch, SetStateAction } from "react";
+
+const SPECIAL_CHOICE_COUNT = 3;
+
+export type GamePhase = "start" | "playing";
+
+interface SpecialMarksSource {
+  bombCells?: string[];
+  boostCells?: string[];
+  ghostCells?: string[];
+  goldenCells?: string[];
+}
+
+function createSpecialMarks(source: SpecialMarksSource = {}): SpecialMarks {
+  return {
+    bomb: new Set(source.bombCells ?? []),
+    boost: new Set(source.boostCells ?? []),
+    ghost: new Set(source.ghostCells ?? []),
+    golden: new Set(source.goldenCells ?? [])
+  };
+}
+
+function resolveMarkUpdate(
+  value: SetStateAction<Set<string>>,
+  current: Set<string>
+): Set<string> {
+  return typeof value === "function" ? value(current) : value;
+}
+
+export function useGameSession() {
+  const [initialGame] = useState(loadSavedGame);
+  const [board, setBoard] = useState<BoardType>(() => initialGame?.board ?? cloneBoard(EMPTY_BOARD));
+  const [deck, setDeck] = useState<string[]>(() => initialGame?.deck ?? DEFAULT_DECK);
+  const [specialPieces, setSpecialPieces] = useState<PieceTemplate[]>(
+    () => initialGame?.specialPieces ?? []
+  );
+  const [specialMarks, setSpecialMarks] = useState<SpecialMarks>(
+    () => createSpecialMarks(initialGame ?? undefined)
+  );
+  const { bomb: bombCells, boost: boostCells, ghost: ghostCells, golden: goldenCells } = specialMarks;
+  const setGhostCells = useCallback<Dispatch<SetStateAction<Set<string>>>>((value) => {
+    setSpecialMarks((current) => ({ ...current, ghost: resolveMarkUpdate(value, current.ghost) }));
+  }, []);
+  const setGoldenCells = useCallback<Dispatch<SetStateAction<Set<string>>>>((value) => {
+    setSpecialMarks((current) => ({ ...current, golden: resolveMarkUpdate(value, current.golden) }));
+  }, []);
+  const setBombCells = useCallback<Dispatch<SetStateAction<Set<string>>>>((value) => {
+    setSpecialMarks((current) => ({ ...current, bomb: resolveMarkUpdate(value, current.bomb) }));
+  }, []);
+  const setBoostCells = useCallback<Dispatch<SetStateAction<Set<string>>>>((value) => {
+    setSpecialMarks((current) => ({ ...current, boost: resolveMarkUpdate(value, current.boost) }));
+  }, []);
+  const deckPieces = useMemo<PieceTemplate[]>(
+    () => [...getDeckPieces(deck), ...specialPieces],
+    [deck, specialPieces]
+  );
+  const [tray, setTray] = useState<Tray>(
+    () =>
+      initialGame?.tray ??
+      nextTray(initialGame?.board ?? EMPTY_BOARD, [
+        ...getDeckPieces(initialGame?.deck ?? DEFAULT_DECK),
+        ...(initialGame?.specialPieces ?? [])
+      ])
+  );
+  const [clearingCells, setClearingCells] = useState<Set<string>>(() => new Set());
+  const [score, setScore] = useState<number>(() => initialGame?.score ?? 0);
+  const [augmentState, setAugmentState] = useState<AugmentState>(
+    () => initialGame?.augmentState ?? createInitialAugmentState()
+  );
+  const [augmentChoiceOpen, setAugmentChoiceOpen] = useState(false);
+  const [rewardPiece, setRewardPiece] = useState<PieceInstance | null>(null);
+  const [specialChoices, setSpecialChoices] = useState<PieceTemplate[] | null>(null);
+  const [specialsGranted, setSpecialsGranted] = useState<number>(() => initialGame?.specialsGranted ?? 0);
+  const [deckModalOpen, setDeckModalOpen] = useState(false);
+  const [startDeckOpen, setStartDeckOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [gamePhase, setGamePhase] = useState<GamePhase>("start");
+  const {
+    addBaseBlock,
+    addSpecialToDeck,
+    addSpecialToStash,
+    availableBaseIds,
+    baseLoadout,
+    loadoutIds,
+    removeBaseBlock,
+    removeSpecialFromDeck,
+    specialStash,
+    unlockedBlocks,
+    unlockBaseBlock
+  } = useDeckBuilderState();
+  const availableBaseSet = useMemo(() => new Set(availableBaseIds), [availableBaseIds]);
+  const selectedBaseDeck = useMemo(
+    () => baseLoadout.filter((id) => availableBaseSet.has(id)),
+    [availableBaseSet, baseLoadout]
+  );
+  const canStartNewGame = selectedBaseDeck.length === MAX_BASE_DECK;
+  const [autoUndoFlash, setAutoUndoFlash] = useState(false);
+  const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoUndoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audio = useGameAudio();
+
+  function playPop() {
+    audio.resume();
+    audio.playPop();
+  }
+
+  const availablePieces = tray.filter((p): p is PieceInstance => p !== null);
+  const isClearing = clearingCells.size > 0;
+  const isPlaying = gamePhase === "playing";
+  const selectionBlocked = augmentChoiceOpen || Boolean(rewardPiece) || Boolean(specialChoices);
+
+  const {
+    anchorCell,
+    boardMetrics,
+    boardRef,
+    clearSelection,
+    closestPlacementCell,
+    cursorAnchorOffset,
+    cursorPiece,
+    cursorPoint,
+    handlePieceSelect,
+    handlePieceActivate,
+    hoverCell,
+    invalidPreview,
+    previewCells,
+    previewClearingCells,
+    selectedPiece,
+    setHoverCell
+  } = usePieceSelection({
+    augmentChoiceOpen: selectionBlocked || settingsOpen || deckModalOpen || isClearing,
+    availablePieces, board, isPlaying, onPlace: placePieceAt
+  });
+
+  const comboEffectValue = useComboEffect(augmentState.combo);
+  const { label: clearLabel, pulseId: clearLabelId, pulse: pulseClearLabel } = usePulseLabel();
+
+  const previewGain = useMemo<number | null>(() => {
+    if (!selectedPiece || !closestPlacementCell || invalidPreview) return null;
+    return resolvePlacement({
+      augmentState,
+      board,
+      bombCells,
+      boostCells,
+      col: closestPlacementCell.col,
+      ghostCells,
+      goldenCells,
+      piece: selectedPiece,
+      row: closestPlacementCell.row,
+      preview: true
+    }).scoreGain;
+  }, [
+    augmentState,
+    board,
+    bombCells,
+    boostCells,
+    closestPlacementCell,
+    ghostCells,
+    goldenCells,
+    invalidPreview,
+    selectedPiece
+  ]);
+
+  const {
+    applyReroll,
+    autoUndo,
+    canUndo,
+    cancelReroll,
+    gravityAnimating,
+    handleItemClick,
+    itemSlots,
+    rerollModalSlot,
+    resetItems,
+    saveUndoSnapshot,
+    undoSnapshot
+  } = useItemSystem({
+    augmentState,
+    board,
+    bombCells,
+    boostCells,
+    clearSelection,
+    clearTimerRef,
+    deckPieces,
+    ghostCells,
+    goldenCells,
+    initialGame,
+    isClearing,
+    score,
+    setAugmentState,
+    setBoard,
+    setBombCells,
+    setBoostCells,
+    setClearingCells,
+    setGhostCells,
+    setGoldenCells,
+    setScore,
+    setTray,
+    tray
+  });
+
+  const noMovesLeft =
+    isPlaying &&
+    !isClearing &&
+    !gravityAnimating &&
+    availablePieces.length > 0 &&
+    !hasMove(board, availablePieces);
+  const gameOver = noMovesLeft && !canUndo;
+
+  useEffect(() => {
+    if (!noMovesLeft || !canUndo) return;
+    if (!autoUndo()) return;
+    setAutoUndoFlash(true);
+    if (autoUndoTimerRef.current !== null) clearTimeout(autoUndoTimerRef.current);
+    autoUndoTimerRef.current = setTimeout(() => setAutoUndoFlash(false), 1500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [noMovesLeft, canUndo]);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    saveCurrentGame({
+      augmentState,
+      board,
+      bombCells,
+      boostCells,
+      deck,
+      ghostCells,
+      goldenCells,
+      itemSlots,
+      score,
+      specialPieces,
+      specialsGranted,
+      tray,
+      undoSnapshot
+    });
+  }, [
+    augmentState,
+    board,
+    bombCells,
+    boostCells,
+    deck,
+    ghostCells,
+    goldenCells,
+    isPlaying,
+    itemSlots,
+    specialPieces,
+    specialsGranted,
+    score,
+    tray,
+    undoSnapshot
+  ]);
+
+  useEffect(() => {
+    if (gameOver) audio.playGameOver();
+  }, [gameOver]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (augmentChoiceOpen) audio.playPopup();
+  }, [augmentChoiceOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (rewardPiece) audio.playPopup();
+  }, [rewardPiece]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (specialChoices) audio.playPopup();
+  }, [specialChoices]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!isPlaying || gameOver || isClearing || augmentChoiceOpen || rewardPiece || specialChoices) return;
+    if (!shouldOfferAugmentChoice(augmentState, score)) return;
+    clearSelection();
+    const specialDue =
+      Math.floor(getTotalAugmentLevels(augmentState) / GHOST_AUGMENT_INTERVAL) > specialsGranted;
+    const timer = setTimeout(() => {
+      if (specialDue) {
+        setSpecialChoices(createRewardChoices(SPECIAL_CHOICE_COUNT, unlockedBlocks));
+      } else {
+        setAugmentChoiceOpen(true);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [
+    augmentChoiceOpen,
+    augmentState,
+    clearSelection,
+    gameOver,
+    isClearing,
+    isPlaying,
+    rewardPiece,
+    score,
+    specialChoices,
+    specialsGranted,
+    unlockedBlocks
+  ]);
+
+  useEffect(() => () => {
+    if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
+    if (autoUndoTimerRef.current !== null) clearTimeout(autoUndoTimerRef.current);
+  }, []);
+
+  function clearGameState() {
+    if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
+    if (autoUndoTimerRef.current !== null) clearTimeout(autoUndoTimerRef.current);
+    clearTimerRef.current = null;
+    autoUndoTimerRef.current = null;
+    setAutoUndoFlash(false);
+    setBoard(cloneBoard(EMPTY_BOARD));
+    setSpecialPieces([]);
+    setSpecialMarks(createSpecialMarks());
+    setTray([null, null, null]);
+    clearSelection();
+    setClearingCells(new Set());
+    setScore(0);
+    setAugmentState(createInitialAugmentState());
+    setAugmentChoiceOpen(false);
+    setRewardPiece(null);
+    setSpecialChoices(null);
+    setSpecialsGranted(0);
+    setDeckModalOpen(false);
+    setStartDeckOpen(false);
+    setSettingsOpen(false);
+    resetItems();
+    audio.resetComboSound();
+  }
+
+  function resetGame(deckIds: string[], carriedSpecials: PieceTemplate[]) {
+    clearGameState();
+    setSpecialPieces(carriedSpecials);
+    setTray(nextTray(EMPTY_BOARD, [...getDeckPieces(deckIds), ...carriedSpecials]));
+  }
+
+  function startGame() {
+    if (!canStartNewGame) {
+      setStartDeckOpen(true);
+      return;
+    }
+
+    setDeck(selectedBaseDeck);
+    resetGame(selectedBaseDeck, getLoadoutPieces(specialStash, loadoutIds));
+    setGamePhase("playing");
+  }
+
+  function continueGame() {
+    setGamePhase("playing");
+  }
+
+  function quitGame() {
+    clearGameState();
+    setGamePhase("start");
+    clearSavedGame();
+  }
+
+  function goHomeFromSettings() {
+    setSettingsOpen(false);
+    clearSelection();
+    setGamePhase("start");
+  }
+
+  function placePieceAt(piece: PieceInstance, row: number, col: number) {
+    if (!isPlaying || selectionBlocked || settingsOpen || deckModalOpen || rerollModalSlot !== null || isClearing || gravityAnimating || !tray.some((entry) => entry?.uid === piece.uid) || !canPlace(board, piece, row, col)) return;
+
+    audio.resume();
+    audio.playPlacement();
+
+    const outcome = resolvePlacement({
+      augmentState,
+      board,
+      bombCells,
+      boostCells,
+      col,
+      ghostCells,
+      goldenCells,
+      piece,
+      row
+    });
+    audio.playClearFeedback(outcome.cleared);
+    const clearTier = getClearTier(outcome.cleared);
+    if (clearTier) pulseClearLabel(CLEAR_TIER_LABEL[clearTier]);
+
+    setBoard(outcome.displayBoard);
+    setClearingCells(outcome.clearingCells);
+    setScore((current) => current + outcome.scoreGain);
+    setSpecialMarks({
+      bomb: outcome.bombCells,
+      boost: outcome.boostCells,
+      ghost: outcome.ghostCells,
+      golden: outcome.goldenCells
+    });
+
+    const updatedTray = tray.map((p) => (p?.uid === piece.uid ? null : p)) as Tray;
+    const trayCompleted = updatedTray.every((p) => !p);
+    const trayClearedLine = augmentState.trayClearedLine || outcome.cleared > 0;
+    if (trayCompleted && !trayClearedLine) audio.resetComboSound();
+    const refreshedTray = trayCompleted
+      ? nextTray(outcome.settledBoard, deckPieces, getComboCorrectionBias(augmentState))
+      : updatedTray;
+    saveUndoSnapshot();
+    setAugmentState((current) => getNextAugmentStateAfterPlacement(current, { cleared: outcome.cleared, trayCompleted }));
+    setTray(refreshedTray);
+    clearSelection();
+
+    if (outcome.clearingCells.size) {
+      if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
+      clearTimerRef.current = setTimeout(() => {
+        setBoard(outcome.settledBoard);
+        setClearingCells(new Set());
+      }, CLEAR_HIGHLIGHT_MS);
+    }
+  }
+
+  function handleCellClick(row: number, col: number) {
+    if (selectionBlocked || !selectedPiece) return;
+    const targetCell = anchorCell
+      ? { row: row - anchorCell[0], col: col - anchorCell[1] }
+      : { row, col };
+    const closest = getClosestPlacement(board, selectedPiece, targetCell);
+    if (!closest) return;
+    if (getPlacementDistanceSquared(targetCell, closest) > MAX_SNAP_DISTANCE ** 2) return;
+    placePieceAt(selectedPiece, closest.row, closest.col);
+  }
+
+  function handleAugmentChoose(augmentId: AugmentId) {
+    setAugmentState((current) => chooseAugment(current, augmentId, score));
+    setAugmentChoiceOpen(false);
+  }
+
+  function handleSpecialChoose(template: PieceTemplate) {
+    if (template.special) {
+      setSpecialPieces((current) => [...current, template]);
+      addSpecialToStash(template);
+    } else {
+      unlockBaseBlock(template.id);
+      setDeck((current) => [...current, template.id]);
+    }
+    setRewardPiece(createPieceInstance(template));
+    setSpecialChoices(null);
+    setSpecialsGranted((count) => count + 1);
+    setAugmentState((current) => advanceAugmentSchedule(current, score));
+  }
+
+  const best = useBestScore(score);
+  const hasProgress = score > 0 || board.some((row) => row.some(Boolean));
+  const canContinue = hasProgress && availablePieces.length > 0 && hasMove(board, availablePieces);
+
+  function buildPlayScreenProps() {
+    return {
+      augmentState,
+      autoUndoFlash,
+      best,
+      board: {
+        board,
+        boardMetrics,
+        boardRef,
+        clearLabel,
+        clearLabelId,
+        clearingCells,
+        cursorAnchorOffset,
+        cursorPiece,
+        cursorPoint,
+        handleCellClick,
+        hoverCell,
+        invalidPreview,
+        previewCells,
+        previewClearingCells,
+        selectedPiece,
+        setHoverCell
+      },
+      comboEffectValue,
+      gameOver,
+      gravityAnimating,
+      handleItemClick,
+      isClearing,
+      itemSlots,
+      onOpenDeckModal: () => { playPop(); setDeckModalOpen(true); },
+      previewGain,
+      score,
+      modals: {
+        augmentChoiceOpen,
+        deckModalOpen,
+        deckPieces,
+        handleAugmentChoose,
+        handleSpecialChoose,
+        onCloseDeckModal: () => setDeckModalOpen(false),
+        onConfirmReward: () => setRewardPiece(null),
+        onGameOverGoHome: () => setGamePhase("start"),
+        onGameOverRestart: startGame,
+        rewardPiece,
+        rerollLevel: getAugmentLevel(augmentState, "reroll-power"),
+        rerollModalSlot,
+        specialChoices,
+        applyReroll,
+        cancelReroll
+      },
+      settings: {
+        open: settingsOpen,
+        onClose: () => setSettingsOpen(false),
+        onGoHome: goHomeFromSettings,
+        onQuit: quitGame,
+        onToggle: () => { playPop(); setSettingsOpen((open) => !open); }
+      },
+      tray: {
+        clearSelection,
+        handlePieceSelect,
+        handlePieceActivate,
+        pieces: tray,
+        selectedPiece
+      },
+      undoSnapshot
+    };
+  }
+
+  function buildStartScreenProps() {
+    return {
+      availableBaseIds,
+      baseLoadout,
+      best,
+      canContinue,
+      canStartNewGame,
+      loadoutIds,
+      maxBase: MAX_BASE_DECK,
+      maxSpecial: MAX_LOADOUT,
+      score,
+      startDeckOpen,
+      stash: specialStash,
+      onAddBase: addBaseBlock,
+      onAddSpecial: addSpecialToDeck,
+      onCloseDeck: () => setStartDeckOpen(false),
+      onContinue: () => { playPop(); continueGame(); },
+      onNewGame: () => { playPop(); startGame(); },
+      onOpenDeck: () => { playPop(); setStartDeckOpen(true); },
+      onRemoveBase: removeBaseBlock,
+      onRemoveSpecial: removeSpecialFromDeck
+    };
+  }
+
+  return {
+    gamePhase,
+    playScreenProps: buildPlayScreenProps(),
+    startScreenProps: buildStartScreenProps()
+  };
+}

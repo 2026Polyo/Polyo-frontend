@@ -1,0 +1,141 @@
+.reroll-backdrop {
+  align-items: center;
+  background: hsl(206 50% 28% / 0.42);
+  backdrop-filter: blur(4px);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 80;
+}
+
+.reroll-panel {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--modal-shadow-lg);
+  color: var(--modal-text);
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 26px;
+  width: min(100%, 560px);
+}
+
+.reroll-heading {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  text-align: center;
+}
+
+.reroll-heading span {
+  color: var(--blue-300);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reroll-heading strong {
+  color: var(--modal-text);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.reroll-hint {
+  color: var(--modal-text-muted);
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin: 0;
+  text-align: center;
+}
+
+.reroll-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.reroll-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.reroll-piece {
+  align-items: center;
+  background: var(--modal-surface-soft);
+  border: 2px solid var(--modal-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--modal-shadow-sm);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  min-height: 92px;
+  min-width: 92px;
+  padding: 14px;
+  transition: box-shadow 140ms ease, transform 140ms ease, border-color 140ms ease;
+}
+
+.reroll-piece:hover,
+.reroll-piece:focus-visible {
+  box-shadow: var(--shadow-md);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.reroll-piece.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px hsl(202 89% 53% / 0.28), var(--shadow-sm);
+}
+
+.reroll-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.reroll-cancel,
+.reroll-confirm {
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 10px 26px;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.reroll-cancel {
+  background: var(--modal-surface);
+  border: 1px solid var(--modal-border);
+  color: var(--modal-text-body);
+}
+
+.reroll-confirm {
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  box-shadow: var(--shadow-md);
+  color: hsl(0 0% 100%);
+}
+
+.reroll-confirm:disabled {
+  background: var(--surface-tint);
+  box-shadow: none;
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.reroll-cancel:hover,
+.reroll-confirm:not(:disabled):hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}

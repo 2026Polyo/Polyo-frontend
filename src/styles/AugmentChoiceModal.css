@@ -1,0 +1,294 @@
+.augment-choice-backdrop {
+  align-items: center;
+  background: hsl(206 50% 28% / 0.42);
+  backdrop-filter: blur(4px);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 70;
+}
+
+.augment-choice-panel {
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+  width: min(100%, 1140px);
+}
+
+.augment-choice-heading {
+  color: hsl(0 0% 100%);
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  text-align: center;
+}
+
+.augment-choice-heading span {
+  color: hsl(0 0% 100% / 0.85);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.augment-choice-heading strong {
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 10px hsl(206 60% 20% / 0.45);
+}
+
+.augment-choice-list {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+}
+
+.augment-choice-card {
+  align-items: center;
+  background: var(--modal-surface);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--modal-shadow-lg);
+  color: var(--modal-text);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+  padding: 24px 22px;
+  aspect-ratio: 9 / 16;
+  position: relative;
+  text-align: center;
+  transition: box-shadow 140ms ease, transform 140ms ease, border-color 140ms ease;
+}
+
+.augment-choice-card.new {
+  border-color: hsl(54 100% 55%);
+  box-shadow:
+    0 0 0 2px hsl(54 100% 55% / 0.42),
+    0 0 24px hsl(54 100% 58% / 0.48),
+    var(--shadow-lg);
+}
+
+.augment-choice-card:hover,
+.augment-choice-card:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px hsl(202 89% 53% / 0.3), var(--modal-shadow-lg);
+  outline: none;
+  transform: translateY(-3px);
+}
+
+.augment-choice-card.new:hover,
+.augment-choice-card.new:focus-visible {
+  border-color: hsl(54 100% 55%);
+  box-shadow:
+    0 0 0 3px hsl(54 100% 55% / 0.48),
+    0 0 32px hsl(54 100% 58% / 0.62),
+    var(--shadow-lg);
+}
+
+.augment-choice-new {
+  color: hsl(54 100% 50%);
+  font-size: 0.86rem;
+  font-weight: 900;
+  line-height: 1;
+  position: absolute;
+  right: 18px;
+  text-shadow:
+    0 0 8px hsl(54 100% 58% / 0.95),
+    0 0 16px hsl(54 100% 58% / 0.62);
+  text-transform: uppercase;
+  top: 16px;
+}
+
+.augment-choice-type {
+  align-self: center;
+  border-radius: 999px;
+  color: hsl(0 0% 100%);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+/* Category accent colors. */
+.augment-choice-type.type-combo { background: hsl(18 90% 52%); }
+.augment-choice-type.type-clear { background: hsl(280 70% 56%); }
+.augment-choice-type.type-multiline { background: hsl(202 89% 48%); }
+.augment-choice-type.type-placement { background: hsl(150 65% 40%); }
+.augment-choice-type.type-item { background: hsl(330 75% 52%); }
+.augment-choice-type.type-etc { background: hsl(220 10% 45%); }
+
+.augment-choice-icon {
+  align-items: center;
+  background: linear-gradient(180deg, var(--blue-300), var(--blue-500));
+  border-radius: var(--radius-lg);
+  color: hsl(0 0% 100%);
+  display: flex;
+  height: 104px;
+  justify-content: center;
+  width: 104px;
+}
+
+.augment-choice-title {
+  color: var(--modal-text);
+  font-size: 1.18rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.augment-choice-card.new .augment-choice-title {
+  color: hsl(54 100% 44%);
+  font-weight: 900;
+  text-shadow: 0 0 10px hsl(54 100% 58% / 0.45);
+}
+
+.augment-choice-summary {
+  color: var(--modal-text-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.augment-choice-effect {
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  color: hsl(0 0% 100%);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.35;
+  margin-top: auto;
+  padding: 8px 12px;
+}
+
+.augment-choice-progress {
+  color: hsl(0 0% 100%);
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 0 1px 6px hsl(206 60% 20% / 0.4);
+}
+
+@media (max-width: 720px) {
+  .augment-choice-backdrop {
+    align-items: center;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+
+  .augment-choice-panel {
+    gap: 12px;
+    max-height: 100%;
+  }
+
+  .augment-choice-heading strong {
+    font-size: 1.6rem;
+  }
+
+  .augment-choice-list {
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .augment-choice-card {
+    aspect-ratio: auto;
+    border-radius: var(--radius-lg);
+    column-gap: 12px;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    justify-items: start;
+    min-height: 118px;
+    padding: 12px;
+    row-gap: 4px;
+    text-align: left;
+  }
+
+  .augment-choice-icon {
+    border-radius: var(--radius-md);
+    grid-column: 1;
+    grid-row: 1 / 5;
+    height: 56px;
+    width: 56px;
+  }
+
+  .augment-choice-icon > svg {
+    height: 30px;
+    width: 30px;
+  }
+
+  .augment-choice-type {
+    font-size: 0.64rem;
+    grid-column: 2;
+    grid-row: 1;
+    padding: 2px 7px;
+  }
+
+  .augment-choice-title {
+    font-size: 0.95rem;
+    grid-column: 2;
+    grid-row: 2;
+    line-height: 1.2;
+    padding-right: 20px;
+  }
+
+  .augment-choice-summary {
+    font-size: 0.74rem;
+    grid-column: 2;
+    grid-row: 3;
+    line-height: 1.35;
+  }
+
+  .augment-choice-effect {
+    border-radius: 7px;
+    font-size: 0.74rem;
+    grid-column: 2;
+    grid-row: 4;
+    margin-top: 2px;
+    padding: 4px 7px;
+  }
+
+  .augment-choice-new {
+    font-size: 0.65rem;
+    right: 12px;
+    top: 12px;
+  }
+
+  .augment-choice-progress {
+    font-size: 0.76rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .special-choice-card {
+    grid-template-columns: 68px minmax(0, 1fr);
+    min-height: 104px;
+  }
+
+  .special-choice-card .augment-choice-icon {
+    grid-row: 1 / 3;
+    height: 68px;
+    width: 68px;
+  }
+
+  .special-choice-card .augment-choice-title {
+    align-self: end;
+    grid-row: 1;
+    padding-top: 4px;
+  }
+
+  .special-choice-card .augment-choice-summary {
+    align-self: start;
+    grid-row: 2;
+  }
+
+  .augment-choice-card:hover,
+  .augment-choice-card:focus-visible {
+    transform: none;
+  }
+}

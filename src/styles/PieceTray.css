@@ -1,0 +1,70 @@
+/* One merged tray card holding the three piece slots. */
+.tray {
+  background: var(--tray-slot);
+  border: 1px solid var(--tray-slot-border);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 2px 6px hsl(205 60% 12% / 0.35), var(--shadow-sm);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 22px;
+  padding: 10px;
+}
+
+.piece-preview {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  cursor: pointer;
+  display: flex;
+  height: 124px;
+  justify-content: center;
+  padding: 12px;
+  touch-action: none;
+  user-select: none;
+}
+
+.piece-preview.selected {
+  background: hsl(202 89% 53% / 0.22);
+  box-shadow: inset 0 0 0 2px hsl(0 0% 100% / 0.9);
+}
+
+.piece-preview:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
+.piece-preview.empty {
+  cursor: default;
+}
+
+.app-shell.has-cursor-piece .piece-preview.empty {
+  cursor: none;
+}
+
+@media (max-width: 720px) {
+  .tray {
+    margin-top: 10px;
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .piece-preview {
+    height: 76px;
+    min-width: 0;
+    padding: 4px;
+  }
+
+  .piece-preview .mini-grid {
+    --mini-cell-size: clamp(10px, 3.3vw, 14px) !important;
+    --mini-cell-gap: 2px !important;
+    gap: 2px;
+  }
+
+  .piece-preview .mini-cell {
+    height: var(--mini-cell-size);
+    width: var(--mini-cell-size);
+  }
+}

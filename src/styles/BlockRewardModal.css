@@ -1,0 +1,102 @@
+.block-reward-backdrop {
+  align-items: center;
+  background: hsl(206 50% 28% / 0.42);
+  backdrop-filter: blur(4px);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 90;
+}
+
+.block-reward-panel {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--modal-shadow-lg);
+  color: var(--modal-text);
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+  max-width: calc(100vw - 48px);
+  padding: 28px 32px;
+  text-align: center;
+  width: min(100%, 360px);
+  animation: block-reward-pop 180ms ease-out;
+}
+
+@keyframes block-reward-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.block-reward-heading {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+}
+
+.block-reward-heading span {
+  color: var(--blue-300);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.block-reward-heading strong {
+  color: var(--modal-text);
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.block-reward-sprite {
+  align-items: center;
+  background: var(--modal-surface-soft);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 2px 6px hsl(208 70% 6% / 0.35);
+  display: flex;
+  justify-content: center;
+  min-height: 120px;
+  min-width: 120px;
+  padding: 18px;
+}
+
+.block-reward-text {
+  color: var(--modal-text-body);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.block-reward-text strong {
+  color: var(--modal-text);
+  font-weight: 900;
+}
+
+.block-reward-confirm {
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  border: 0;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
+  color: hsl(0 0% 100%);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 10px 32px;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.block-reward-confirm:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}

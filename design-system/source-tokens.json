@@ -1,0 +1,4446 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "project": "Polyomino",
+    "generatedAt": "2026-10-12T11:27:35.749Z",
+    "sourceRoot": "C:/github/poliyomino",
+    "scope": "Current working tree, including existing uncommitted edits. App files are read only.",
+    "purpose": "Canonical observed source values for Figma design-system construction.",
+    "extractionScript": "C:/github/poliyomino/design-system/extract-source-tokens.mjs",
+    "sourceSha256": {
+      "src/styles/App.css": "272a831d5c4e38cbdcfad0f4274232e54987ce3e6df1cc597e371c36b56700f2",
+      "src/styles/AugmentChoiceModal.css": "f8933c4bfaedc2583423e0dfc1a58497a848cd01a94a71c6461e6dc5e5cc65be",
+      "src/styles/AugmentPanel.css": "d6939fe1d928ad072c1beb6bc40f32842ea41488b29a6740446f30cf4c2f5e44",
+      "src/styles/AutoUndoFlash.css": "725036ea587045052f52a9bb732d606aa47f9e2e00087452876c157e3ba72e5f",
+      "src/styles/BlockRewardModal.css": "ec520cf765d678355e21144bbd1560fc21f0ebf3cd683a5b316a9143f4fef03f",
+      "src/styles/Board.css": "cdf56d7334d65686f16bcfe1c83bf4b2d49601de2f1b28a510c5614241c3860a",
+      "src/styles/DeckModal.css": "7303ac294faf201873615881af6df8486d84e80294bd43085400be1f2cca2f41",
+      "src/styles/GameOver.css": "146d34d6466329b8685cd2e70febd42235c7ba3e1aa52bf7bf5c95ead03ace93",
+      "src/styles/ItemSlots.css": "38891672b8e6c88440820aa900fa36637c2551258e55983a15885a51407b5b2b",
+      "src/styles/PieceShape.css": "e93b9bda199754d79cbd667fd7ec9a90a4b3dc7fa4a823987232fe6744b9fea3",
+      "src/styles/PieceTray.css": "061803d133491e9739de54c5866df7137110ec1a38ecd6a8522228d574ac7679",
+      "src/styles/RerollModal.css": "181d3391457a6715991a9d59e80c6de810ccae1b7dde79378aadb2d49bc396a7",
+      "src/styles/ScoreBoard.css": "7c4c602916cb2f567a331f1b09e36cc983ad924456ed84b05cf3dff9471e7a52",
+      "src/styles/StartScreen.css": "3c68fbc5529d35d15995d14c16589a0c939fa9273ff3da0d3c41383fb4811316",
+      "src/styles/global.css": "3185a55648dfd62642598c93d5a8cd50165de6519d206beaaa60c7ab8dbd4915"
+    }
+  },
+  "sourceTokens": {
+    "colors": [
+      {
+        "sourceName": "--blue-100",
+        "value": "hsl(202 100% 80%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 4
+        },
+        "status": "observed",
+        "category": "primitive",
+        "r": 0.6000000000000001,
+        "g": 0.8533333333333333,
+        "b": 1,
+        "a": 1,
+        "hex": "#99DAFF"
+      },
+      {
+        "sourceName": "--blue-300",
+        "value": "hsl(201 96% 70%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 5
+        },
+        "status": "observed",
+        "category": "primitive",
+        "r": 0.4119999999999999,
+        "g": 0.7863999999999998,
+        "b": 0.988,
+        "a": 1,
+        "hex": "#69C9FC"
+      },
+      {
+        "sourceName": "--blue-500",
+        "value": "hsl(200 92% 64%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 6
+        },
+        "status": "observed",
+        "category": "primitive",
+        "r": 0.30879999999999996,
+        "g": 0.7503999999999997,
+        "b": 0.9712000000000001,
+        "a": 1,
+        "hex": "#4FBFF8"
+      },
+      {
+        "sourceName": "--blue-600",
+        "value": "hsl(202 89% 53%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 7
+        },
+        "status": "observed",
+        "category": "primitive",
+        "r": 0.11170000000000013,
+        "g": 0.6415466666666665,
+        "b": 0.9482999999999999,
+        "a": 1,
+        "hex": "#1CA4F2"
+      },
+      {
+        "sourceName": "--blue-700",
+        "value": "hsl(204 80% 44%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 8
+        },
+        "status": "observed",
+        "category": "primitive",
+        "r": 0.08799999999999997,
+        "g": 0.5104,
+        "b": 0.792,
+        "a": 1,
+        "hex": "#1682CA"
+      },
+      {
+        "sourceName": "--blue-800",
+        "value": "hsl(205 78% 36%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 9
+        },
+        "status": "observed",
+        "category": "primitive",
+        "r": 0.07919999999999994,
+        "g": 0.40679999999999994,
+        "b": 0.6408,
+        "a": 1,
+        "hex": "#1468A3"
+      },
+      {
+        "sourceName": "--blue-850",
+        "value": "hsl(206 76% 31%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 10
+        },
+        "status": "observed",
+        "category": "primitive",
+        "r": 0.07440000000000002,
+        "g": 0.3414133333333333,
+        "b": 0.5456,
+        "a": 1,
+        "hex": "#13578B"
+      },
+      {
+        "sourceName": "--blue-900",
+        "value": "hsl(207 74% 26%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 11
+        },
+        "status": "observed",
+        "category": "primitive",
+        "r": 0.0676,
+        "g": 0.27924000000000004,
+        "b": 0.4524,
+        "a": 1,
+        "hex": "#114773"
+      },
+      {
+        "sourceName": "--blue-950",
+        "value": "hsl(208 70% 19%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 12
+        },
+        "status": "observed",
+        "category": "primitive",
+        "r": 0.056999999999999995,
+        "g": 0.1988666666666667,
+        "b": 0.323,
+        "a": 1,
+        "hex": "#0F3352"
+      },
+      {
+        "sourceName": "--surface-page-top",
+        "value": "hsl(200 85% 60%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 15
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.26,
+        "g": 0.713333333333333,
+        "b": 0.94,
+        "a": 1,
+        "hex": "#42B6F0"
+      },
+      {
+        "sourceName": "--surface-page-mid",
+        "value": "hsl(205 84% 50%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 16
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.08000000000000007,
+        "g": 0.5699999999999998,
+        "b": 0.9199999999999999,
+        "a": 1,
+        "hex": "#1491EB"
+      },
+      {
+        "sourceName": "--surface-page-bottom",
+        "value": "hsl(209 80% 40%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 17
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.07999999999999996,
+        "g": 0.41066666666666596,
+        "b": 0.7200000000000001,
+        "a": 1,
+        "hex": "#1469B8"
+      },
+      {
+        "sourceName": "--surface-card",
+        "value": "hsl(0 0% 100%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 18
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 1,
+        "g": 1,
+        "b": 1,
+        "a": 1,
+        "hex": "#FFFFFF"
+      },
+      {
+        "sourceName": "--surface-card-soft",
+        "value": "hsl(202 90% 91%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 19
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.8290000000000001,
+        "g": 0.9316,
+        "b": 0.991,
+        "a": 1,
+        "hex": "#D3EEFD"
+      },
+      {
+        "sourceName": "--surface-card-border",
+        "value": "hsl(205 66% 79%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 20
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.6514,
+        "g": 0.8131,
+        "b": 0.9286000000000001,
+        "a": 1,
+        "hex": "#A6CFED"
+      },
+      {
+        "sourceName": "--surface-tint",
+        "value": "hsl(203 85% 88%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 21
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.778,
+        "g": 0.9037999999999999,
+        "b": 0.982,
+        "a": 1,
+        "hex": "#C6E6FA"
+      },
+      {
+        "sourceName": "--board-bg",
+        "value": "hsl(208 62% 23%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 24
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.08739999999999998,
+        "g": 0.2395066666666667,
+        "b": 0.37260000000000004,
+        "a": 1,
+        "hex": "#163D5F"
+      },
+      {
+        "sourceName": "--board-cell-empty",
+        "value": "hsl(207 54% 32%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 25
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.1472,
+        "g": 0.33728,
+        "b": 0.4928,
+        "a": 1,
+        "hex": "#26567E"
+      },
+      {
+        "sourceName": "--board-cell-line",
+        "value": "hsl(205 30% 96% / 0.14)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 26
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.948,
+        "g": 0.962,
+        "b": 0.972,
+        "a": 0.14,
+        "hex": "#F2F5F8"
+      },
+      {
+        "sourceName": "--tray-slot",
+        "value": "hsl(207 54% 32%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 29
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.1472,
+        "g": 0.33728,
+        "b": 0.4928,
+        "a": 1,
+        "hex": "#26567E"
+      },
+      {
+        "sourceName": "--tray-slot-border",
+        "value": "hsl(207 45% 42%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 30
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.23099999999999998,
+        "g": 0.43889999999999996,
+        "b": 0.609,
+        "a": 1,
+        "hex": "#3B709B"
+      },
+      {
+        "sourceName": "--tray-slot-hover",
+        "value": "hsl(208 58% 24%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 31
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.1008,
+        "g": 0.24928000000000003,
+        "b": 0.3792,
+        "a": 1,
+        "hex": "#1A4061"
+      },
+      {
+        "sourceName": "--tray-slot-empty",
+        "value": "hsl(208 62% 21%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 32
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.07979999999999998,
+        "g": 0.21868,
+        "b": 0.3402,
+        "a": 1,
+        "hex": "#143857"
+      },
+      {
+        "sourceName": "--panel-dark",
+        "value": "hsl(207 58% 42%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 35
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.1764,
+        "g": 0.44436,
+        "b": 0.6636,
+        "a": 1,
+        "hex": "#2D71A9"
+      },
+      {
+        "sourceName": "--panel-dark-border",
+        "value": "hsl(206 62% 56%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 36
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.2871999999999999,
+        "g": 0.5963733333333334,
+        "b": 0.8328000000000002,
+        "a": 1,
+        "hex": "#4998D4"
+      },
+      {
+        "sourceName": "--panel-slot",
+        "value": "hsl(206 56% 47%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 37
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.20679999999999998,
+        "g": 0.5050933333333333,
+        "b": 0.7332,
+        "a": 1,
+        "hex": "#3581BB"
+      },
+      {
+        "sourceName": "--panel-slot-hover",
+        "value": "hsl(205 64% 54%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 38
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.24559999999999993,
+        "g": 0.5890666666666666,
+        "b": 0.8344000000000001,
+        "a": 1,
+        "hex": "#3F96D5"
+      },
+      {
+        "sourceName": "--panel-slot-empty",
+        "value": "hsl(208 56% 37%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 39
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.16279999999999994,
+        "g": 0.3838133333333334,
+        "b": 0.5772,
+        "a": 1,
+        "hex": "#2A6293"
+      },
+      {
+        "sourceName": "--text-strong",
+        "value": "hsl(208 55% 20%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 42
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.08999999999999997,
+        "g": 0.20733333333333337,
+        "b": 0.31000000000000005,
+        "a": 1,
+        "hex": "#17354F"
+      },
+      {
+        "sourceName": "--text-body",
+        "value": "hsl(207 32% 32%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 43
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.21759999999999996,
+        "g": 0.33024000000000003,
+        "b": 0.42240000000000005,
+        "a": 1,
+        "hex": "#37546C"
+      },
+      {
+        "sourceName": "--text-muted",
+        "value": "hsl(206 24% 50%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 44
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.38,
+        "g": 0.516,
+        "b": 0.62,
+        "a": 1,
+        "hex": "#61849E"
+      },
+      {
+        "sourceName": "--text-on-board",
+        "value": "hsl(0 0% 100%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 45
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 1,
+        "g": 1,
+        "b": 1,
+        "a": 1,
+        "hex": "#FFFFFF"
+      },
+      {
+        "sourceName": "--text-on-accent",
+        "value": "hsl(208 70% 19%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 46
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.056999999999999995,
+        "g": 0.1988666666666667,
+        "b": 0.323,
+        "a": 1,
+        "hex": "#0F3352"
+      },
+      {
+        "sourceName": "--accent",
+        "value": "hsl(205 90% 46%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 49
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.04600000000000004,
+        "g": 0.5289999999999999,
+        "b": 0.874,
+        "a": 1,
+        "hex": "#0C87DF"
+      },
+      {
+        "sourceName": "--accent-strong",
+        "value": "hsl(207 88% 39%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 50
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.046800000000000064,
+        "g": 0.42432000000000003,
+        "b": 0.7332,
+        "a": 1,
+        "hex": "#0C6CBB"
+      },
+      {
+        "sourceName": "--score-gold",
+        "value": "hsl(42 100% 50%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 53
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 1,
+        "g": 0.7000000000000002,
+        "b": 0,
+        "a": 1,
+        "hex": "#FFB300"
+      },
+      {
+        "sourceName": "--score-gold-shadow",
+        "value": "hsl(38 80% 30%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 54
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.54,
+        "g": 0.3640000000000002,
+        "b": 0.05999999999999994,
+        "a": 1,
+        "hex": "#8A5D0F"
+      },
+      {
+        "sourceName": "--blue-shadow",
+        "value": "hsl(206 65% 42% / 0.16)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 69
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.14700000000000002,
+        "g": 0.4564,
+        "b": 0.693,
+        "a": 0.16,
+        "hex": "#2574B1"
+      },
+      {
+        "sourceName": "--modal-bg",
+        "value": "hsl(210 85% 22%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 72
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.032999999999999974,
+        "g": 0.21999999999999958,
+        "b": 0.40700000000000003,
+        "a": 1,
+        "hex": "#083868"
+      },
+      {
+        "sourceName": "--modal-surface",
+        "value": "hsl(210 80% 30%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 73
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.05999999999999994,
+        "g": 0.29999999999999943,
+        "b": 0.54,
+        "a": 1,
+        "hex": "#0F4C8A"
+      },
+      {
+        "sourceName": "--modal-surface-soft",
+        "value": "hsl(209 74% 38%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 74
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.0988,
+        "g": 0.3893733333333327,
+        "b": 0.6612,
+        "a": 1,
+        "hex": "#1963A9"
+      },
+      {
+        "sourceName": "--modal-border",
+        "value": "hsl(208 70% 52%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 75
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.18400000000000005,
+        "g": 0.5424000000000001,
+        "b": 0.856,
+        "a": 1,
+        "hex": "#2F8ADA"
+      },
+      {
+        "sourceName": "--modal-text",
+        "value": "hsl(206 80% 97%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 76
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.946,
+        "g": 0.9732,
+        "b": 0.994,
+        "a": 1,
+        "hex": "#F1F8FD"
+      },
+      {
+        "sourceName": "--modal-text-body",
+        "value": "hsl(207 65% 85%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 77
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.7525,
+        "g": 0.85975,
+        "b": 0.9475,
+        "a": 1,
+        "hex": "#C0DBF2"
+      },
+      {
+        "sourceName": "--modal-text-muted",
+        "value": "hsl(207 45% 68%)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 78
+        },
+        "status": "observed",
+        "category": "semantic",
+        "r": 0.536,
+        "g": 0.6944000000000001,
+        "b": 0.8240000000000001,
+        "a": 1,
+        "hex": "#89B1D2"
+      }
+    ],
+    "radius": [
+      {
+        "sourceName": "--radius-sm",
+        "value": "10px",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 57
+        },
+        "status": "observed",
+        "numericValue": 10,
+        "unit": "px"
+      },
+      {
+        "sourceName": "--radius-md",
+        "value": "14px",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 58
+        },
+        "status": "observed",
+        "numericValue": 14,
+        "unit": "px"
+      },
+      {
+        "sourceName": "--radius-lg",
+        "value": "18px",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 59
+        },
+        "status": "observed",
+        "numericValue": 18,
+        "unit": "px"
+      },
+      {
+        "sourceName": "--radius-xl",
+        "value": "24px",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 60
+        },
+        "status": "observed",
+        "numericValue": 24,
+        "unit": "px"
+      },
+      {
+        "sourceName": "--radius-pill",
+        "value": "999px",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 61
+        },
+        "status": "observed",
+        "numericValue": 999,
+        "unit": "px"
+      },
+      {
+        "sourceName": "--block-cell-radius",
+        "value": "16%",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 62
+        },
+        "status": "observed",
+        "numericValue": 16,
+        "unit": "%"
+      }
+    ],
+    "shadows": [
+      {
+        "sourceName": "--shadow-sm",
+        "value": "0 2px 8px hsl(206 70% 45% / 0.10)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 65
+        },
+        "status": "observed"
+      },
+      {
+        "sourceName": "--shadow-md",
+        "value": "0 10px 24px hsl(206 65% 42% / 0.14)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 66
+        },
+        "status": "observed"
+      },
+      {
+        "sourceName": "--shadow-lg",
+        "value": "0 18px 40px hsl(206 60% 38% / 0.18)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 67
+        },
+        "status": "observed"
+      },
+      {
+        "sourceName": "--shadow-inset",
+        "value": "inset 0 1px 0 hsl(0 0% 100% / 0.6)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 68
+        },
+        "status": "observed"
+      },
+      {
+        "sourceName": "--modal-shadow-sm",
+        "value": "0 2px 8px hsl(208 70% 6% / 0.35)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 79
+        },
+        "status": "observed"
+      },
+      {
+        "sourceName": "--modal-shadow-md",
+        "value": "0 10px 24px hsl(208 70% 6% / 0.42)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 80
+        },
+        "status": "observed"
+      },
+      {
+        "sourceName": "--modal-shadow-lg",
+        "value": "0 18px 40px hsl(208 70% 6% / 0.50)",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 81
+        },
+        "status": "observed"
+      }
+    ]
+  },
+  "blockPalette": {
+    "normal": [
+      {
+        "name": "cyan",
+        "cssClass": ".piece-cyan",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(192 100% 43%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(192 100% 43%)",
+            "r": 0,
+            "g": 0.6880000000000004,
+            "b": 0.86,
+            "a": 1,
+            "hex": "#00AFDB"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 36
+        }
+      },
+      {
+        "name": "lime",
+        "cssClass": ".piece-lime",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(85 96% 41%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(85 96% 41%)",
+            "r": 0.4755999999999999,
+            "g": 0.8036,
+            "b": 0.01639999999999997,
+            "a": 1,
+            "hex": "#79CD04"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 37
+        }
+      },
+      {
+        "name": "amber",
+        "cssClass": ".piece-amber",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(32 100% 49%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(32 100% 49%)",
+            "r": 0.98,
+            "g": 0.5226666666666661,
+            "b": 0,
+            "a": 1,
+            "hex": "#FA8500"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 38
+        }
+      },
+      {
+        "name": "rose",
+        "cssClass": ".piece-rose",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(347 92% 55%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(347 92% 55%)",
+            "r": 0.9640000000000001,
+            "g": 0.136,
+            "b": 0.31539999999999996,
+            "a": 1,
+            "hex": "#F62350"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 39
+        }
+      },
+      {
+        "name": "violet",
+        "cssClass": ".piece-violet",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(262 96% 63%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(262 96% 63%)",
+            "r": 0.5352799999999991,
+            "g": 0.27480000000000016,
+            "b": 0.9851999999999999,
+            "a": 1,
+            "hex": "#8846FB"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 40
+        }
+      },
+      {
+        "name": "blue",
+        "cssClass": ".piece-blue",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(221 96% 59%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(221 96% 59%)",
+            "r": 0.19640000000000002,
+            "g": 0.44567999999999963,
+            "b": 0.9835999999999999,
+            "a": 1,
+            "hex": "#3272FB"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 41
+        }
+      },
+      {
+        "name": "teal",
+        "cssClass": ".piece-teal",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(175 92% 35%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(175 92% 35%)",
+            "r": 0.028000000000000025,
+            "g": 0.6719999999999999,
+            "b": 0.6183333333333328,
+            "a": 1,
+            "hex": "#07AB9E"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 42
+        }
+      },
+      {
+        "name": "orange",
+        "cssClass": ".piece-orange",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(21 100% 54%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(21 100% 54%)",
+            "r": 1,
+            "g": 0.40200000000000014,
+            "b": 0.08000000000000007,
+            "a": 1,
+            "hex": "#FF6714"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 43
+        }
+      },
+      {
+        "name": "pink",
+        "cssClass": ".piece-pink",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(333 92% 56%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(333 92% 56%)",
+            "r": 0.9647999999999999,
+            "g": 0.15520000000000023,
+            "b": 0.5195199999999993,
+            "a": 1,
+            "hex": "#F62884"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 44
+        }
+      },
+      {
+        "name": "green",
+        "cssClass": ".piece-green",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(142 92% 43%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(142 92% 43%)",
+            "r": 0.034399999999999986,
+            "g": 0.8256,
+            "b": 0.3245066666666667,
+            "a": 1,
+            "hex": "#09D353"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 45
+        }
+      },
+      {
+        "name": "indigo",
+        "cssClass": ".piece-indigo",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(243 92% 64%)"
+        },
+        "colors": [
+          {
+            "value": "hsl(243 92% 64%)",
+            "r": 0.34191999999999984,
+            "g": 0.30879999999999996,
+            "b": 0.9712000000000001,
+            "a": 1,
+            "hex": "#574FF8"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 46
+        }
+      }
+    ],
+    "special": [
+      {
+        "name": "ghost",
+        "cssClass": ".piece-ghost",
+        "status": "observed",
+        "declarations": {
+          "background": "hsl(210 40% 96% / 0.32)",
+          "border": "1.5px dashed hsl(210 40% 98% / 0.85)",
+          "box-shadow": "inset 0 0 8px hsl(210 60% 90% / 0.45)"
+        },
+        "colors": [
+          {
+            "value": "hsl(210 40% 96% / 0.32)",
+            "r": 0.9440000000000001,
+            "g": 0.96,
+            "b": 0.9759999999999999,
+            "a": 0.32,
+            "hex": "#F1F5F9"
+          },
+          {
+            "value": "hsl(210 40% 98% / 0.85)",
+            "r": 0.9720000000000001,
+            "g": 0.98,
+            "b": 0.9879999999999999,
+            "a": 0.85,
+            "hex": "#F8FAFC"
+          },
+          {
+            "value": "hsl(210 60% 90% / 0.45)",
+            "r": 0.8400000000000001,
+            "g": 0.8999999999999999,
+            "b": 0.96,
+            "a": 0.45,
+            "hex": "#D6E5F5"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 47
+        }
+      },
+      {
+        "name": "line",
+        "cssClass": ".piece-line",
+        "status": "observed",
+        "declarations": {
+          "background": "linear-gradient(135deg, hsl(48 100% 62%), hsl(20 100% 58%))",
+          "box-shadow": "inset 0 0 0 2px hsl(0 0% 100% / 0.7), 0 0 10px hsl(40 100% 60% / 0.7)"
+        },
+        "colors": [
+          {
+            "value": "hsl(48 100% 62%)",
+            "r": 1,
+            "g": 0.848,
+            "b": 0.24,
+            "a": 1,
+            "hex": "#FFD83D"
+          },
+          {
+            "value": "hsl(20 100% 58%)",
+            "r": 1,
+            "g": 0.4400000000000001,
+            "b": 0.15999999999999992,
+            "a": 1,
+            "hex": "#FF7029"
+          },
+          {
+            "value": "hsl(0 0% 100% / 0.7)",
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.7,
+            "hex": "#FFFFFF"
+          },
+          {
+            "value": "hsl(40 100% 60% / 0.7)",
+            "r": 1,
+            "g": 0.7333333333333336,
+            "b": 0.19999999999999996,
+            "a": 0.7,
+            "hex": "#FFBB33"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 52
+        }
+      },
+      {
+        "name": "echo",
+        "cssClass": ".piece-echo",
+        "status": "observed",
+        "declarations": {
+          "background": "linear-gradient(135deg, hsl(280 100% 70%), hsl(200 100% 60%))",
+          "box-shadow": "inset 0 0 0 2px hsl(0 0% 100% / 0.7), 0 0 10px hsl(240 100% 70% / 0.7)"
+        },
+        "colors": [
+          {
+            "value": "hsl(280 100% 70%)",
+            "r": 0.8000000000000002,
+            "g": 0.3999999999999999,
+            "b": 1,
+            "a": 1,
+            "hex": "#CC66FF"
+          },
+          {
+            "value": "hsl(200 100% 60%)",
+            "r": 0.19999999999999996,
+            "g": 0.7333333333333331,
+            "b": 1,
+            "a": 1,
+            "hex": "#33BBFF"
+          },
+          {
+            "value": "hsl(0 0% 100% / 0.7)",
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.7,
+            "hex": "#FFFFFF"
+          },
+          {
+            "value": "hsl(240 100% 70% / 0.7)",
+            "r": 0.3999999999999999,
+            "g": 0.4000000000000003,
+            "b": 1,
+            "a": 0.7,
+            "hex": "#6666FF"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 58
+        }
+      },
+      {
+        "name": "golden",
+        "cssClass": ".piece-golden",
+        "status": "observed",
+        "declarations": {
+          "background": "linear-gradient(135deg, hsl(45 100% 60%), hsl(36 100% 48%))",
+          "box-shadow": "inset 0 0 0 2px hsl(50 100% 85% / 0.9), 0 0 12px hsl(45 100% 55% / 0.8)"
+        },
+        "colors": [
+          {
+            "value": "hsl(45 100% 60%)",
+            "r": 1,
+            "g": 0.8,
+            "b": 0.19999999999999996,
+            "a": 1,
+            "hex": "#FFCC33"
+          },
+          {
+            "value": "hsl(36 100% 48%)",
+            "r": 0.96,
+            "g": 0.5760000000000005,
+            "b": 0,
+            "a": 1,
+            "hex": "#F59300"
+          },
+          {
+            "value": "hsl(50 100% 85% / 0.9)",
+            "r": 1,
+            "g": 0.95,
+            "b": 0.7,
+            "a": 0.9,
+            "hex": "#FFF2B3"
+          },
+          {
+            "value": "hsl(45 100% 55% / 0.8)",
+            "r": 1,
+            "g": 0.775,
+            "b": 0.10000000000000009,
+            "a": 0.8,
+            "hex": "#FFC61A"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 64
+        }
+      },
+      {
+        "name": "bomb",
+        "cssClass": ".piece-bomb",
+        "status": "observed",
+        "declarations": {
+          "background": "radial-gradient(circle at 35% 30%, hsl(0 0% 32%), hsl(0 0% 10%) 70%)",
+          "box-shadow": "inset 0 0 0 2px hsl(0 85% 60% / 0.85), 0 0 10px hsl(0 90% 55% / 0.6)"
+        },
+        "colors": [
+          {
+            "value": "hsl(0 0% 32%)",
+            "r": 0.32,
+            "g": 0.32,
+            "b": 0.32,
+            "a": 1,
+            "hex": "#525252"
+          },
+          {
+            "value": "hsl(0 0% 10%)",
+            "r": 0.1,
+            "g": 0.1,
+            "b": 0.1,
+            "a": 1,
+            "hex": "#1A1A1A"
+          },
+          {
+            "value": "hsl(0 85% 60% / 0.85)",
+            "r": 0.94,
+            "g": 0.26,
+            "b": 0.26,
+            "a": 0.85,
+            "hex": "#F04242"
+          },
+          {
+            "value": "hsl(0 90% 55% / 0.6)",
+            "r": 0.9550000000000001,
+            "g": 0.14500000000000002,
+            "b": 0.14500000000000002,
+            "a": 0.6,
+            "hex": "#F42525"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 70
+        }
+      },
+      {
+        "name": "fill",
+        "cssClass": ".piece-fill",
+        "status": "observed",
+        "declarations": {
+          "background": "linear-gradient(135deg, hsl(160 90% 52%), hsl(190 95% 50%))",
+          "box-shadow": "inset 0 0 0 2px hsl(0 0% 100% / 0.7), 0 0 10px hsl(170 90% 55% / 0.7)"
+        },
+        "colors": [
+          {
+            "value": "hsl(160 90% 52%)",
+            "r": 0.08800000000000008,
+            "g": 0.952,
+            "b": 0.6640000000000003,
+            "a": 1,
+            "hex": "#16F3A9"
+          },
+          {
+            "value": "hsl(190 95% 50%)",
+            "r": 0.025000000000000022,
+            "g": 0.816666666666667,
+            "b": 0.975,
+            "a": 1,
+            "hex": "#06D0F9"
+          },
+          {
+            "value": "hsl(0 0% 100% / 0.7)",
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.7,
+            "hex": "#FFFFFF"
+          },
+          {
+            "value": "hsl(170 90% 55% / 0.7)",
+            "r": 0.14500000000000002,
+            "g": 0.9550000000000001,
+            "b": 0.8199999999999998,
+            "a": 0.7,
+            "hex": "#25F4D1"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 76
+        }
+      },
+      {
+        "name": "boost",
+        "cssClass": ".piece-boost",
+        "status": "observed",
+        "declarations": {
+          "background": "linear-gradient(135deg, hsl(330 95% 60%), hsl(280 95% 60%))",
+          "box-shadow": "inset 0 0 0 2px hsl(0 0% 100% / 0.8), 0 0 12px hsl(305 95% 62% / 0.8)"
+        },
+        "colors": [
+          {
+            "value": "hsl(330 95% 60%)",
+            "r": 0.9799999999999999,
+            "g": 0.22000000000000008,
+            "b": 0.6000000000000001,
+            "a": 1,
+            "hex": "#FA3899"
+          },
+          {
+            "value": "hsl(280 95% 60%)",
+            "r": 0.7266666666666668,
+            "g": 0.22000000000000008,
+            "b": 0.9799999999999999,
+            "a": 1,
+            "hex": "#B938FA"
+          },
+          {
+            "value": "hsl(0 0% 100% / 0.8)",
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 0.8,
+            "hex": "#FFFFFF"
+          },
+          {
+            "value": "hsl(305 95% 62% / 0.8)",
+            "r": 0.9809999999999999,
+            "g": 0.2590000000000001,
+            "b": 0.9208333333333333,
+            "a": 0.8,
+            "hex": "#FA42EB"
+          }
+        ],
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/PieceShape.css",
+          "line": 82
+        }
+      }
+    ]
+  },
+  "categoryBadges": [
+    {
+      "name": "combo",
+      "value": "hsl(18 90% 52%)",
+      "r": 0.952,
+      "g": 0.3472000000000003,
+      "b": 0.08800000000000008,
+      "a": 1,
+      "hex": "#F35916",
+      "source": {
+        "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+        "line": 120
+      },
+      "status": "observed"
+    },
+    {
+      "name": "clear",
+      "value": "hsl(280 70% 56%)",
+      "r": 0.662666666666667,
+      "g": 0.2520000000000001,
+      "b": 0.868,
+      "a": 1,
+      "hex": "#A940DD",
+      "source": {
+        "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+        "line": 121
+      },
+      "status": "observed"
+    },
+    {
+      "name": "multiline",
+      "value": "hsl(202 89% 48%)",
+      "r": 0.05279999999999996,
+      "g": 0.5939199999999998,
+      "b": 0.9072,
+      "a": 1,
+      "hex": "#0D97E7",
+      "source": {
+        "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+        "line": 122
+      },
+      "status": "observed"
+    },
+    {
+      "name": "placement",
+      "value": "hsl(150 65% 40%)",
+      "r": 0.14,
+      "g": 0.66,
+      "b": 0.40000000000000047,
+      "a": 1,
+      "hex": "#24A866",
+      "source": {
+        "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+        "line": 123
+      },
+      "status": "observed"
+    },
+    {
+      "name": "item",
+      "value": "hsl(330 75% 52%)",
+      "r": 0.88,
+      "g": 0.16000000000000003,
+      "b": 0.5200000000000002,
+      "a": 1,
+      "hex": "#E02985",
+      "source": {
+        "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+        "line": 124
+      },
+      "status": "observed"
+    },
+    {
+      "name": "etc",
+      "value": "hsl(220 10% 45%)",
+      "r": 0.40499999999999997,
+      "g": 0.43499999999999994,
+      "b": 0.49500000000000005,
+      "a": 1,
+      "hex": "#676F7E",
+      "source": {
+        "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+        "line": 125
+      },
+      "status": "observed"
+    }
+  ],
+  "typography": {
+    "status": "observed",
+    "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "fontAssetNote": "Inter is named in the stack; no @font-face or explicit external font loading was found in the inspected CSS/index.html. Korean glyphs use available fallback fonts.",
+    "rootSizeAssumptionForFigma": "No explicit root font-size. rem-to-pixel examples require the browser default 16px assumption; original rem/clamp expressions remain authoritative.",
+    "styles": [
+      {
+        "selector": ".combo-burst",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 50
+        },
+        "properties": {
+          "color": "hsl(0 0% 100%)",
+          "font-size": "clamp(3.4rem, 10vw, 6.8rem)",
+          "font-weight": "900",
+          "letter-spacing": "0",
+          "line-height": "0.95",
+          "text-transform": "uppercase"
+        }
+      },
+      {
+        "selector": ".clear-burst",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 93
+        },
+        "properties": {
+          "color": "hsl(42 100% 60%)",
+          "font-size": "clamp(2.2rem, 6.4vw, 4.2rem)",
+          "font-style": "italic",
+          "font-weight": "900",
+          "line-height": "0.95",
+          "text-transform": "uppercase"
+        }
+      },
+      {
+        "selector": ".game-settings-title",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 189
+        },
+        "properties": {
+          "color": "var(--modal-text)",
+          "font-size": "1.7rem",
+          "font-weight": "900",
+          "line-height": "1"
+        }
+      },
+      {
+        "selector": ".game-settings-menu-button",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 199
+        },
+        "properties": {
+          "color": "var(--modal-text)",
+          "font-size": "1.08rem",
+          "font-weight": "800"
+        }
+      },
+      {
+        "selector": ".primary-action",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 267
+        },
+        "properties": {
+          "color": "hsl(0 0% 100%)",
+          "font-weight": "900",
+          "text-transform": "uppercase"
+        }
+      },
+      {
+        "selector": ".secondary-action",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 295
+        },
+        "properties": {
+          "color": "var(--text-strong)",
+          "font-weight": "800",
+          "text-transform": "uppercase"
+        }
+      },
+      {
+        "selector": ".combo-burst",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 437
+        },
+        "properties": {
+          "font-size": "clamp(2.5rem, 12vw, 4.5rem)"
+        }
+      },
+      {
+        "selector": ".augment-choice-heading strong",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 36
+        },
+        "properties": {
+          "font-size": "clamp(2rem, 6vw, 3.2rem)",
+          "font-weight": "900",
+          "line-height": "1"
+        }
+      },
+      {
+        "selector": ".augment-choice-type",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 108
+        },
+        "properties": {
+          "color": "hsl(0 0% 100%)",
+          "font-size": "0.74rem",
+          "font-weight": "800",
+          "letter-spacing": "0.02em"
+        }
+      },
+      {
+        "selector": ".augment-choice-title",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 138
+        },
+        "properties": {
+          "color": "var(--modal-text)",
+          "font-size": "1.18rem",
+          "font-weight": "900",
+          "line-height": "1.1"
+        }
+      },
+      {
+        "selector": ".augment-choice-summary",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 151
+        },
+        "properties": {
+          "color": "var(--modal-text-muted)",
+          "font-size": "0.88rem",
+          "font-weight": "700",
+          "line-height": "1.35"
+        }
+      },
+      {
+        "selector": ".augment-choice-effect",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 158
+        },
+        "properties": {
+          "color": "hsl(0 0% 100%)",
+          "font-size": "0.88rem",
+          "font-weight": "800",
+          "line-height": "1.35"
+        }
+      },
+      {
+        "selector": ".augment-choice-heading strong",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 190
+        },
+        "properties": {
+          "font-size": "1.6rem"
+        }
+      },
+      {
+        "selector": ".augment-choice-type",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 225
+        },
+        "properties": {
+          "font-size": "0.64rem"
+        }
+      },
+      {
+        "selector": ".augment-choice-title",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 232
+        },
+        "properties": {
+          "font-size": "0.95rem",
+          "line-height": "1.2"
+        }
+      },
+      {
+        "selector": ".augment-choice-summary",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 240
+        },
+        "properties": {
+          "font-size": "0.74rem",
+          "line-height": "1.35"
+        }
+      },
+      {
+        "selector": ".augment-choice-effect",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 247
+        },
+        "properties": {
+          "font-size": "0.74rem"
+        }
+      },
+      {
+        "selector": ".augment-level",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+          "line": 97
+        },
+        "properties": {
+          "color": "hsl(0 0% 100%)",
+          "font-size": "0.65rem",
+          "font-weight": "900",
+          "line-height": "1.4"
+        }
+      },
+      {
+        "selector": ".augment-detail-copy strong",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+          "line": 161
+        },
+        "properties": {
+          "color": "var(--modal-text)",
+          "font-size": "1.55rem",
+          "font-weight": "900",
+          "line-height": "1"
+        }
+      },
+      {
+        "selector": ".augment-detail-copy p",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+          "line": 175
+        },
+        "properties": {
+          "color": "var(--modal-text-body)",
+          "font-size": "1rem",
+          "font-weight": "700",
+          "line-height": "1.45"
+        }
+      },
+      {
+        "selector": ".augment-detail-copy strong",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+          "line": 304
+        },
+        "properties": {
+          "font-size": "1rem",
+          "line-height": "1.25"
+        }
+      },
+      {
+        "selector": ".augment-detail-copy p",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+          "line": 309
+        },
+        "properties": {
+          "font-size": "0.82rem"
+        }
+      },
+      {
+        "selector": ".block-reward-heading strong",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/BlockRewardModal.css",
+          "line": 54
+        },
+        "properties": {
+          "color": "var(--modal-text)",
+          "font-size": "clamp(1.4rem, 4vw, 1.9rem)",
+          "font-weight": "900",
+          "line-height": "1"
+        }
+      },
+      {
+        "selector": ".block-reward-text",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/BlockRewardModal.css",
+          "line": 74
+        },
+        "properties": {
+          "color": "var(--modal-text-body)",
+          "font-size": "1rem",
+          "font-weight": "700"
+        }
+      },
+      {
+        "selector": ".deck-heading span",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+          "line": 33
+        },
+        "properties": {
+          "color": "var(--blue-300)",
+          "font-size": "0.8rem",
+          "font-weight": "900",
+          "letter-spacing": "0.08em",
+          "text-transform": "uppercase"
+        }
+      },
+      {
+        "selector": ".deck-heading strong",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+          "line": 41
+        },
+        "properties": {
+          "color": "var(--modal-text)",
+          "font-size": "clamp(1.4rem, 4vw, 1.8rem)",
+          "font-weight": "900",
+          "line-height": "1.1"
+        }
+      },
+      {
+        "selector": ".deck-section-title",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+          "line": 74
+        },
+        "properties": {
+          "color": "var(--modal-text-muted)",
+          "font-size": "0.9rem",
+          "font-weight": "800"
+        }
+      },
+      {
+        "selector": ".deck-tile-label",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+          "line": 220
+        },
+        "properties": {
+          "font-size": "0.7rem",
+          "font-weight": "800"
+        }
+      },
+      {
+        "selector": ".game-over h2",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/GameOver.css",
+          "line": 17
+        },
+        "properties": {
+          "color": "var(--text-strong)",
+          "font-size": "clamp(3.4rem, 13vw, 7rem)",
+          "line-height": "0.92",
+          "text-transform": "uppercase"
+        }
+      },
+      {
+        "selector": ".game-over-score strong",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/GameOver.css",
+          "line": 41
+        },
+        "properties": {
+          "color": "var(--accent-strong)",
+          "font-size": "clamp(3.8rem, 14vw, 6.4rem)",
+          "font-weight": "900",
+          "line-height": "0.9"
+        }
+      },
+      {
+        "selector": ".undo-item-label",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ItemSlots.css",
+          "line": 128
+        },
+        "properties": {
+          "color": "hsl(0 0% 100%)",
+          "font-size": "0.85rem",
+          "font-weight": "800",
+          "line-height": "1"
+        }
+      },
+      {
+        "selector": ".undo-item-detail p",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ItemSlots.css",
+          "line": 196
+        },
+        "properties": {
+          "color": "var(--modal-text-body)",
+          "font-size": "0.9rem",
+          "line-height": "1.5"
+        }
+      },
+      {
+        "selector": ".undo-item-label",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ItemSlots.css",
+          "line": 284
+        },
+        "properties": {
+          "font-size": "0.72rem",
+          "line-height": "1.2"
+        }
+      },
+      {
+        "selector": ".reroll-heading strong",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/RerollModal.css",
+          "line": 43
+        },
+        "properties": {
+          "color": "var(--modal-text)",
+          "font-size": "clamp(1.6rem, 4vw, 2.2rem)",
+          "font-weight": "900",
+          "line-height": "1"
+        }
+      },
+      {
+        "selector": ".reroll-hint",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/RerollModal.css",
+          "line": 50
+        },
+        "properties": {
+          "color": "var(--modal-text-muted)",
+          "font-size": "0.95rem",
+          "font-weight": "800"
+        }
+      },
+      {
+        "selector": ".score-preview-gain",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 49
+        },
+        "properties": {
+          "color": "var(--text-strong)",
+          "font-size": "3.7rem",
+          "font-weight": "900",
+          "line-height": "1.1",
+          "font-variant-numeric": "tabular-nums"
+        }
+      },
+      {
+        "selector": ".score-box strong",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 68
+        },
+        "properties": {
+          "color": "var(--text-strong)",
+          "font-size": "3.7rem",
+          "font-weight": "900",
+          "line-height": "1.1",
+          "font-variant-numeric": "tabular-nums"
+        }
+      },
+      {
+        "selector": ".best-score-badge strong",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 129
+        },
+        "properties": {
+          "color": "var(--score-gold)",
+          "font-size": "1.6rem",
+          "font-weight": "900",
+          "line-height": "1"
+        }
+      },
+      {
+        "selector": ".score-box strong",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 156
+        },
+        "properties": {
+          "font-size": "clamp(1.25rem, 6.4vw, 2rem)"
+        }
+      },
+      {
+        "selector": ".score-preview-gain",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 162
+        },
+        "properties": {
+          "font-size": "0.8rem"
+        }
+      },
+      {
+        "selector": ".best-score-badge strong",
+        "conditions": [
+          "@media (max-width: 720px)"
+        ],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 187
+        },
+        "properties": {
+          "font-size": "0.9rem"
+        }
+      },
+      {
+        "selector": ".start-screen h1",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/StartScreen.css",
+          "line": 34
+        },
+        "properties": {
+          "font-size": "clamp(3.25rem, 13vw, 5.8rem)",
+          "text-transform": "uppercase"
+        }
+      },
+      {
+        "selector": ".start-actions .primary-action, .start-actions .secondary-action",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/StartScreen.css",
+          "line": 47
+        },
+        "properties": {
+          "font-size": "1.08rem"
+        }
+      },
+      {
+        "selector": ".start-best strong",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/StartScreen.css",
+          "line": 108
+        },
+        "properties": {
+          "color": "var(--score-gold)",
+          "font-size": "1.35rem",
+          "font-weight": "900"
+        }
+      },
+      {
+        "selector": ":root",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 1
+        },
+        "properties": {
+          "color": "var(--text-body)",
+          "font-family": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+          "font-synthesis": "none"
+        }
+      },
+      {
+        "selector": "h1",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 119
+        },
+        "properties": {
+          "color": "var(--text-strong)",
+          "font-size": "clamp(2rem, 8vw, 4rem)",
+          "line-height": "0.95"
+        }
+      },
+      {
+        "selector": "p",
+        "conditions": [],
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/global.css",
+          "line": 127
+        },
+        "properties": {
+          "color": "var(--text-body)",
+          "font-size": "0.98rem"
+        }
+      }
+    ]
+  },
+  "spacing": {
+    "status": "observed",
+    "hasSharedCssTokens": false,
+    "notes": "Unique px values extracted only from padding/margin/gap declarations. Values inside responsive expressions are recorded, not asserted to be a coherent spacing scale.",
+    "values": [
+      {
+        "value": -4,
+        "unit": "px",
+        "status": "observed",
+        "count": 1,
+        "examples": [
+          {
+            "selector": ".deck-hint",
+            "property": "margin",
+            "cssValue": "-4px 0 0",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+              "line": 149
+            }
+          }
+        ]
+      },
+      {
+        "value": 1,
+        "unit": "px",
+        "status": "observed",
+        "count": 1,
+        "examples": [
+          {
+            "selector": ".augment-level",
+            "property": "padding",
+            "cssValue": "1px 5px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+              "line": 97
+            }
+          }
+        ]
+      },
+      {
+        "value": 2,
+        "unit": "px",
+        "status": "observed",
+        "count": 11,
+        "examples": [
+          {
+            "selector": ".augment-choice-type",
+            "property": "padding",
+            "cssValue": "2px 7px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 225
+            }
+          },
+          {
+            "selector": ".augment-choice-effect",
+            "property": "margin-top",
+            "cssValue": "2px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 247
+            }
+          },
+          {
+            "selector": ".augment-panel-head",
+            "property": "gap",
+            "cssValue": "2px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+              "line": 15
+            }
+          }
+        ]
+      },
+      {
+        "value": 3,
+        "unit": "px",
+        "status": "observed",
+        "count": 3,
+        "examples": [
+          {
+            "selector": ".augment-choice-type",
+            "property": "padding",
+            "cssValue": "3px 10px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 108
+            }
+          },
+          {
+            "selector": ".board",
+            "property": "gap",
+            "cssValue": "3px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/Board.css",
+              "line": 1
+            }
+          },
+          {
+            "selector": ".deck-columns",
+            "property": "padding",
+            "cssValue": "3px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+              "line": 155
+            }
+          }
+        ]
+      },
+      {
+        "value": 4,
+        "unit": "px",
+        "status": "observed",
+        "count": 11,
+        "examples": [
+          {
+            "selector": ".augment-choice-card",
+            "property": "row-gap",
+            "cssValue": "4px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 199
+            }
+          },
+          {
+            "selector": ".augment-choice-effect",
+            "property": "padding",
+            "cssValue": "4px 7px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 247
+            }
+          },
+          {
+            "selector": ".special-choice-card .augment-choice-title",
+            "property": "padding-top",
+            "cssValue": "4px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 279
+            }
+          }
+        ]
+      },
+      {
+        "value": 5,
+        "unit": "px",
+        "status": "observed",
+        "count": 5,
+        "examples": [
+          {
+            "selector": ".augment-level",
+            "property": "padding",
+            "cssValue": "1px 5px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+              "line": 97
+            }
+          },
+          {
+            "selector": ".deck-selection-count > span",
+            "property": "padding",
+            "cssValue": "5px 11px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+              "line": 106
+            }
+          },
+          {
+            "selector": ".undo-item",
+            "property": "gap",
+            "cssValue": "5px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/ItemSlots.css",
+              "line": 262
+            }
+          }
+        ]
+      },
+      {
+        "value": 6,
+        "unit": "px",
+        "status": "observed",
+        "count": 12,
+        "examples": [
+          {
+            "selector": ".deck-view-button",
+            "property": "gap",
+            "cssValue": "6px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 409
+            }
+          },
+          {
+            "selector": ".augment-choice-heading",
+            "property": "gap",
+            "cssValue": "6px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 20
+            }
+          },
+          {
+            "selector": ".augment-list",
+            "property": "gap",
+            "cssValue": "22px 6px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+              "line": 55
+            }
+          }
+        ]
+      },
+      {
+        "value": 7,
+        "unit": "px",
+        "status": "observed",
+        "count": 4,
+        "examples": [
+          {
+            "selector": ".augment-choice-type",
+            "property": "padding",
+            "cssValue": "2px 7px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 225
+            }
+          },
+          {
+            "selector": ".augment-choice-effect",
+            "property": "padding",
+            "cssValue": "4px 7px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 247
+            }
+          },
+          {
+            "selector": ".board",
+            "property": "padding",
+            "cssValue": "7px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/Board.css",
+              "line": 32
+            }
+          }
+        ]
+      },
+      {
+        "value": 8,
+        "unit": "px",
+        "status": "observed",
+        "count": 25,
+        "examples": [
+          {
+            "selector": ".placement-hint",
+            "property": "margin-top",
+            "cssValue": "8px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 42
+            }
+          },
+          {
+            "selector": ".game-settings",
+            "property": "gap",
+            "cssValue": "8px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 136
+            }
+          },
+          {
+            "selector": ".game-settings-title",
+            "property": "margin-bottom",
+            "cssValue": "8px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 189
+            }
+          }
+        ]
+      },
+      {
+        "value": 9,
+        "unit": "px",
+        "status": "observed",
+        "count": 1,
+        "examples": [
+          {
+            "selector": ".deck-grid.mini",
+            "property": "gap",
+            "cssValue": "9px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+              "line": 177
+            }
+          }
+        ]
+      },
+      {
+        "value": 10,
+        "unit": "px",
+        "status": "observed",
+        "count": 30,
+        "examples": [
+          {
+            "selector": ".game-settings-menu-button",
+            "property": "gap",
+            "cssValue": "10px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 199
+            }
+          },
+          {
+            "selector": ".deck-view-button",
+            "property": "gap",
+            "cssValue": "10px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 227
+            }
+          },
+          {
+            "selector": ".secondary-action",
+            "property": "padding",
+            "cssValue": "10px 18px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 295
+            }
+          }
+        ]
+      },
+      {
+        "value": 11,
+        "unit": "px",
+        "status": "observed",
+        "count": 1,
+        "examples": [
+          {
+            "selector": ".deck-selection-count > span",
+            "property": "padding",
+            "cssValue": "5px 11px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+              "line": 106
+            }
+          }
+        ]
+      },
+      {
+        "value": 12,
+        "unit": "px",
+        "status": "observed",
+        "count": 33,
+        "examples": [
+          {
+            "selector": ".primary-action",
+            "property": "padding",
+            "cssValue": "12px 18px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 267
+            }
+          },
+          {
+            "selector": ".play-shell",
+            "property": "padding",
+            "cssValue": "max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left))",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 372
+            }
+          },
+          {
+            "selector": ".deck-view-button",
+            "property": "padding",
+            "cssValue": "8px 12px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 409
+            }
+          }
+        ]
+      },
+      {
+        "value": 14,
+        "unit": "px",
+        "status": "observed",
+        "count": 10,
+        "examples": [
+          {
+            "selector": ".game-settings-menu",
+            "property": "gap",
+            "cssValue": "14px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 178
+            }
+          },
+          {
+            "selector": ".game-settings-menu-button",
+            "property": "padding",
+            "cssValue": "14px 18px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 199
+            }
+          },
+          {
+            "selector": ".deck-view-button",
+            "property": "padding",
+            "cssValue": "14px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 227
+            }
+          }
+        ]
+      },
+      {
+        "value": 16,
+        "unit": "px",
+        "status": "observed",
+        "count": 9,
+        "examples": [
+          {
+            "selector": ".game-settings-backdrop",
+            "property": "padding",
+            "cssValue": "16px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 433
+            }
+          },
+          {
+            "selector": ".augment-choice-backdrop",
+            "property": "padding",
+            "cssValue": "max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left))",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 178
+            }
+          },
+          {
+            "selector": ".augment-choice-backdrop",
+            "property": "padding",
+            "cssValue": "max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left))",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 178
+            }
+          }
+        ]
+      },
+      {
+        "value": 18,
+        "unit": "px",
+        "status": "observed",
+        "count": 14,
+        "examples": [
+          {
+            "selector": ".game-settings-menu-button",
+            "property": "padding",
+            "cssValue": "14px 18px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 199
+            }
+          },
+          {
+            "selector": ".primary-action",
+            "property": "padding",
+            "cssValue": "12px 18px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 267
+            }
+          },
+          {
+            "selector": ".secondary-action",
+            "property": "padding",
+            "cssValue": "10px 18px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 295
+            }
+          }
+        ]
+      },
+      {
+        "value": 20,
+        "unit": "px",
+        "status": "observed",
+        "count": 3,
+        "examples": [
+          {
+            "selector": ".augment-choice-title",
+            "property": "padding-right",
+            "cssValue": "20px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 232
+            }
+          },
+          {
+            "selector": ".deck-done",
+            "property": "padding",
+            "cssValue": "10px 20px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+              "line": 135
+            }
+          },
+          {
+            "selector": ".start-deck-action",
+            "property": "padding",
+            "cssValue": "10px 20px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/StartScreen.css",
+              "line": 61
+            }
+          }
+        ]
+      },
+      {
+        "value": 22,
+        "unit": "px",
+        "status": "observed",
+        "count": 4,
+        "examples": [
+          {
+            "selector": ".augment-choice-card",
+            "property": "padding",
+            "cssValue": "24px 22px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+              "line": 50
+            }
+          },
+          {
+            "selector": ".augment-list",
+            "property": "gap",
+            "cssValue": "22px 6px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AugmentPanel.css",
+              "line": 55
+            }
+          },
+          {
+            "selector": ".tray",
+            "property": "margin-top",
+            "cssValue": "22px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/PieceTray.css",
+              "line": 2
+            }
+          }
+        ]
+      },
+      {
+        "value": 24,
+        "unit": "px",
+        "status": "observed",
+        "count": 11,
+        "examples": [
+          {
+            "selector": ".app-shell",
+            "property": "padding",
+            "cssValue": "24px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 1
+            }
+          },
+          {
+            "selector": ".board-layout",
+            "property": "gap",
+            "cssValue": "24px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 24
+            }
+          },
+          {
+            "selector": ".game-settings-backdrop",
+            "property": "padding",
+            "cssValue": "24px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 166
+            }
+          }
+        ]
+      },
+      {
+        "value": 26,
+        "unit": "px",
+        "status": "observed",
+        "count": 2,
+        "examples": [
+          {
+            "selector": ".reroll-panel",
+            "property": "padding",
+            "cssValue": "26px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/RerollModal.css",
+              "line": 13
+            }
+          },
+          {
+            "selector": ".reroll-cancel, .reroll-confirm",
+            "property": "padding",
+            "cssValue": "10px 26px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/RerollModal.css",
+              "line": 106
+            }
+          }
+        ]
+      },
+      {
+        "value": 28,
+        "unit": "px",
+        "status": "observed",
+        "count": 5,
+        "examples": [
+          {
+            "selector": ".game-settings-menu",
+            "property": "padding",
+            "cssValue": "28px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 178
+            }
+          },
+          {
+            "selector": ".deck-view-button",
+            "property": "margin-bottom",
+            "cssValue": "28px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 227
+            }
+          },
+          {
+            "selector": ".auto-undo-flash-card",
+            "property": "padding",
+            "cssValue": "28px 36px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AutoUndoFlash.css",
+              "line": 14
+            }
+          }
+        ]
+      },
+      {
+        "value": 32,
+        "unit": "px",
+        "status": "observed",
+        "count": 2,
+        "examples": [
+          {
+            "selector": ".block-reward-panel",
+            "property": "padding",
+            "cssValue": "28px 32px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/BlockRewardModal.css",
+              "line": 13
+            }
+          },
+          {
+            "selector": ".block-reward-confirm",
+            "property": "padding",
+            "cssValue": "10px 32px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/BlockRewardModal.css",
+              "line": 86
+            }
+          }
+        ]
+      },
+      {
+        "value": 36,
+        "unit": "px",
+        "status": "observed",
+        "count": 1,
+        "examples": [
+          {
+            "selector": ".auto-undo-flash-card",
+            "property": "padding",
+            "cssValue": "28px 36px",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AutoUndoFlash.css",
+              "line": 14
+            }
+          }
+        ]
+      },
+      {
+        "value": 52,
+        "unit": "px",
+        "status": "observed",
+        "count": 1,
+        "examples": [
+          {
+            "selector": ".score-row",
+            "property": "margin",
+            "cssValue": "0 52px 12px 68px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+              "line": 144
+            }
+          }
+        ]
+      },
+      {
+        "value": 68,
+        "unit": "px",
+        "status": "observed",
+        "count": 1,
+        "examples": [
+          {
+            "selector": ".score-row",
+            "property": "margin",
+            "cssValue": "0 52px 12px 68px",
+            "conditions": [
+              "@media (max-width: 720px)"
+            ],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+              "line": 144
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "motion": {
+    "status": "observed",
+    "hasSharedCssTokens": false,
+    "durations": [
+      {
+        "milliseconds": 120,
+        "status": "observed",
+        "examples": [
+          {
+            "selector": ".board-cell",
+            "property": "transition",
+            "cssValue": "transform 120ms ease, filter 120ms ease, opacity 120ms ease",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/Board.css",
+              "line": 17
+            }
+          },
+          {
+            "selector": ".board-cell",
+            "property": "transition",
+            "cssValue": "transform 120ms ease, filter 120ms ease, opacity 120ms ease",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/Board.css",
+              "line": 17
+            }
+          },
+          {
+            "selector": ".board-cell",
+            "property": "transition",
+            "cssValue": "transform 120ms ease, filter 120ms ease, opacity 120ms ease",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/Board.css",
+              "line": 17
+            }
+          },
+          {
+            "selector": ".deck-qty button",
+            "property": "transition",
+            "cssValue": "transform 120ms ease, box-shadow 120ms ease",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/DeckModal.css",
+              "line": 290
+            }
+          }
+        ]
+      },
+      {
+        "milliseconds": 140,
+        "status": "observed",
+        "examples": [
+          {
+            "selector": ".game-settings-button",
+            "property": "transition",
+            "cssValue": "box-shadow 140ms ease, transform 140ms ease",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 146
+            }
+          },
+          {
+            "selector": ".game-settings-button",
+            "property": "transition",
+            "cssValue": "box-shadow 140ms ease, transform 140ms ease",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 146
+            }
+          },
+          {
+            "selector": ".game-settings-menu-button",
+            "property": "transition",
+            "cssValue": "box-shadow 140ms ease, transform 140ms ease",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 199
+            }
+          },
+          {
+            "selector": ".game-settings-menu-button",
+            "property": "transition",
+            "cssValue": "box-shadow 140ms ease, transform 140ms ease",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 199
+            }
+          }
+        ]
+      },
+      {
+        "milliseconds": 160,
+        "status": "observed",
+        "examples": [
+          {
+            "selector": ".score-preview-gain",
+            "property": "transition",
+            "cssValue": "opacity 160ms ease-out, transform 160ms ease-out",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+              "line": 49
+            }
+          },
+          {
+            "selector": ".score-preview-gain",
+            "property": "transition",
+            "cssValue": "opacity 160ms ease-out, transform 160ms ease-out",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+              "line": 49
+            }
+          }
+        ]
+      },
+      {
+        "milliseconds": 180,
+        "status": "observed",
+        "examples": [
+          {
+            "selector": ".block-reward-panel",
+            "property": "animation",
+            "cssValue": "block-reward-pop 180ms ease-out",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/BlockRewardModal.css",
+              "line": 13
+            }
+          },
+          {
+            "selector": ".score-box strong.is-counting",
+            "property": "animation",
+            "cssValue": "score-count-up 180ms ease-out",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+              "line": 81
+            }
+          }
+        ]
+      },
+      {
+        "milliseconds": 260,
+        "status": "observed",
+        "examples": [
+          {
+            "selector": ".board-cell.clearing",
+            "property": "animation",
+            "cssValue": "clear-pop 260ms ease-out forwards",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/Board.css",
+              "line": 62
+            }
+          }
+        ]
+      },
+      {
+        "milliseconds": 900,
+        "status": "observed",
+        "examples": [
+          {
+            "selector": ".auto-undo-flash-icon",
+            "property": "animation",
+            "cssValue": "auto-undo-glow 0.9s ease-in-out infinite alternate",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AutoUndoFlash.css",
+              "line": 26
+            }
+          }
+        ]
+      },
+      {
+        "milliseconds": 940,
+        "status": "observed",
+        "examples": [
+          {
+            "selector": ".combo-burst",
+            "property": "animation",
+            "cssValue": "combo-burst 940ms ease-out forwards",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 50
+            }
+          },
+          {
+            "selector": ".clear-burst",
+            "property": "animation",
+            "cssValue": "clear-burst 940ms ease-out forwards",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 93
+            }
+          }
+        ]
+      },
+      {
+        "milliseconds": 1500,
+        "status": "observed",
+        "examples": [
+          {
+            "selector": ".auto-undo-flash",
+            "property": "animation",
+            "cssValue": "auto-undo-overlay 1.5s ease forwards",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AutoUndoFlash.css",
+              "line": 1
+            }
+          },
+          {
+            "selector": ".auto-undo-flash-card",
+            "property": "animation",
+            "cssValue": "auto-undo-pop 1.5s ease forwards",
+            "conditions": [],
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/AutoUndoFlash.css",
+              "line": 14
+            }
+          }
+        ]
+      }
+    ],
+    "reducedMotionRules": [
+      {
+        "selector": ".auto-undo-flash, .auto-undo-flash-card, .auto-undo-flash-icon",
+        "conditions": [
+          "@media (prefers-reduced-motion: reduce)"
+        ],
+        "declarations": {
+          "animation-iteration-count": "1"
+        },
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AutoUndoFlash.css",
+          "line": 62
+        }
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Button",
+      "variants": [
+        "primary",
+        "secondary",
+        "icon",
+        "settings",
+        "deck-action",
+        "close"
+      ],
+      "states": [
+        "default",
+        "hover",
+        "active"
+      ],
+      "optionalStates": [
+        "disabled (native attribute; not uniformly styled)",
+        "focus-visible (component-specific)"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/styles/App.css",
+        "C:/github/poliyomino/src/styles/ScoreBoard.css",
+        "C:/github/poliyomino/src/styles/StartScreen.css",
+        "C:/github/poliyomino/src/styles/DeckModal.css"
+      ],
+      "note": "No shared Button TSX abstraction; CSS classes are reused.",
+      "status": "observed"
+    },
+    {
+      "name": "Board / Cell",
+      "variants": [
+        "empty",
+        "11 normal block colors",
+        "7 special effects"
+      ],
+      "states": [
+        "filled",
+        "preview",
+        "preview-clearing",
+        "clearing",
+        "focus-visible"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/Board.tsx",
+        "C:/github/poliyomino/src/styles/Board.css"
+      ],
+      "layout": "8 by 8; square; gap 3px/padding 10px, mobile 2px/7px",
+      "status": "observed"
+    },
+    {
+      "name": "PieceShape",
+      "variants": [
+        "shape footprint",
+        "normal color",
+        "special effect",
+        "preview size"
+      ],
+      "states": [
+        "default"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/PieceShape.tsx",
+        "C:/github/poliyomino/src/styles/PieceShape.css"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "PiecePreview / Tray",
+      "variants": [
+        "three slots",
+        "desktop",
+        "mobile"
+      ],
+      "states": [
+        "default",
+        "selected",
+        "empty",
+        "focus-visible",
+        "disabled (native)"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/PiecePreview.tsx",
+        "C:/github/poliyomino/src/components/PieceTray.tsx",
+        "C:/github/poliyomino/src/styles/PieceTray.css"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "CursorPiece",
+      "variants": [
+        "shape",
+        "normal/special color"
+      ],
+      "states": [
+        "valid",
+        "invalid"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/screens/PlayScreen.tsx",
+        "C:/github/poliyomino/src/styles/PieceShape.css"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "Score",
+      "variants": [
+        "current",
+        "best badge",
+        "placement gain"
+      ],
+      "states": [
+        "idle",
+        "is-counting",
+        "gain visible",
+        "gain hidden"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/ScoreBoard.tsx",
+        "C:/github/poliyomino/src/styles/ScoreBoard.css"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "ItemSlot",
+      "variants": [
+        "undo",
+        "reroll",
+        "gravity",
+        "desktop tile",
+        "mobile row"
+      ],
+      "states": [
+        "available",
+        "empty",
+        "active",
+        "unavailable",
+        "disabled",
+        "focus-visible"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/ItemSlots.tsx",
+        "C:/github/poliyomino/src/styles/ItemSlots.css"
+      ],
+      "children": [
+        "icon",
+        "quantity badge",
+        "detail popover",
+        "disabled reason",
+        "use button"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "AugmentTile / Panel",
+      "variants": [
+        "icon and level",
+        "detail",
+        "desktop grid",
+        "mobile accordion"
+      ],
+      "states": [
+        "empty",
+        "default",
+        "hover",
+        "focus-visible",
+        "active",
+        "expanded",
+        "collapsed"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/AugmentPanel.tsx",
+        "C:/github/poliyomino/src/styles/AugmentPanel.css"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "ChoiceCard",
+      "variants": [
+        "augment",
+        "special block",
+        "desktop portrait",
+        "mobile horizontal"
+      ],
+      "states": [
+        "default",
+        "new",
+        "hover",
+        "focus-visible"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/AugmentChoiceModal.tsx",
+        "C:/github/poliyomino/src/components/SpecialChoiceModal.tsx",
+        "C:/github/poliyomino/src/styles/AugmentChoiceModal.css"
+      ],
+      "children": [
+        "category badge",
+        "icon/shape",
+        "title",
+        "summary",
+        "effect pill",
+        "new badge"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "CategoryBadge",
+      "variants": [
+        "combo",
+        "clear",
+        "multiline",
+        "placement",
+        "item",
+        "etc"
+      ],
+      "states": [
+        "default"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/styles/AugmentChoiceModal.css"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "DeckTile",
+      "variants": [
+        "normal",
+        "special",
+        "read-only",
+        "selectable"
+      ],
+      "states": [
+        "default",
+        "hover",
+        "focus-visible",
+        "selected",
+        "disabled",
+        "selected-disabled"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/DeckModal.tsx",
+        "C:/github/poliyomino/src/components/StartDeckModal.tsx",
+        "C:/github/poliyomino/src/styles/DeckModal.css"
+      ],
+      "children": [
+        "shape",
+        "label",
+        "checkmark",
+        "count"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "DeckBuilder",
+      "variants": [
+        "desktop two columns",
+        "mobile single column with current deck hidden"
+      ],
+      "states": [
+        "empty deck section",
+        "partial count",
+        "complete count"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/StartDeckModal.tsx",
+        "C:/github/poliyomino/src/styles/DeckModal.css"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "Reroll",
+      "variants": [
+        "slot selection",
+        "candidate selection",
+        "deck selection"
+      ],
+      "states": [
+        "unselected",
+        "selected",
+        "confirm enabled",
+        "confirm disabled"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/RerollModal.tsx",
+        "C:/github/poliyomino/src/styles/RerollModal.css"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "Modal",
+      "variants": [
+        "settings",
+        "deck viewer",
+        "deck builder",
+        "augment choice",
+        "special choice",
+        "reroll",
+        "block reward",
+        "game over"
+      ],
+      "states": [
+        "open",
+        "closed"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/GameSettingsMenu.tsx",
+        "C:/github/poliyomino/src/components/DeckModal.tsx",
+        "C:/github/poliyomino/src/components/StartDeckModal.tsx",
+        "C:/github/poliyomino/src/components/AugmentChoiceModal.tsx",
+        "C:/github/poliyomino/src/components/SpecialChoiceModal.tsx",
+        "C:/github/poliyomino/src/components/RerollModal.tsx",
+        "C:/github/poliyomino/src/components/BlockRewardModal.tsx",
+        "C:/github/poliyomino/src/components/GameOver.tsx"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "StartScreen",
+      "variants": [
+        "new game only",
+        "saved game available"
+      ],
+      "states": [
+        "new game enabled",
+        "new game disabled"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/components/StartScreen.tsx",
+        "C:/github/poliyomino/src/styles/StartScreen.css"
+      ],
+      "status": "observed"
+    },
+    {
+      "name": "Feedback",
+      "variants": [
+        "combo burst",
+        "clear burst",
+        "automatic undo flash",
+        "block reward pop",
+        "score count",
+        "cell clear"
+      ],
+      "states": [
+        "animated",
+        "hidden"
+      ],
+      "sourceFiles": [
+        "C:/github/poliyomino/src/styles/App.css",
+        "C:/github/poliyomino/src/styles/AutoUndoFlash.css",
+        "C:/github/poliyomino/src/styles/BlockRewardModal.css",
+        "C:/github/poliyomino/src/styles/ScoreBoard.css",
+        "C:/github/poliyomino/src/styles/Board.css"
+      ],
+      "status": "observed"
+    }
+  ],
+  "responsive": {
+    "status": "observed",
+    "breakpoints": [
+      {
+        "maxWidthPx": 460,
+        "status": "observed",
+        "mediaQuery": "@media (max-width: 460px)",
+        "sourceFiles": [
+          "C:/github/poliyomino/src/styles/App.css",
+          "C:/github/poliyomino/src/styles/ScoreBoard.css"
+        ],
+        "examples": [
+          {
+            "selector": ".game-settings-menu",
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 351
+            }
+          },
+          {
+            "selector": ".deck-view-button",
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 356
+            }
+          },
+          {
+            "selector": ".deck-view-button svg",
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 361
+            }
+          }
+        ],
+        "behavior": "Narrow settings dialog; smaller deck button and topbar alignment. Some earlier rules are superseded by the later 720px play-shell rules."
+      },
+      {
+        "maxWidthPx": 720,
+        "status": "observed",
+        "mediaQuery": "@media (max-width: 720px)",
+        "sourceFiles": [
+          "C:/github/poliyomino/src/styles/App.css",
+          "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "C:/github/poliyomino/src/styles/AugmentPanel.css",
+          "C:/github/poliyomino/src/styles/Board.css",
+          "C:/github/poliyomino/src/styles/DeckModal.css",
+          "C:/github/poliyomino/src/styles/ItemSlots.css",
+          "C:/github/poliyomino/src/styles/PieceTray.css",
+          "C:/github/poliyomino/src/styles/ScoreBoard.css"
+        ],
+        "examples": [
+          {
+            "selector": ".play-shell",
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 372
+            }
+          },
+          {
+            "selector": ".play-shell .game-area",
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 379
+            }
+          },
+          {
+            "selector": ".board-layout",
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 385
+            }
+          }
+        ],
+        "behavior": "Mobile play area max 480px. Items are horizontal 48px slots. Augment region becomes collapsible. Choice cards stack and change to horizontal information layout. Board gap/padding and tray size reduce."
+      },
+      {
+        "maxWidthPx": 1520,
+        "status": "observed",
+        "mediaQuery": "@media (max-width: 1520px)",
+        "sourceFiles": [
+          "C:/github/poliyomino/src/styles/App.css",
+          "C:/github/poliyomino/src/styles/AugmentPanel.css",
+          "C:/github/poliyomino/src/styles/ItemSlots.css"
+        ],
+        "examples": [
+          {
+            "selector": ".app-shell",
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 324
+            }
+          },
+          {
+            "selector": ".game-area",
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 328
+            }
+          },
+          {
+            "selector": ".board-layout",
+            "source": {
+              "path": "C:/github/poliyomino/src/styles/App.css",
+              "line": 332
+            }
+          }
+        ],
+        "behavior": "Three columns collapse into a 620px single-column layout; item/augment regions move above board."
+      }
+    ],
+    "minBodyWidthPx": 320,
+    "desktopGameMaxWidthPx": 1920,
+    "desktopBoardColumnMaxWidthPx": 600,
+    "mobileGameMaxWidthPx": 480,
+    "source": {
+      "path": "C:/github/poliyomino/src/styles/App.css",
+      "line": 18
+    }
+  },
+  "contrastAudit": {
+    "status": "calculated-from-observed-values",
+    "method": "sRGB relative luminance: channel <= 0.04045 => channel/12.92, else ((channel+0.055)/1.055)^2.4; L=0.2126R+0.7152G+0.0722B; ratio=(Llighter+0.05)/(Ldarker+0.05). RGB values are not rounded before calculation.",
+    "thresholds": {
+      "normalTextAA": 4.5,
+      "largeTextAA": 3,
+      "nonText": 3
+    },
+    "limitations": "Static foreground/background pairs only. This is a likely-risk audit, not a rendered accessibility certification. Endpoint samples do not account for radial overlays, shadow outlines, exact viewport position, antialiasing or disabled-control exemptions. Classification of a text style as large must use its actual rendered size and weight.",
+    "pairs": [
+      {
+        "id": "primary-white-on-accent",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "--accent",
+        "backgroundHex": "#0C87DF",
+        "ratio": 3.791,
+        "kind": "text",
+        "usage": "Primary action gradient bright endpoint",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 267
+        }
+      },
+      {
+        "id": "primary-white-on-accent-strong",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "--accent-strong",
+        "backgroundHex": "#0C6CBB",
+        "ratio": 5.404,
+        "kind": "text",
+        "usage": "Primary action gradient dark endpoint",
+        "note": "",
+        "normalTextAA": true,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 267
+        }
+      },
+      {
+        "id": "secondary-strong-on-white",
+        "foreground": "--text-strong",
+        "foregroundHex": "#17354F",
+        "background": "--surface-card",
+        "backgroundHex": "#FFFFFF",
+        "ratio": 12.679,
+        "kind": "text",
+        "usage": "Secondary action label",
+        "note": "",
+        "normalTextAA": true,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/App.css",
+          "line": 295
+        }
+      },
+      {
+        "id": "modal-body-on-bg",
+        "foreground": "--modal-text-body",
+        "foregroundHex": "#C0DBF2",
+        "background": "--modal-bg",
+        "backgroundHex": "#083868",
+        "ratio": 8.255,
+        "kind": "text",
+        "usage": "Item description on modal background",
+        "note": "",
+        "normalTextAA": true,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ItemSlots.css",
+          "line": 196
+        }
+      },
+      {
+        "id": "modal-muted-on-surface",
+        "foreground": "--modal-text-muted",
+        "foregroundHex": "#89B1D2",
+        "background": "--modal-surface",
+        "backgroundHex": "#0F4C8A",
+        "ratio": 3.815,
+        "kind": "text",
+        "usage": "Augment choice summary",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 151
+        }
+      },
+      {
+        "id": "modal-muted-on-bg",
+        "foreground": "--modal-text-muted",
+        "foregroundHex": "#89B1D2",
+        "background": "--modal-bg",
+        "backgroundHex": "#083868",
+        "ratio": 5.223,
+        "kind": "text",
+        "usage": "Reroll hint",
+        "note": "",
+        "normalTextAA": true,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/RerollModal.css",
+          "line": 50
+        }
+      },
+      {
+        "id": "modal-title-on-surface",
+        "foreground": "--modal-text",
+        "foregroundHex": "#F1F8FD",
+        "background": "--modal-surface",
+        "backgroundHex": "#0F4C8A",
+        "ratio": 8.062,
+        "kind": "text",
+        "usage": "Augment card title",
+        "note": "",
+        "normalTextAA": true,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 138
+        }
+      },
+      {
+        "id": "new-gold-title-on-modal",
+        "foreground": "hsl(54 100% 44%)",
+        "foregroundHex": "#E0CA00",
+        "background": "--modal-surface",
+        "backgroundHex": "#0F4C8A",
+        "ratio": 5.188,
+        "kind": "text",
+        "usage": "New augment card title",
+        "note": "",
+        "normalTextAA": true,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 145
+        }
+      },
+      {
+        "id": "item-white-on-panel-slot",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "--panel-slot",
+        "backgroundHex": "#3581BB",
+        "ratio": 4.203,
+        "kind": "text",
+        "usage": "Item label in available slot",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ItemSlots.css",
+          "line": 128
+        }
+      },
+      {
+        "id": "item-white-on-slot-hover",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "--panel-slot-hover",
+        "backgroundHex": "#3F96D5",
+        "ratio": 3.209,
+        "kind": "text",
+        "usage": "Item label in hovered/active slot",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ItemSlots.css",
+          "line": 83
+        }
+      },
+      {
+        "id": "icon-white-on-blue-300",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "--blue-300",
+        "backgroundHex": "#69C9FC",
+        "ratio": 1.856,
+        "kind": "icon",
+        "usage": "White icon on gradient bright endpoint",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": false,
+        "nonTextContrast3to1": false,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ItemSlots.css",
+          "line": 97
+        }
+      },
+      {
+        "id": "icon-white-on-blue-500",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "--blue-500",
+        "backgroundHex": "#4FBFF8",
+        "ratio": 2.066,
+        "kind": "icon",
+        "usage": "White icon on gradient dark endpoint",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": false,
+        "nonTextContrast3to1": false,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ItemSlots.css",
+          "line": 97
+        }
+      },
+      {
+        "id": "score-strong-on-surface-page-top",
+        "foreground": "--text-strong",
+        "foregroundHex": "#17354F",
+        "background": "--surface-page-top",
+        "backgroundHex": "#42B6F0",
+        "ratio": 5.538,
+        "kind": "text",
+        "usage": "Current score/title over page gradient (endpoint sample)",
+        "note": "Gradient endpoint estimate; actual foreground position, radial white overlay and text shadows are not rendered here.",
+        "normalTextAA": true,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 68
+        }
+      },
+      {
+        "id": "gold-on-surface-page-top",
+        "foreground": "--score-gold",
+        "foregroundHex": "#FFB300",
+        "background": "--surface-page-top",
+        "backgroundHex": "#42B6F0",
+        "ratio": 1.271,
+        "kind": "text",
+        "usage": "Best score badge over page gradient (endpoint sample)",
+        "note": "Gradient endpoint estimate; shadow excluded.",
+        "normalTextAA": false,
+        "largeTextAA": false,
+        "nonTextContrast3to1": false,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 99
+        }
+      },
+      {
+        "id": "muted-on-surface-page-top",
+        "foreground": "--text-muted",
+        "foregroundHex": "#61849E",
+        "background": "--surface-page-top",
+        "backgroundHex": "#42B6F0",
+        "ratio": 1.737,
+        "kind": "text",
+        "usage": "Saved score / empty augment text over page gradient (endpoint sample)",
+        "note": "Gradient endpoint estimate; actual background varies with viewport and position.",
+        "normalTextAA": false,
+        "largeTextAA": false,
+        "nonTextContrast3to1": false,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/StartScreen.css",
+          "line": 115
+        }
+      },
+      {
+        "id": "score-strong-on-surface-page-mid",
+        "foreground": "--text-strong",
+        "foregroundHex": "#17354F",
+        "background": "--surface-page-mid",
+        "backgroundHex": "#1491EB",
+        "ratio": 3.802,
+        "kind": "text",
+        "usage": "Current score/title over page gradient (endpoint sample)",
+        "note": "Gradient endpoint estimate; actual foreground position, radial white overlay and text shadows are not rendered here.",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 68
+        }
+      },
+      {
+        "id": "gold-on-surface-page-mid",
+        "foreground": "--score-gold",
+        "foregroundHex": "#FFB300",
+        "background": "--surface-page-mid",
+        "backgroundHex": "#1491EB",
+        "ratio": 1.852,
+        "kind": "text",
+        "usage": "Best score badge over page gradient (endpoint sample)",
+        "note": "Gradient endpoint estimate; shadow excluded.",
+        "normalTextAA": false,
+        "largeTextAA": false,
+        "nonTextContrast3to1": false,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 99
+        }
+      },
+      {
+        "id": "muted-on-surface-page-mid",
+        "foreground": "--text-muted",
+        "foregroundHex": "#61849E",
+        "background": "--surface-page-mid",
+        "backgroundHex": "#1491EB",
+        "ratio": 1.193,
+        "kind": "text",
+        "usage": "Saved score / empty augment text over page gradient (endpoint sample)",
+        "note": "Gradient endpoint estimate; actual background varies with viewport and position.",
+        "normalTextAA": false,
+        "largeTextAA": false,
+        "nonTextContrast3to1": false,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/StartScreen.css",
+          "line": 115
+        }
+      },
+      {
+        "id": "score-strong-on-surface-page-bottom",
+        "foreground": "--text-strong",
+        "foregroundHex": "#17354F",
+        "background": "--surface-page-bottom",
+        "backgroundHex": "#1469B8",
+        "ratio": 2.251,
+        "kind": "text",
+        "usage": "Current score/title over page gradient (endpoint sample)",
+        "note": "Gradient endpoint estimate; actual foreground position, radial white overlay and text shadows are not rendered here.",
+        "normalTextAA": false,
+        "largeTextAA": false,
+        "nonTextContrast3to1": false,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 68
+        }
+      },
+      {
+        "id": "gold-on-surface-page-bottom",
+        "foreground": "--score-gold",
+        "foregroundHex": "#FFB300",
+        "background": "--surface-page-bottom",
+        "backgroundHex": "#1469B8",
+        "ratio": 3.127,
+        "kind": "text",
+        "usage": "Best score badge over page gradient (endpoint sample)",
+        "note": "Gradient endpoint estimate; shadow excluded.",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/ScoreBoard.css",
+          "line": 99
+        }
+      },
+      {
+        "id": "muted-on-surface-page-bottom",
+        "foreground": "--text-muted",
+        "foregroundHex": "#61849E",
+        "background": "--surface-page-bottom",
+        "backgroundHex": "#1469B8",
+        "ratio": 1.416,
+        "kind": "text",
+        "usage": "Saved score / empty augment text over page gradient (endpoint sample)",
+        "note": "Gradient endpoint estimate; actual background varies with viewport and position.",
+        "normalTextAA": false,
+        "largeTextAA": false,
+        "nonTextContrast3to1": false,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/StartScreen.css",
+          "line": 115
+        }
+      },
+      {
+        "id": "category-combo",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "hsl(18 90% 52%)",
+        "backgroundHex": "#F35916",
+        "ratio": 3.372,
+        "kind": "text",
+        "usage": "White small category badge text",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 120
+        }
+      },
+      {
+        "id": "category-clear",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "hsl(280 70% 56%)",
+        "backgroundHex": "#A940DD",
+        "ratio": 4.694,
+        "kind": "text",
+        "usage": "White small category badge text",
+        "note": "",
+        "normalTextAA": true,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 121
+        }
+      },
+      {
+        "id": "category-multiline",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "hsl(202 89% 48%)",
+        "backgroundHex": "#0D97E7",
+        "ratio": 3.167,
+        "kind": "text",
+        "usage": "White small category badge text",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 122
+        }
+      },
+      {
+        "id": "category-placement",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "hsl(150 65% 40%)",
+        "backgroundHex": "#24A866",
+        "ratio": 3.048,
+        "kind": "text",
+        "usage": "White small category badge text",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 123
+        }
+      },
+      {
+        "id": "category-item",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "hsl(330 75% 52%)",
+        "backgroundHex": "#E02985",
+        "ratio": 4.345,
+        "kind": "text",
+        "usage": "White small category badge text",
+        "note": "",
+        "normalTextAA": false,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 124
+        }
+      },
+      {
+        "id": "category-etc",
+        "foreground": "hsl(0 0% 100%)",
+        "foregroundHex": "#FFFFFF",
+        "background": "hsl(220 10% 45%)",
+        "backgroundHex": "#676F7E",
+        "ratio": 5.057,
+        "kind": "text",
+        "usage": "White small category badge text",
+        "note": "",
+        "normalTextAA": true,
+        "largeTextAA": true,
+        "nonTextContrast3to1": true,
+        "status": "observed",
+        "source": {
+          "path": "C:/github/poliyomino/src/styles/AugmentChoiceModal.css",
+          "line": 125
+        }
+      }
+    ],
+    "likelyRisks": [
+      {
+        "id": "primary-white-on-accent",
+        "ratio": 3.791,
+        "usage": "Primary action gradient bright endpoint",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      },
+      {
+        "id": "modal-muted-on-surface",
+        "ratio": 3.815,
+        "usage": "Augment choice summary",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      },
+      {
+        "id": "item-white-on-panel-slot",
+        "ratio": 4.203,
+        "usage": "Item label in available slot",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      },
+      {
+        "id": "item-white-on-slot-hover",
+        "ratio": 3.209,
+        "usage": "Item label in hovered/active slot",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      },
+      {
+        "id": "icon-white-on-blue-300",
+        "ratio": 1.856,
+        "usage": "White icon on gradient bright endpoint",
+        "reason": "Below 3:1 icon reference threshold"
+      },
+      {
+        "id": "icon-white-on-blue-500",
+        "ratio": 2.066,
+        "usage": "White icon on gradient dark endpoint",
+        "reason": "Below 3:1 icon reference threshold"
+      },
+      {
+        "id": "gold-on-surface-page-top",
+        "ratio": 1.271,
+        "usage": "Best score badge over page gradient (endpoint sample)",
+        "reason": "Below 3:1 and 4.5:1 text reference thresholds"
+      },
+      {
+        "id": "muted-on-surface-page-top",
+        "ratio": 1.737,
+        "usage": "Saved score / empty augment text over page gradient (endpoint sample)",
+        "reason": "Below 3:1 and 4.5:1 text reference thresholds"
+      },
+      {
+        "id": "score-strong-on-surface-page-mid",
+        "ratio": 3.802,
+        "usage": "Current score/title over page gradient (endpoint sample)",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      },
+      {
+        "id": "gold-on-surface-page-mid",
+        "ratio": 1.852,
+        "usage": "Best score badge over page gradient (endpoint sample)",
+        "reason": "Below 3:1 and 4.5:1 text reference thresholds"
+      },
+      {
+        "id": "muted-on-surface-page-mid",
+        "ratio": 1.193,
+        "usage": "Saved score / empty augment text over page gradient (endpoint sample)",
+        "reason": "Below 3:1 and 4.5:1 text reference thresholds"
+      },
+      {
+        "id": "score-strong-on-surface-page-bottom",
+        "ratio": 2.251,
+        "usage": "Current score/title over page gradient (endpoint sample)",
+        "reason": "Below 3:1 and 4.5:1 text reference thresholds"
+      },
+      {
+        "id": "gold-on-surface-page-bottom",
+        "ratio": 3.127,
+        "usage": "Best score badge over page gradient (endpoint sample)",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      },
+      {
+        "id": "muted-on-surface-page-bottom",
+        "ratio": 1.416,
+        "usage": "Saved score / empty augment text over page gradient (endpoint sample)",
+        "reason": "Below 3:1 and 4.5:1 text reference thresholds"
+      },
+      {
+        "id": "category-combo",
+        "ratio": 3.372,
+        "usage": "White small category badge text",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      },
+      {
+        "id": "category-multiline",
+        "ratio": 3.167,
+        "usage": "White small category badge text",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      },
+      {
+        "id": "category-placement",
+        "ratio": 3.048,
+        "usage": "White small category badge text",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      },
+      {
+        "id": "category-item",
+        "ratio": 4.345,
+        "usage": "White small category badge text",
+        "reason": "Below 4.5:1 normal text; may pass only if actual text qualifies as large"
+      }
+    ]
+  },
+  "proposedImprovements": [
+    {
+      "status": "proposed-not-applied",
+      "area": "Naming",
+      "proposal": "Map existing CSS colors to Figma primitive and semantic variables, keeping the original sourceName in descriptions. White cards and dark modals are simultaneous surface families, not existing light/dark theme modes."
+    },
+    {
+      "status": "proposed-not-applied",
+      "area": "Typography",
+      "proposal": "Create named text styles from the observed roles; settle an explicitly available Korean/Latin font pairing before treating fallback rendering as visually canonical."
+    },
+    {
+      "status": "proposed-not-applied",
+      "area": "Spacing",
+      "proposal": "Normalize a shared spacing scale only after review. Do not silently replace the extracted 3/5/7/14/18/22px values with a new 4px scale."
+    },
+    {
+      "status": "proposed-not-applied",
+      "area": "State coverage",
+      "proposal": "Add consistent primary/secondary disabled and focus-visible treatments; keep existing board, item and deck states."
+    },
+    {
+      "status": "proposed-not-applied",
+      "area": "Contrast",
+      "proposal": "Review the calculated risks, especially white icons on light blue, normal white text on accent/slot fills, category labels, and muted text over the page gradient. Preserve observed colors in the source library and mark any revised contrast-safe palette separately."
+    },
+    {
+      "status": "proposed-not-applied",
+      "area": "Motion",
+      "proposal": "Promote observed timings to named motion tokens and define reduced-motion behavior for burst/cell/score animations; existing reduced-motion CSS only targets auto-undo effects."
+    }
+  ],
+  "contentMismatches": [
+    {
+      "status": "observed",
+      "detail": "Brand naming differs: README heading Polyo, start screen Polyomino, HTML title Block Blast React.",
+      "sources": [
+        {
+          "path": "C:/github/poliyomino/README.md",
+          "line": 1
+        },
+        {
+          "path": "C:/github/poliyomino/src/components/StartScreen.tsx",
+          "line": 62
+        },
+        {
+          "path": "C:/github/poliyomino/index.html",
+          "line": 6
+        }
+      ]
+    },
+    {
+      "status": "observed",
+      "detail": "README describes basic deck up to 20, while disabled start action copy requires 10 normal blocks. Source UI copy should be reviewed before documentation is frozen.",
+      "sources": [
+        {
+          "path": "C:/github/poliyomino/README.md",
+          "line": 116
+        },
+        {
+          "path": "C:/github/poliyomino/src/components/StartScreen.tsx",
+          "line": 71
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+.auto-undo-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Semi-transparent overlay so the board dims behind the notice. */
+  background: hsl(230 40% 6% / 0.62);
+  pointer-events: none;
+  animation: auto-undo-overlay 1.5s ease forwards;
+}
+
+.auto-undo-flash-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 36px;
+  border-radius: 20px;
+  background: hsl(230 35% 14% / 0.55);
+  box-shadow: 0 0 40px hsl(190 95% 55% / 0.45);
+  animation: auto-undo-pop 1.5s ease forwards;
+}
+
+.auto-undo-flash-icon {
+  color: hsl(190 95% 65%);
+  /* Glowing, pulsing undo icon. */
+  filter: drop-shadow(0 0 10px hsl(190 95% 60% / 0.9));
+  animation: auto-undo-glow 0.9s ease-in-out infinite alternate;
+}
+
+.auto-undo-flash-text {
+  color: hsl(0 0% 100%);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 12px hsl(190 95% 60% / 0.7);
+}
+
+@keyframes auto-undo-overlay {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  78% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes auto-undo-pop {
+  0% { opacity: 0; transform: scale(0.8); }
+  16% { opacity: 1; transform: scale(1.04); }
+  26% { transform: scale(1); }
+  80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.96); }
+}
+
+@keyframes auto-undo-glow {
+  from { filter: drop-shadow(0 0 8px hsl(190 95% 60% / 0.7)); transform: scale(1); }
+  to { filter: drop-shadow(0 0 22px hsl(190 95% 70% / 1)); transform: scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auto-undo-flash,
+  .auto-undo-flash-card,
+  .auto-undo-flash-icon { animation-iteration-count: 1; }
+}

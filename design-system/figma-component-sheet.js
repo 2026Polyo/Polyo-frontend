@@ -1,0 +1,25 @@
+const all={...STATE.core.components,...STATE.game.components},refs={};
+for(const [family,data]of Object.entries(all)){refs[family]={};for(const [name,id]of Object.entries(data.variants))refs[family][name]=await figma.getNodeByIdAsync(id);}
+function use(family,key,parent){if(!refs[family]?.[key])throw new Error('Missing '+family+' / '+key);return instance(refs[family][key],parent);}
+const sheet=root('Poliyomino · Component specimen',1280);
+await heading(sheet,'02 / COMPONENTS','상태가 명확한 컴포넌트','이 표본은 모두 연결된 인스턴스입니다. 원본 컴포넌트 세트는 오른쪽 캔버스에 있습니다. 라벨·아이콘은 속성으로 변경합니다.');
+await heading(sheet,'01 / ACTIONS','Button & Icon button','Primary · Secondary / Medium 48px · Large 64px / Default · Hover · Pressed · Focus · Disabled');
+for(const style of ['Primary','Secondary']){const row=append(sheet,layout(style,'HORIZONTAL',24));for(const state of ['Default','Hover','Pressed','Focus','Disabled']){const cell=append(row,layout(state,'VERTICAL',12));await text(cell,state,'Code','text/body');use('Button','Size=Medium, Style='+style+', State='+state,cell);}}
+const icons=append(sheet,layout('Icon button states','HORIZONTAL',16));for(const state of ['Default','Hover','Focus','Disabled'])use('Icon button','State='+state,icons);await text(icons,'44 × 44 / Icon swap / Accessible label','Small','text/body');
+await heading(sheet,'02 / PLAY','Blocks & special effects','일반 11색 + 특수 효과 7종. 특수 블록은 색상·그라데이션·기호로 함께 구분합니다.');
+const palette=append(sheet,layout('Block variants','VERTICAL',24,24,'board/bg'));palette.resize(1184,100);palette.primaryAxisSizingMode='AUTO';palette.counterAxisSizingMode='FIXED';radius(palette,'radius/lg');
+for(const list of [Object.keys(SOURCE.pieces),['ghost','line','echo','golden','bomb','fill','boost']]){const row=append(palette,layout('Block row','HORIZONTAL',16));for(const name of list){const cell=append(row,layout(name,'VERTICAL',8));use('Block','Kind='+name,cell);await text(cell,name,'Code','modal/text-body',88);}}
+const gridArea=append(sheet,layout('Board and states','HORIZONTAL',32));const boardCol=append(gridArea,layout('Board specimen','VERTICAL',16));use('Board','Device=Desktop, State=Preview',boardCol);const tray=use('Piece tray','Device=Desktop',boardCol);tray.rescale(392/600);
+const details=append(gridArea,layout('Cell and shape states','VERTICAL',24));await text(details,'보드 셀 / 배치 상태','Title');const cellRow=append(details,layout('Cell states','HORIZONTAL',16));for(const state of ['Empty','Filled','Preview','Clearing','Focus']){const column=append(cellRow,layout(state,'VERTICAL',8));use('Board cell','State='+state,column);await text(column,state,'Code','text/body',100);}
+await text(details,'테트로미노 / 기본 모양','Title');for(const names of [['O','I','L','J'],['S','Z','T']]){const row=append(details,layout('Tetromino shapes','HORIZONTAL',16));for(const name of names){const column=append(row,layout(name,'VERTICAL',8));use('Piece','Shape='+name,column);await text(column,name,'Code','text/body');}}
+await text(details,'Board: 8 × 8 / Desktop 392 specimen · Mobile 343\nTray: 3 slots / Desktop 144px · Mobile 88px\n회전은 원본의 19종 테트로미노 구성을 따릅니다.','Small','text/body',660);
+await heading(sheet,'03 / INVENTORY','아이템, 증강, 덱','아이템의 이용 가능 여부와 선택 상태를 구분합니다. 상태 변경은 Variant, 이름은 Text property를 사용합니다.');
+const itemRow=append(sheet,layout('Item states','HORIZONTAL',24,24,'board/bg'));radius(itemRow,'radius/lg');for(const state of ['Available','Active','Empty','Unavailable','Disabled']){const c=append(itemRow,layout(state,'VERTICAL',8));use('Item slot','Device=Desktop, State='+state,c);await text(c,state,'Code','modal/text-body',136);}
+const inv=append(sheet,layout('Inventory variants','HORIZONTAL',32,24,'board/bg'));radius(inv,'radius/lg');for(const state of ['Default','Active','Empty'])use('Augment tile','State='+state,inv);use('Deck tile','Type=Normal, State=Selected',inv);use('Deck tile','Type=Special, State=Default',inv);use('Deck tile','Type=Normal, State=Disabled',inv);
+await heading(sheet,'04 / CHOICES','성장의 순간을 일관되게','기본·신규·호버·포커스와 PC·모바일 변형을 지원합니다. 신규 강조는 NEW 문구와 테두리로 함께 전달합니다.');
+const choices=append(sheet,layout('Choice comparison','HORIZONTAL',24));for(const state of ['Default','New','Focus'])use('Choice card','Device=Desktop, State='+state,choices);const mob=append(choices,layout('Mobile choice','VERTICAL',16));use('Choice card','Device=Mobile, State=New',mob);await text(mob,'Mobile / horizontal\n설명은 modal-text-body\n아이콘은 56px 표면','Small','text/body',360);
+await heading(sheet,'05 / FEEDBACK','점수와 모달','설정 · 게임 종료 · 블록 해금. 데이터·키보드 이동·열고 닫기 동작은 실제 앱에서 연결합니다.');
+const scores=append(sheet,layout('Score types','HORIZONTAL',24));for(const type of ['Current','Best','Gain'])use('Score','Type='+type,scores);
+const modals=append(sheet,layout('Modal patterns','HORIZONTAL',24));for(const type of ['Settings','Result','Reward'])use('Modal','Type='+type,modals);
+await text(sheet,'구현 참조: src/components · src/styles. 각 원본 컴포넌트의 설명에서 대응 소스와 Figma 개선 내용을 확인할 수 있습니다.','Small','text/body',1184);
+return result({reviewFrame:sheet.id,bounds:{width:sheet.width,height:sheet.height},instanceCount:sheet.findAll(n=>n.type==='INSTANCE').length});

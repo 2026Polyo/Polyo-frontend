@@ -1,0 +1,440 @@
+.app-shell {
+  align-items: center;
+  display: flex;
+  min-height: 100vh;
+  padding: 24px;
+  justify-content: center;
+}
+
+.app-shell.has-cursor-piece,
+.app-shell.has-cursor-piece * {
+  cursor: none;
+}
+
+.app-shell.has-cell-mode .board-cell {
+  cursor: crosshair;
+}
+
+.game-area {
+  /* Wider so the side columns use the page margins; the board stays centered.
+     This gives the left column room to fit 8 augment tiles per row on wide screens. */
+  width: min(100%, 1920px);
+}
+
+.board-layout {
+  align-items: start;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 600px) minmax(0, 1fr);
+}
+
+.board-stack {
+  grid-column: 2;
+  justify-self: center;
+  min-width: 0;
+  width: 100%;
+}
+
+.board-combo-stage {
+  position: relative;
+}
+
+.placement-hint {
+  margin-top: 8px;
+  text-align: center;
+  color: var(--text-on-board);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.combo-burst {
+  animation: combo-burst 940ms ease-out forwards;
+  color: hsl(0 0% 100%);
+  font-size: clamp(3.4rem, 10vw, 6.8rem);
+  font-weight: 900;
+  left: 50%;
+  letter-spacing: 0;
+  line-height: 0.95;
+  pointer-events: none;
+  position: absolute;
+  text-shadow:
+    0 4px 0 var(--accent-strong),
+    0 12px 28px hsl(205 90% 20% / 0.42),
+    0 0 34px hsl(205 90% 62% / 0.55);
+  text-transform: uppercase;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  z-index: 20;
+}
+
+@keyframes combo-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -42%) scale(0.72);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.14);
+  }
+
+  52% {
+    opacity: 1;
+    transform: translate(-50%, -54%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -70%) scale(1.05);
+  }
+}
+
+.clear-burst {
+  animation: clear-burst 940ms ease-out forwards;
+  background: none;
+  color: hsl(42 100% 60%);
+  font-size: clamp(2.2rem, 6.4vw, 4.2rem);
+  font-style: italic;
+  font-weight: 900;
+  left: 50%;
+  line-height: 0.95;
+  pointer-events: none;
+  position: absolute;
+  text-shadow:
+    0 2px 0 hsl(28 100% 42%),
+    0 0 18px hsl(40 100% 55% / 0.55);
+  text-transform: uppercase;
+  top: 26%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  z-index: 21;
+}
+
+@keyframes clear-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -38%) scale(0.6) rotate(-4deg);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.18) rotate(-2deg);
+  }
+
+  55% {
+    opacity: 1;
+    transform: translate(-50%, -52%) scale(1) rotate(-2deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -66%) scale(1.04) rotate(-2deg);
+  }
+}
+
+.game-settings {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  top: max(24px, env(safe-area-inset-top));
+  z-index: 50;
+}
+
+.game-settings-button {
+  align-items: center;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  color: var(--accent-strong);
+  cursor: pointer;
+  display: inline-flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.game-settings-button:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.game-settings-backdrop {
+  align-items: center;
+  background: hsl(205 70% 16% / 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 90;
+}
+
+.game-settings-menu {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--modal-shadow-lg);
+  display: grid;
+  gap: 14px;
+  min-width: 320px;
+  padding: 28px;
+}
+
+.game-settings-title {
+  color: var(--modal-text);
+  display: block;
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.game-settings-menu-button {
+  align-items: center;
+  background: var(--modal-surface);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-md);
+  color: var(--modal-text);
+  cursor: pointer;
+  display: flex;
+  font-size: 1.08rem;
+  font-weight: 800;
+  gap: 10px;
+  justify-content: center;
+  min-height: 60px;
+  padding: 14px 18px;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.game-settings-menu-button:hover {
+  box-shadow: var(--modal-shadow-md);
+  transform: translateY(-1px);
+}
+
+.game-settings-menu-button svg {
+  color: var(--blue-300);
+  height: 22px;
+  width: 22px;
+}
+
+.deck-view-button {
+  /* Same column as the item slots, lifted near the tray level. */
+  grid-column: 3;
+  grid-row: 1;
+  align-self: end;
+  justify-self: start;
+  align-items: center;
+  background: var(--panel-dark);
+  border: 1px solid var(--panel-dark-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  color: hsl(0 0% 100%);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 132px;
+  justify-content: center;
+  margin-bottom: 28px;
+  min-width: 132px;
+  padding: 14px;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.deck-view-button:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.deck-view-button span {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.deck-view-button svg {
+  height: 38px;
+  width: 38px;
+  color: var(--blue-300);
+}
+
+.primary-action {
+  align-items: center;
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  color: hsl(0 0% 100%);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 900;
+  gap: 8px;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 132px;
+  padding: 12px 18px;
+  text-transform: uppercase;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.primary-action:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.primary-action:active {
+  transform: translateY(0);
+}
+
+.secondary-action {
+  align-items: center;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-strong);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
+  min-height: 42px;
+  min-width: 132px;
+  padding: 10px 18px;
+  text-transform: uppercase;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.secondary-action:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.secondary-action:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 1520px) {
+  .app-shell {
+    padding: 14px;
+  }
+
+  .game-area {
+    width: min(100%, 620px);
+  }
+
+  .board-layout {
+    grid-template-columns: minmax(0, 620px);
+    justify-content: center;
+  }
+
+  .board-stack {
+    grid-column: auto;
+  }
+
+  .deck-view-button {
+    grid-column: auto;
+    grid-row: auto;
+    align-self: auto;
+    justify-self: center;
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 460px) {
+  .game-settings-menu {
+    min-width: 0;
+    width: min(100%, 320px);
+  }
+
+  .deck-view-button {
+    height: 92px;
+    min-width: 92px;
+  }
+
+  .deck-view-button svg {
+    height: 28px;
+    width: 28px;
+  }
+
+  .deck-view-button span {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .play-shell {
+    align-items: flex-start;
+    min-height: 100svh;
+    padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+    position: relative;
+  }
+
+  .play-shell .game-area {
+    width: min(100%, 480px);
+    min-width: 0;
+    position: relative;
+  }
+
+  .board-layout {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .board-stack {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: min(100%, max(240px, calc(100svh - 220px)));
+  }
+
+  .board-layout > .undo-items {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    order: 0;
+  }
+
+  .board-layout > .augment-panel {
+    grid-column: 1;
+    grid-row: 2;
+    order: 0;
+    min-width: 0;
+  }
+
+  .deck-view-button {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    min-width: 64px;
+    min-height: 44px;
+    height: 44px;
+    padding: 8px 12px;
+    gap: 6px;
+    flex-direction: row;
+    border-radius: var(--radius-md);
+  }
+
+  .deck-view-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .game-settings {
+    position: absolute;
+    top: max(10px, env(safe-area-inset-top));
+    right: max(10px, env(safe-area-inset-right));
+  }
+
+  .game-settings-backdrop {
+    padding: 16px;
+  }
+
+  .combo-burst {
+    font-size: clamp(2.5rem, 12vw, 4.5rem);
+  }
+}

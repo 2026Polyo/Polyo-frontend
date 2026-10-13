@@ -1,0 +1,302 @@
+.undo-items {
+  background: var(--panel-dark);
+  border: 1px solid var(--panel-dark-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  color: hsl(0 0% 100%);
+  display: grid;
+  gap: 12px;
+  /* Share column 3 / row 1 with the deck button: item panel pinned to the top,
+     deck button (align-self: end) sits near the tray. */
+  grid-column: 3;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  padding: 16px;
+  position: relative;
+  min-width: 0;
+}
+
+.undo-items-head {
+  display: grid;
+  gap: 2px;
+  padding: 2px 4px;
+}
+
+.undo-items-head span {
+  color: var(--blue-300);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.undo-items-head strong {
+  color: hsl(0 0% 100%);
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.undo-item-row {
+  display: flex;
+  gap: 12px;
+}
+
+.undo-item {
+  align-items: center;
+  background: var(--panel-slot);
+  border: 1px solid var(--panel-dark-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  color: hsl(0 0% 100%);
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 132px;
+  justify-content: center;
+  padding: 14px 12px;
+  position: relative;
+  transition: box-shadow 140ms ease, transform 140ms ease, background 140ms ease;
+  width: 112px;
+}
+
+.undo-item.available {
+  cursor: pointer;
+}
+
+.undo-item.empty {
+  background: var(--panel-slot-empty);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: default;
+  opacity: 0.7;
+}
+
+.undo-item.available:hover:not(:disabled) {
+  background: var(--panel-slot-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.undo-item.active {
+  background: var(--panel-slot-hover);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px hsl(202 89% 53% / 0.32), var(--shadow-md);
+}
+
+.undo-item:disabled {
+  opacity: 0.55;
+}
+
+.undo-item.empty:disabled {
+  opacity: 0.7;
+}
+
+.undo-item.unavailable .undo-item-icon {
+  opacity: 0.55;
+}
+
+.undo-item:focus-visible,
+.undo-item-detail-close:focus-visible,
+.undo-item-use:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.undo-item-empty-label {
+  font-size: 0.75rem;
+}
+
+.undo-item-icon {
+  align-items: center;
+  background: linear-gradient(180deg, var(--blue-300), var(--blue-500));
+  border-radius: var(--radius-sm);
+  color: hsl(0 0% 100%);
+  display: flex;
+  height: 64px;
+  justify-content: center;
+  width: 64px;
+}
+
+.undo-item-icon svg {
+  height: 34px;
+  width: 34px;
+}
+
+.undo-item-label {
+  color: hsl(0 0% 100%);
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.undo-item-count {
+  align-items: center;
+  background: var(--accent);
+  border: 2px solid hsl(0 0% 100%);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+  color: hsl(0 0% 100%);
+  display: flex;
+  font-size: 0.82rem;
+  font-weight: 900;
+  height: 26px;
+  justify-content: center;
+  min-width: 26px;
+  padding: 0 6px;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
+
+.undo-item-detail {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-md);
+  top: calc(100% + 8px);
+  box-shadow: var(--shadow-lg);
+  color: hsl(0 0% 100%);
+  display: grid;
+  gap: 8px;
+  left: 0;
+  padding: 12px;
+  position: absolute;
+  right: 0;
+  text-align: left;
+  z-index: 80;
+}
+
+.undo-item-detail-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.undo-item-detail-head strong {
+  font-size: 1rem;
+}
+
+.undo-item-detail-close {
+  align-items: center;
+  background: var(--panel-slot);
+  border: 1px solid var(--panel-dark-border);
+  border-radius: var(--radius-sm);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 44px;
+  height: 44px;
+  justify-content: center;
+  padding: 0;
+}
+
+.undo-item-detail p {
+  color: var(--modal-text-body);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.undo-item-status {
+  color: var(--blue-300);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.undo-item-use {
+  background: var(--accent);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: hsl(0 0% 100%);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 800;
+  min-height: 44px;
+  padding: 10px 16px;
+}
+
+.undo-item-use:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+@media (max-width: 1520px) {
+  .undo-items {
+    grid-column: auto;
+    grid-row: auto;
+    align-self: auto;
+    justify-self: stretch;
+    order: -1;
+    width: 100%;
+  }
+
+  .undo-item-row {
+    justify-content: center;
+  }
+
+}
+
+@media (max-width: 720px) {
+  .undo-items {
+    border-radius: var(--radius-md);
+    gap: 6px;
+    padding: 7px;
+  }
+
+  .undo-items-head {
+    display: none;
+  }
+
+  .undo-item-row {
+    display: grid;
+    gap: 6px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-width: 0;
+  }
+
+  .undo-item {
+    border-radius: var(--radius-sm);
+    flex-direction: row;
+    gap: 5px;
+    height: 48px;
+    min-width: 0;
+    padding: 5px;
+    width: 100%;
+  }
+
+  .undo-item-icon {
+    background: none;
+    flex: 0 0 22px;
+    height: 22px;
+    width: 22px;
+  }
+
+  .undo-item-icon svg {
+    height: 22px;
+    width: 22px;
+  }
+
+  .undo-item-label {
+    font-size: 0.72rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .undo-item-count {
+    display: none;
+  }
+
+  .undo-item.available:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .undo-item-detail {
+    bottom: auto;
+    top: calc(100% + 8px);
+  }
+}
