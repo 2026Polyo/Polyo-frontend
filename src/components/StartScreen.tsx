@@ -28,6 +28,7 @@ interface StartScreenProps {
   onOpenDeck: () => void;
   onRemoveBase: (id: string) => void;
   onRemoveSpecial: (id: string) => void;
+  onRandomizeDeck: () => void;
 }
 
 function StartScreen({
@@ -49,7 +50,8 @@ function StartScreen({
   onNewGame,
   onOpenDeck,
   onRemoveBase,
-  onRemoveSpecial
+  onRemoveSpecial,
+  onRandomizeDeck
 }: StartScreenProps) {
   return (
     <main className="app-shell start-shell">
@@ -113,6 +115,7 @@ function StartScreen({
           onRemoveBase={onRemoveBase}
           onAddSpecial={onAddSpecial}
           onRemoveSpecial={onRemoveSpecial}
+          onRandomize={onRandomizeDeck}
           onClose={onCloseDeck}
         />
       )}
