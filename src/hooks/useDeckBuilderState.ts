@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_DECK } from "../constants/gameData";
+import { shuffle } from "../utils/shuffle";
 import {
   addToStash,
   addUnlockedBlock,
@@ -73,6 +74,11 @@ export function useDeckBuilderState() {
     setUnlockedBlocks((current) => addUnlockedBlock(current, id));
   }
 
+  function randomizeDeck() {
+    setBaseLoadout(shuffle(availableBaseIds).slice(0, MAX_BASE_DECK));
+    setLoadoutIds(shuffle(specialStash.map((piece) => piece.id)).slice(0, MAX_LOADOUT));
+  }
+
   return {
     addBaseBlock,
     addSpecialToDeck,
@@ -80,6 +86,7 @@ export function useDeckBuilderState() {
     availableBaseIds,
     baseLoadout,
     loadoutIds,
+    randomizeDeck,
     removeBaseBlock,
     removeSpecialFromDeck,
     specialStash,

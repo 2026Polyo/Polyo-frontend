@@ -125,6 +125,7 @@ export function useGameSession() {
     availableBaseIds,
     baseLoadout,
     loadoutIds,
+    randomizeDeck,
     removeBaseBlock,
     removeSpecialFromDeck,
     specialStash,
@@ -571,7 +572,8 @@ export function useGameSession() {
       onNewGame: () => { playPop(); startGame(); },
       onOpenDeck: () => { playPop(); setStartDeckOpen(true); },
       onRemoveBase: removeBaseBlock,
-      onRemoveSpecial: removeSpecialFromDeck
+      onRemoveSpecial: removeSpecialFromDeck,
+      onRandomizeDeck: randomizeDeck
     };
   }
 
