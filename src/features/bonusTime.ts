@@ -1,7 +1,7 @@
 import { createPieceInstance } from "../utils/pieceUtils";
 import type { BonusTimeState, GameMode, PieceTemplate, Tray } from "../types";
 
-export const BONUS_PLACEMENT_TARGET = 60;
+export const BONUS_PLACEMENT_TARGET = 30;
 export const BONUS_DURATION_MS = 15000;
 export const BONUS_PIECE: PieceTemplate = { id: "monomino-single", cells: [[0, 0]] };
 

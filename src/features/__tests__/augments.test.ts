@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   advanceAugmentSchedule,
+  shouldOfferAugmentChoice,
   chooseAugment,
   createInitialAugmentState,
   getAugmentedScore,
@@ -215,5 +216,16 @@ describe("getNextAugmentStateAfterPlacement", () => {
     const state = { ...createInitialAugmentState(), combo: 5, trayClearedLine: false };
     const next = getNextAugmentStateAfterPlacement(state, { cleared: 0, trayCompleted: false });
     expect(next.combo).toBe(5);
+  });
+});
+
+
+describe("bonus reward deferral", () => {
+  it("holds a due card choice during bonus time and offers it afterwards", () => {
+    const state = createInitialAugmentState();
+    const dueScore = state.nextChoiceScore + 500;
+    expect(shouldOfferAugmentChoice(state, dueScore, true)).toBe(false);
+    expect(shouldOfferAugmentChoice(state, dueScore, false)).toBe(true);
+    expect(shouldOfferAugmentChoice(state, state.nextChoiceScore - 1, false)).toBe(false);
   });
 });
