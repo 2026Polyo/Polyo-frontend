@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import {
-  advanceBonusPlacement, BONUS_DURATION_MS, BONUS_PIECE, createBonusTimeState,
+  advanceBonusPlacement, BONUS_PLACEMENT_TARGET, BONUS_DURATION_MS, BONUS_PIECE, createBonusTimeState,
   createBonusTray, elapseBonusTime, getSavedBonusTime, restoreBonusSnapshot
 } from "../bonusTime";
 import { EMPTY_BOARD } from "../../constants/gameData";
@@ -14,10 +14,10 @@ const regularTray: Tray = [createPieceInstance({ id: "domino-horizontal", cells:
 afterEach(() => vi.unstubAllGlobals());
 
 describe("bonus time", () => {
-  it("starts on the 60th normal placement, retaining the regular tray", () => {
+  it("starts at the normal placement target, retaining the regular tray", () => {
     let state = createBonusTimeState();
-    for (let index = 0; index < 59; index++) state = advanceBonusPlacement(state, "normal", regularTray);
-    expect(state).toMatchObject({ placements: 59, remainingMs: 0 });
+    for (let index = 0; index < BONUS_PLACEMENT_TARGET - 1; index++) state = advanceBonusPlacement(state, "normal", regularTray);
+    expect(state).toMatchObject({ placements: BONUS_PLACEMENT_TARGET - 1, remainingMs: 0 });
     state = advanceBonusPlacement(state, "normal", regularTray);
     expect(state).toEqual({ placements: 0, remainingMs: 15000, regularTray });
   });
@@ -30,7 +30,7 @@ describe("bonus time", () => {
   });
 
   it("does not charge or extend while active, then charges the next cycle", () => {
-    const active = advanceBonusPlacement({ ...createBonusTimeState(), placements: 59 }, "normal", regularTray);
+    const active = advanceBonusPlacement({ ...createBonusTimeState(), placements: BONUS_PLACEMENT_TARGET - 1 }, "normal", regularTray);
     const elapsed = elapseBonusTime(active, 2300);
     expect(advanceBonusPlacement(elapsed, "normal", regularTray)).toEqual(elapsed);
     expect(elapseBonusTime(elapsed, 12699).remainingMs).toBe(1);
@@ -62,7 +62,7 @@ describe("bonus time", () => {
     const tray = createBonusTray();
     expect(restoreBonusSnapshot({ ...saved, remainingMs: 1200 }, saved, tray).bonusTime.remainingMs).toBe(1200);
     expect(restoreBonusSnapshot(createBonusTimeState(), saved, tray)).toEqual({ bonusTime: createBonusTimeState(), tray: regularTray });
-    const previous = { ...createBonusTimeState(), placements: 59 };
+    const previous = { ...createBonusTimeState(), placements: BONUS_PLACEMENT_TARGET - 1 };
     expect(restoreBonusSnapshot(saved, previous, regularTray)).toEqual({ bonusTime: previous, tray: regularTray });
   });
 

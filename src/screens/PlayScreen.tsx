@@ -1,4 +1,6 @@
 import { Layers, Undo2 } from "lucide-react";
+import BonusTimeEffect from "../components/BonusTimeEffect";
+import { BONUS_PLACEMENT_TARGET } from "../features/bonusTime";
 import BlockRewardModal from "../components/BlockRewardModal";
 import Board from "../components/Board";
 import DeckModal from "../components/DeckModal";
@@ -122,9 +124,10 @@ function PlayScreen({
   undoSnapshot
 }: PlayScreenProps) {
   const selectedPiece = board.selectedPiece;
+  const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
 
   return (
-    <main className={`app-shell play-shell ${board.cursorPoint ? "has-cursor-piece" : ""}`}>
+    <main className={`app-shell play-shell ${bonusActive ? "bonus-playing" : ""} ${board.cursorPoint ? "has-cursor-piece" : ""}`}>
       <GameSettingsMenu
         open={settings.open}
         onClose={settings.onClose}
@@ -138,7 +141,7 @@ function PlayScreen({
           <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
           {gameMode === "normal" && (bonusTime.remainingMs > 0 ? (
             <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
-          ) : <span>보너스까지 {bonusTime.placements} / 60</span>)}
+          ) : <span>보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}</span>)}
         </div>
         <div className="board-layout">
           <AugmentPanel augmentState={augmentState} />
@@ -156,6 +159,7 @@ function PlayScreen({
                 previewCells={board.previewCells}
                 selectedPiece={selectedPiece}
               />
+              {bonusActive && <BonusTimeEffect />}
               {comboEffectValue !== null && (
                 <div className="combo-burst" aria-live="polite">
                   combo {comboEffectValue}
@@ -213,10 +217,10 @@ function PlayScreen({
           </div>
         )}
       </section>
-      {modals.augmentChoiceOpen && (
+      {!bonusActive && modals.augmentChoiceOpen && (
         <AugmentChoiceModal augmentState={augmentState} onChoose={modals.handleAugmentChoose} score={score} />
       )}
-      {modals.specialChoices && (
+      {!bonusActive && modals.specialChoices && (
         <SpecialChoiceModal choices={modals.specialChoices} onChoose={modals.handleSpecialChoose} />
       )}
       {modals.rewardPiece && <BlockRewardModal onConfirm={modals.onConfirmReward} piece={modals.rewardPiece} />}

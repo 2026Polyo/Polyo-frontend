@@ -273,6 +273,7 @@ export function useGameSession() {
     !hasMove(board, availablePieces);
   const gameOver = noMovesLeft && !canUndo;
 
+  const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
   const bonusPaused = !isPlaying || gameOver || isClearing || gravityAnimating || selectionBlocked || settingsOpen || deckModalOpen || rerollModalSlot !== null;
 
   function tickBonusTime() {
@@ -370,11 +371,12 @@ export function useGameSession() {
 
   useEffect(() => {
     if (!isPlaying || gameOver || isClearing || augmentChoiceOpen || rewardPiece || specialChoices) return;
-    if (!shouldOfferAugmentChoice(augmentState, score)) return;
+    if (!shouldOfferAugmentChoice(augmentState, score, bonusActive)) return;
     clearSelection();
     const specialDue =
       Math.floor(getTotalAugmentLevels(augmentState) / GHOST_AUGMENT_INTERVAL) > specialsGranted;
     const timer = setTimeout(() => {
+      if (bonusTimeRef.current.remainingMs > 0) return;
       if (specialDue) {
         setSpecialChoices(createRewardChoices(SPECIAL_CHOICE_COUNT, unlockedBlocks));
       } else {
@@ -383,6 +385,7 @@ export function useGameSession() {
     }, 500);
     return () => clearTimeout(timer);
   }, [
+    bonusActive,
     augmentChoiceOpen,
     augmentState,
     clearSelection,
