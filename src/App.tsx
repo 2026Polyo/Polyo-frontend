@@ -4,12 +4,17 @@ import "./styles/AutoUndoFlash.css";
 import StartScreen from "./components/StartScreen";
 import { useGameSession } from "./hooks/useGameSession";
 import PlayScreen from "./screens/PlayScreen";
+import { useState } from "react";
+import ShopScreen from "./screens/ShopScreen";
 
 function App() {
+  const [shopOpen, setShopOpen] = useState(false);
   const { gamePhase, playScreenProps, startScreenProps } = useGameSession();
 
+  if (shopOpen) return <ShopScreen onGoHome={() => setShopOpen(false)} />;
+
   if (gamePhase === "start") {
-    return <StartScreen {...startScreenProps} />;
+    return <StartScreen {...startScreenProps} onOpenShop={() => setShopOpen(true)} />;
   }
 
   return <PlayScreen {...playScreenProps} />;

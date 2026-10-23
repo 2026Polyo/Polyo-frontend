@@ -1,4 +1,4 @@
-import { Layers, Play, Trophy } from "lucide-react";
+import { Layers, Play, Trophy, ShoppingBag } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
 import type { PieceTemplate } from "../types";
 
@@ -9,6 +9,7 @@ const START_PREVIEW_CELLS: string[] = [
 ];
 
 interface StartScreenProps {
+  onOpenShop: () => void;
   availableBaseIds: string[];
   baseLoadout: string[];
   best: number;
@@ -31,6 +32,7 @@ interface StartScreenProps {
 }
 
 function StartScreen({
+  onOpenShop,
   availableBaseIds,
   baseLoadout,
   best,
@@ -89,6 +91,9 @@ function StartScreen({
             덱 구성
           </button>
         </div>
+        <button className="start-deck-action" onClick={onOpenShop} type="button">
+          <ShoppingBag size={20} aria-hidden="true" /> 상점
+        </button>
         {canContinue && (
           <div className="start-saved-score" aria-label="Saved game score">
             <span>진행 점수</span>
