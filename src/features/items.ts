@@ -1,3 +1,4 @@
+import { getSavedBonusTime } from "./bonusTime";
 import { ArrowDownToLine, RefreshCw, Undo2 } from "lucide-react";
 import { getAugmentLevel, getSavedAugmentState } from "./augments";
 import { cloneBoard } from "../utils/boardUtils";
@@ -108,6 +109,7 @@ export function getSavedItemState(savedGame: SavedGame, validators: ItemStateVal
     itemSlots: migrateItemSlots(savedGame),
     undoSnapshot: isValidUndoSnapshot(rawSnapshot, validators)
       ? {
+          bonusTime: getSavedBonusTime((rawSnapshot as UndoSnapshot).bonusTime, validators.isValidTray),
           board: cloneBoard((rawSnapshot as UndoSnapshot).board),
           augmentState: getSavedAugmentState(rawSnapshot as SavedGame),
           bombCells: toStringArray((rawSnapshot as UndoSnapshot).bombCells),

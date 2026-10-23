@@ -1,6 +1,6 @@
 import { Layers, Play, Trophy } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
-import type { PieceTemplate } from "../types";
+import type { GameMode, PieceTemplate } from "../types";
 
 const START_PREVIEW_CELLS: string[] = [
   "piece-cyan", "piece-lime", "piece-amber", "", "",
@@ -9,15 +9,17 @@ const START_PREVIEW_CELLS: string[] = [
 ];
 
 interface StartScreenProps {
+  startFlow: "mode" | "continue" | null;
+  onModeSelect: (mode: GameMode) => void;
+  onCloseStartFlow: () => void;
+  onStartFresh: () => void;
   availableBaseIds: string[];
   baseLoadout: string[];
   best: number;
-  canContinue: boolean;
   canStartNewGame: boolean;
   loadoutIds: string[];
   maxBase: number;
   maxSpecial: number;
-  score: number;
   startDeckOpen: boolean;
   stash: PieceTemplate[];
   onAddBase: (id: string) => void;
@@ -32,15 +34,17 @@ interface StartScreenProps {
 }
 
 function StartScreen({
+  startFlow,
+  onModeSelect,
+  onCloseStartFlow,
+  onStartFresh,
   availableBaseIds,
   baseLoadout,
   best,
-  canContinue,
   canStartNewGame,
   loadoutIds,
   maxBase,
   maxSpecial,
-  score,
   startDeckOpen,
   stash,
   onAddBase,
@@ -63,22 +67,15 @@ function StartScreen({
         </div>
         <h1 id="start-title">Polyomino</h1>
         <div className="start-actions">
-          {canContinue && (
-            <button className="primary-action" onClick={onContinue} type="button">
-              <Play size={20} aria-hidden="true" />
-              이어하기
-            </button>
-          )}
           <button
-            aria-label={canStartNewGame ? "새 게임" : "일반 블록 10개를 선택해야 새 게임을 시작할 수 있습니다."}
+            aria-label="새 게임"
             aria-describedby={!canStartNewGame ? "new-game-disabled-reason" : undefined}
-            className={canContinue ? "secondary-action" : "primary-action"}
-            disabled={!canStartNewGame}
+            className="primary-action"
             onClick={onNewGame}
             title={canStartNewGame ? undefined : "일반 블록 10개를 선택해야 시작할 수 있습니다."}
             type="button"
           >
-            {!canContinue && <Play size={20} aria-hidden="true" />}
+            <Play size={20} aria-hidden="true" />
             새 게임
           </button>
           {!canStartNewGame && (
@@ -91,18 +88,33 @@ function StartScreen({
             덱 구성
           </button>
         </div>
-        {canContinue && (
-          <div className="start-saved-score" aria-label="Saved game score">
-            <span>진행 점수</span>
-            <strong>{score}</strong>
-          </div>
-        )}
         <div className="start-best" aria-label="Best score">
           <Trophy size={20} aria-hidden="true" />
           <span>Best</span>
           <strong>{best}</strong>
         </div>
       </section>
+      {startFlow && (
+        <div className="start-dialog-backdrop">
+          <section className="start-dialog" role="dialog" aria-modal="true" aria-labelledby="start-dialog-title">
+            <h2 id="start-dialog-title">{startFlow === "mode" ? "모드 선택" : "이전 게임을 이어가시겠습니까?"}</h2>
+            <div className="start-dialog-actions">
+              {startFlow === "mode" ? (
+                <>
+                  <button className="primary-action" type="button" autoFocus onClick={() => onModeSelect("normal")}>일반모드</button>
+                  <button className="secondary-action" type="button" onClick={() => onModeSelect("hard")}>하드모드</button>
+                </>
+              ) : (
+                <>
+                  <button className="primary-action" type="button" autoFocus onClick={onContinue}>예</button>
+                  <button className="secondary-action" type="button" onClick={onStartFresh}>아니요</button>
+                </>
+              )}
+              <button className="start-dialog-cancel" type="button" onClick={onCloseStartFlow}>취소</button>
+            </div>
+          </section>
+        </div>
+      )}
       {startDeckOpen && (
         <StartDeckModal
           stash={stash}

@@ -14,6 +14,7 @@ import { rerollOnePiece } from "../utils/tray";
 import type {
   AugmentState,
   Board,
+  BonusTimeState,
   ItemSlots,
   ItemType,
   PieceTemplate,
@@ -24,6 +25,8 @@ import type {
 import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 
 interface UseItemSystemArgs {
+  bonusTime: BonusTimeState;
+  restoreBonusTime: (state: BonusTimeState, tray: Tray) => Tray;
   augmentState: AugmentState;
   board: Board;
   bombCells: Set<string>;
@@ -49,6 +52,8 @@ interface UseItemSystemArgs {
 }
 
 export function useItemSystem({
+  bonusTime,
+  restoreBonusTime,
   augmentState,
   board,
   bombCells,
@@ -133,8 +138,15 @@ export function useItemSystem({
     setRerollModalSlot(null);
   }
 
+  function restoreItems(saved: SavedItemState & { augmentState: AugmentState }) {
+    setItemSlots(saved.itemSlots);
+    setUndoSnapshot(saved.undoSnapshot);
+    comboMilestoneRef.current = saved.augmentState.combo;
+  }
+
   function saveUndoSnapshot() {
     setUndoSnapshot({
+      bonusTime,
       augmentState,
       board: cloneBoard(board),
       bombCells: [...bombCells],
@@ -160,7 +172,7 @@ export function useItemSystem({
     if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
     setAugmentState(getSavedAugmentState(undoSnapshot as unknown as SavedGame));
     setBoard(cloneBoard(undoSnapshot.board));
-    setTray(undoSnapshot.tray);
+    setTray(undoSnapshot.bonusTime ? restoreBonusTime(undoSnapshot.bonusTime, undoSnapshot.tray) : undoSnapshot.tray);
     setScore(undoSnapshot.score);
     setGhostCells(new Set(undoSnapshot.ghostCells ?? []));
     setGoldenCells(new Set(undoSnapshot.goldenCells ?? []));
@@ -274,6 +286,7 @@ export function useItemSystem({
     itemSlots,
     rerollModalSlot,
     resetItems,
+    restoreItems,
     saveUndoSnapshot,
     undoSnapshot
   };
