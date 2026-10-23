@@ -438,3 +438,22 @@
     font-size: clamp(2.5rem, 12vw, 4.5rem);
   }
 }
+
+.bonus-status {
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  gap: 8px 16px;
+  justify-content: center;
+  padding: 8px 12px;
+}
+
+.bonus-status.is-active {
+  background: var(--surface-card);
+  border: 1px solid var(--accent-strong);
+  border-radius: var(--radius-md);
+  color: var(--accent-strong);
+  font-variant-numeric: tabular-nums;
+}

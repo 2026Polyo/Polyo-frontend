@@ -13,6 +13,8 @@ import { AugmentChoiceModal } from "../components/AugmentChoiceModal";
 import { AugmentPanel } from "../components/AugmentPanel";
 import { ItemSlots as ItemSlotsView } from "../components/ItemSlots";
 import type {
+  BonusTimeState,
+  GameMode,
   AugmentId,
   AugmentState,
   Board as BoardType,
@@ -31,6 +33,8 @@ import type { Dispatch, RefObject, SetStateAction } from "react";
 import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
 
 interface PlayScreenProps {
+  bonusTime: BonusTimeState;
+  gameMode: GameMode;
   augmentState: AugmentState;
   autoUndoFlash: boolean;
   best: number;
@@ -65,6 +69,7 @@ interface PlayScreenProps {
     augmentChoiceOpen: boolean;
     deckModalOpen: boolean;
     deckPieces: PieceTemplate[];
+    rerollPieces: PieceTemplate[];
     handleAugmentChoose: (augmentId: AugmentId) => void;
     handleSpecialChoose: (template: PieceTemplate) => void;
     onCloseDeckModal: () => void;
@@ -96,6 +101,8 @@ interface PlayScreenProps {
 }
 
 function PlayScreen({
+  bonusTime,
+  gameMode,
   augmentState,
   autoUndoFlash,
   best,
@@ -127,6 +134,12 @@ function PlayScreen({
       />
       <section className="game-area">
         <ScoreBoard best={best} score={score} previewGain={previewGain} />
+        <div className={`bonus-status ${bonusTime.remainingMs > 0 ? "is-active" : ""}`}>
+          <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
+          {gameMode === "normal" && (bonusTime.remainingMs > 0 ? (
+            <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
+          ) : <span>보너스까지 {bonusTime.placements} / 60</span>)}
+        </div>
         <div className="board-layout">
           <AugmentPanel augmentState={augmentState} />
           <div className="board-stack">
@@ -213,7 +226,7 @@ function PlayScreen({
       {modals.rerollModalSlot !== null && (
         <RerollModal
           board={board.board}
-          deckPieces={modals.deckPieces}
+          deckPieces={modals.rerollPieces}
           level={modals.rerollLevel}
           onApply={modals.applyReroll}
           onCancel={modals.cancelReroll}
