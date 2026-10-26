@@ -3,9 +3,22 @@ import StartDeckModal from "./StartDeckModal";
 import type { GameMode, PieceTemplate } from "../types";
 
 const START_PREVIEW_CELLS: string[] = [
-  "piece-cyan", "piece-lime", "piece-amber", "", "",
-  "piece-rose", "piece-violet", "piece-blue", "piece-teal", "piece-orange", "", "",
-  "piece-pink", "piece-green", "piece-indigo", ""
+  "piece-cyan",
+  "piece-lime",
+  "piece-amber",
+  "",
+  "",
+  "piece-rose",
+  "piece-violet",
+  "piece-blue",
+  "piece-teal",
+  "piece-orange",
+  "",
+  "",
+  "piece-pink",
+  "piece-green",
+  "piece-indigo",
+  "",
 ];
 
 interface StartScreenProps {
@@ -83,7 +96,11 @@ function StartScreen({
             덱 구성
           </button>
         </div>
-        <button className="start-deck-action" onClick={onOpenShop} type="button">
+        <button
+          className="start-deck-action"
+          onClick={onOpenShop}
+          type="button"
+        >
           <ShoppingBag size={20} aria-hidden="true" /> 상점
         </button>
         <div className="start-best" aria-label="Best score">

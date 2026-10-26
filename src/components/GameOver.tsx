@@ -1,16 +1,29 @@
 import { Home, RotateCcw } from "lucide-react";
 import "../styles/GameOver.css";
+import type { ReactNode } from "react";
 
 interface GameOverProps {
+  rewardContent?: ReactNode;
   best: number;
   onGoHome: () => void;
   onRestart: () => void;
   score: number;
 }
 
-function GameOver({ best, onGoHome, onRestart, score }: GameOverProps) {
+function GameOver({
+  best,
+  onGoHome,
+  onRestart,
+  score,
+  rewardContent,
+}: GameOverProps) {
   return (
-    <div className="game-over" role="dialog" aria-modal="true" aria-labelledby="game-over-title">
+    <div
+      className="game-over"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="game-over-title"
+    >
       <div className="game-over-score" aria-label="Final score">
         <span>Score</span>
         <strong>{score}</strong>
@@ -21,6 +34,7 @@ function GameOver({ best, onGoHome, onRestart, score }: GameOverProps) {
         <strong>{best}</strong>
       </div>
       <div className="game-over-actions">
+        {rewardContent}
         <button className="primary-action" onClick={onRestart} type="button">
           <RotateCcw size={18} aria-hidden="true" />
           Retry
