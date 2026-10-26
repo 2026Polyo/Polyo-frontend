@@ -3,9 +3,22 @@ import StartDeckModal from "./StartDeckModal";
 import type { PieceTemplate } from "../types";
 
 const START_PREVIEW_CELLS: string[] = [
-  "piece-cyan", "piece-lime", "piece-amber", "", "",
-  "piece-rose", "piece-violet", "piece-blue", "piece-teal", "piece-orange", "", "",
-  "piece-pink", "piece-green", "piece-indigo", ""
+  "piece-cyan",
+  "piece-lime",
+  "piece-amber",
+  "",
+  "",
+  "piece-rose",
+  "piece-violet",
+  "piece-blue",
+  "piece-teal",
+  "piece-orange",
+  "",
+  "",
+  "piece-pink",
+  "piece-green",
+  "piece-indigo",
+  "",
 ];
 
 interface StartScreenProps {
@@ -51,7 +64,7 @@ function StartScreen({
   onNewGame,
   onOpenDeck,
   onRemoveBase,
-  onRemoveSpecial
+  onRemoveSpecial,
 }: StartScreenProps) {
   return (
     <main className="app-shell start-shell">
@@ -64,34 +77,54 @@ function StartScreen({
         <h1 id="start-title">Polyomino</h1>
         <div className="start-actions">
           {canContinue && (
-            <button className="primary-action" onClick={onContinue} type="button">
+            <button
+              className="primary-action"
+              onClick={onContinue}
+              type="button"
+            >
               <Play size={20} aria-hidden="true" />
               이어하기
             </button>
           )}
           <button
-            aria-label={canStartNewGame ? "새 게임" : "일반 블록 10개를 선택해야 새 게임을 시작할 수 있습니다."}
-            aria-describedby={!canStartNewGame ? "new-game-disabled-reason" : undefined}
+            aria-label={
+              canStartNewGame
+                ? "새 게임"
+                : "일반 블록 10개를 선택해야 새 게임을 시작할 수 있습니다."
+            }
+            aria-describedby={
+              !canStartNewGame ? "new-game-disabled-reason" : undefined
+            }
             className={canContinue ? "secondary-action" : "primary-action"}
             disabled={!canStartNewGame}
             onClick={onNewGame}
-            title={canStartNewGame ? undefined : "일반 블록 10개를 선택해야 시작할 수 있습니다."}
+            title={
+              canStartNewGame
+                ? undefined
+                : "일반 블록 10개를 선택해야 시작할 수 있습니다."
+            }
             type="button"
           >
-            {!canContinue && <Play size={20} aria-hidden="true" />}
-            새 게임
+            {!canContinue && <Play size={20} aria-hidden="true" />}새 게임
           </button>
           {!canStartNewGame && (
             <p className="start-disabled-hint" id="new-game-disabled-reason">
               일반 블록 {maxBase}개를 선택해야 시작할 수 있습니다.
             </p>
           )}
-          <button className="start-deck-action" onClick={onOpenDeck} type="button">
-            <Layers size={20} aria-hidden="true" />
-            덱 구성
+          <button
+            className="start-deck-action"
+            onClick={onOpenDeck}
+            type="button"
+          >
+            <Layers size={20} aria-hidden="true" />덱 구성
           </button>
         </div>
-        <button className="start-deck-action" onClick={onOpenShop} type="button">
+        <button
+          className="start-deck-action"
+          onClick={onOpenShop}
+          type="button"
+        >
           <ShoppingBag size={20} aria-hidden="true" /> 상점
         </button>
         {canContinue && (

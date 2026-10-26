@@ -1,0 +1,12 @@
+.coin-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.coin-reward > svg {
+  flex-shrink: 0;
+  color: var(--coin-reward-icon-color, currentColor);
+}

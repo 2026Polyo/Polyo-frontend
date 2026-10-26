@@ -28,6 +28,10 @@ coverage/
 .cache/
 .npm-cache/
 
+# Local reports, verification tools and temporary previews
+/output/
+/tmp/
+
 # Editor and OS files
 .vscode/
 .idea/
