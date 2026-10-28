@@ -8,7 +8,8 @@ export default defineConfig({
     environment: "node"
   },
   server: {
-    allowedHosts: true
+    allowedHosts: true,
+    proxy: { "/api": "http://localhost:8080" }
   }
 });
 
