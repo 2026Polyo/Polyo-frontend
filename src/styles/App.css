@@ -457,3 +457,16 @@
   color: var(--accent-strong);
   font-variant-numeric: tabular-nums;
 }
+
+.bonus-status.hard-status {
+  color: var(--accent-strong);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.hard-timer {
+  color: var(--danger, hsl(0 70% 52%));
+  font-size: 1.15rem;
+  min-width: 3.4rem;
+  text-align: center;
+}
