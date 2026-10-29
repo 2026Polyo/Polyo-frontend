@@ -1,4 +1,4 @@
-import { Layers, Play, Trophy } from "lucide-react";
+import { Layers, LogOut, Play, Trophy } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
 import type { GameMode, PieceTemplate } from "../types";
 
@@ -28,6 +28,7 @@ interface StartScreenProps {
   onContinue: () => void;
   onNewGame: () => void;
   onOpenDeck: () => void;
+  onLogout: () => void;
   onRemoveBase: (id: string) => void;
   onRemoveSpecial: (id: string) => void;
   onRandomizeDeck: () => void;
@@ -53,6 +54,7 @@ function StartScreen({
   onContinue,
   onNewGame,
   onOpenDeck,
+  onLogout,
   onRemoveBase,
   onRemoveSpecial,
   onRandomizeDeck
@@ -60,6 +62,10 @@ function StartScreen({
   return (
     <main className="app-shell start-shell">
       <section className="start-screen" aria-labelledby="start-title">
+        <button className="start-logout-action" onClick={onLogout} type="button">
+          <LogOut size={17} aria-hidden="true" />
+          로그아웃
+        </button>
         <div className="start-preview" aria-hidden="true">
           {START_PREVIEW_CELLS.map((cellClass, index) => (
             <span className={`start-cell ${cellClass}`} key={index} />

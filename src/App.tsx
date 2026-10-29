@@ -14,22 +14,23 @@ function App() {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
     const storedUser = localStorage.getItem(AUTH_USER_KEY);
     if (!token || !storedUser) return null;
-    try {
-      return JSON.parse(storedUser) as AuthUser;
-    } catch {
-      localStorage.removeItem(AUTH_TOKEN_KEY);
-      localStorage.removeItem(AUTH_USER_KEY);
-      return null;
-    }
+    try { return JSON.parse(storedUser) as AuthUser; } catch { return null; }
   });
   const { gamePhase, playScreenProps, startScreenProps } = useGameSession();
 
-  if (!user) {
-    return <AuthScreen onAuthenticated={setUser} />;
-  }
+  if (!user) return <AuthScreen onAuthenticated={setUser} />;
 
   if (gamePhase === "start") {
-    return <StartScreen {...startScreenProps} />;
+    return (
+      <StartScreen
+        {...startScreenProps}
+        onLogout={() => {
+          localStorage.removeItem(AUTH_TOKEN_KEY);
+          localStorage.removeItem(AUTH_USER_KEY);
+          setUser(null);
+        }}
+      />
+    );
   }
 
   return <PlayScreen {...playScreenProps} />;

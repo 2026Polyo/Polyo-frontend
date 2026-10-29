@@ -12,6 +12,27 @@
   width: min(100%, 520px);
 }
 
+.start-logout-action {
+  align-items: center;
+  align-self: flex-end;
+  background: hsl(0 0% 100% / 0.18);
+  border: 1px solid hsl(0 0% 100% / 0.35);
+  border-radius: var(--radius-pill);
+  color: hsl(0 0% 100% / 0.9);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 800;
+  gap: 6px;
+  padding: 8px 12px;
+  transition: background 140ms ease, transform 140ms ease;
+}
+
+.start-logout-action:hover {
+  background: hsl(0 0% 100% / 0.28);
+  transform: translateY(-1px);
+}
+
 .start-preview {
   background: var(--surface-card);
   border: 1px solid var(--surface-card-border);
