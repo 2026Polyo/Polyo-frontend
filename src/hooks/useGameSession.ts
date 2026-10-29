@@ -47,6 +47,8 @@ import type {
 import type { Dispatch, SetStateAction } from "react";
 
 const SPECIAL_CHOICE_COUNT = 3;
+const HARD_SCORE_MULTIPLIER = 2;
+const HARD_COMBO_MULTIPLIER = 2;
 
 export type GamePhase = "start" | "playing";
 
@@ -209,7 +211,9 @@ export function useGameSession() {
 
   const comboEffectValue = useComboEffect(augmentState.combo);
   const { label: clearLabel, pulseId: clearLabelId, pulse: pulseClearLabel } = usePulseLabel();
-  const scoringAugmentState = gameMode === "hard" ? createInitialAugmentState() : augmentState;
+  const scoringAugmentState = augmentState;
+  const scoreMultiplier = gameMode === "hard" ? HARD_SCORE_MULTIPLIER : 1;
+  const comboMultiplier = gameMode === "hard" ? HARD_COMBO_MULTIPLIER : 1;
 
   const previewGain = useMemo<number | null>(() => {
     if (!selectedPiece || !closestPlacementCell || invalidPreview) return null;
@@ -223,7 +227,9 @@ export function useGameSession() {
       goldenCells,
       piece: selectedPiece,
       row: closestPlacementCell.row,
-      preview: true
+      preview: true,
+      scoreMultiplier,
+      comboMultiplier
     }).scoreGain;
   }, [
     augmentState,
@@ -234,7 +240,9 @@ export function useGameSession() {
     ghostCells,
     goldenCells,
     invalidPreview,
-    selectedPiece
+    selectedPiece,
+    scoreMultiplier,
+    comboMultiplier
   ]);
 
   const {
@@ -251,6 +259,7 @@ export function useGameSession() {
     saveUndoSnapshot,
     undoSnapshot
   } = useItemSystem({
+    enabled: gameMode === "normal",
     augmentState,
     board,
     bombCells,
@@ -561,7 +570,9 @@ export function useGameSession() {
       ghostCells,
       goldenCells,
       piece,
-      row
+      row,
+      scoreMultiplier,
+      comboMultiplier
     });
     audio.playClearFeedback(outcome.cleared);
     const clearTier = getClearTier(outcome.cleared);
@@ -594,9 +605,7 @@ export function useGameSession() {
       resetHardTimeLimit(Math.max(HARD_MIN_PLACEMENT_MS, hardTimeLimitRef.current - placementDecay));
     }
     if (bonusStarted) bonusTickRef.current = performance.now();
-    if (gameMode === "normal") {
-      setAugmentState((current) => getNextAugmentStateAfterPlacement(current, { cleared: outcome.cleared, trayCompleted }));
-    }
+    setAugmentState((current) => getNextAugmentStateAfterPlacement(current, { cleared: outcome.cleared, trayCompleted }));
     setTray(bonusStarted ? createBonusTray() : refreshedTray);
     clearSelection();
 
@@ -639,7 +648,7 @@ export function useGameSession() {
     setAugmentState((current) => advanceAugmentSchedule(current, score));
   }
 
-  const best = useBestScore(score);
+  const best = useBestScore(score, gameMode);
 
   function buildPlayScreenProps() {
     return {
