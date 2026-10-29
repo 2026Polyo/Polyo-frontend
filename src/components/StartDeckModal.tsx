@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import "../styles/DeckModal.css";
-import { Check, X } from "lucide-react";
+import { Check, Shuffle, X } from "lucide-react";
 import PieceShape from "./PieceShape";
 import { PIECES } from "../constants/gameData";
 import { SPECIAL_LABELS } from "../features/specials";
@@ -18,6 +18,7 @@ interface StartDeckModalProps {
   onRemoveBase: (id: string) => void;
   onAddSpecial: (id: string) => void;
   onRemoveSpecial: (id: string) => void;
+  onRandomize: () => void;
   onClose: () => void;
 }
 
@@ -97,6 +98,7 @@ function StartDeckModal({
   onRemoveBase,
   onAddSpecial,
   onRemoveSpecial,
+  onRandomize,
   onClose
 }: StartDeckModalProps) {
   // Stable instances (colors don't reshuffle while editing).
@@ -134,10 +136,6 @@ function StartDeckModal({
             <button aria-label="닫기" className="deck-close" onClick={onClose} type="button">
               <X size={20} aria-hidden="true" />
             </button>
-          </div>
-          <div className="deck-selection-count" aria-live="polite" aria-atomic="true">
-            <span className={baseTotal === maxBase ? "complete" : ""}>기본 <strong>{baseTotal}/{maxBase}</strong></span>
-            <span>특수 <strong>{specialTotal}/{maxSpecial}</strong></span>
           </div>
           <p className="deck-hint">블록을 눌러 선택하거나 해제하세요.</p>
         </div>
@@ -213,8 +211,25 @@ function StartDeckModal({
           </div>
         </div>
         <div className="deck-builder-footer">
-          <p>{baseTotal === maxBase ? "선택한 덱이 자동 저장됩니다." : `기본 블록 ${maxBase}개를 선택하면 시작할 수 있어요.`}</p>
-          <button className="deck-done" onClick={onClose} type="button">완료</button>
+          <p aria-live="polite" role="status">
+            {baseTotal === maxBase
+              ? "선택한 덱이 자동 저장됩니다."
+              : `완료하려면 기본 블록 ${maxBase}개를 선택해야 해요. (현재 ${baseTotal}/${maxBase})`}
+          </p>
+          <div className="deck-builder-actions">
+            <button className="deck-done deck-randomize" onClick={onRandomize} type="button">
+              <Shuffle size={17} aria-hidden="true" />
+              랜덤 덱 구성
+            </button>
+            <button
+              className="deck-done"
+              disabled={baseTotal !== maxBase}
+              onClick={onClose}
+              type="button"
+            >
+              완료
+            </button>
+          </div>
         </div>
       </section>
     </div>

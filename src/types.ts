@@ -1,5 +1,13 @@
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
+export type GameMode = "normal" | "hard";
+
+export interface BonusTimeState {
+  placements: number;
+  remainingMs: number;
+  regularTray: Tray | null;
+}
+
 export type Cell = string | null;
 
 /** 8×8 grid of Cell values. */
@@ -91,6 +99,7 @@ export type ItemType = "undo" | "reroll" | "gravity";
 export type ItemSlots = [ItemType | null, ItemType | null, ItemType | null];
 
 export interface UndoSnapshot {
+  bonusTime?: BonusTimeState;
   augmentState: AugmentState;
   board: Board;
   bombCells: string[];
@@ -155,6 +164,8 @@ export interface AnchorOffset {
 // ─── Saved game (raw JSON from localStorage) ─────────────────────────────────
 
 export interface SavedGame {
+  gameMode?: unknown;
+  bonusTime?: unknown;
   augmentState?: Partial<AugmentState> & { levels?: Partial<AugmentLevels> };
   board?: unknown;
   bombCells?: unknown;

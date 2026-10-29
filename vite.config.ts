@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       allowedHosts: true,
-      proxy: env.API_PROXY_TARGET ? { "/api": { target: env.API_PROXY_TARGET, changeOrigin: true } } : undefined
+      proxy: { "/api": { target: env.API_PROXY_TARGET || "http://localhost:8080", changeOrigin: true } }
     }
   };
 });

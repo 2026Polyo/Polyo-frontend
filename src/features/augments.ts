@@ -174,8 +174,8 @@ export function rollSpreadClear(augmentState: AugmentState): number {
   return getSpreadClearCount(augmentState);
 }
 
-export function shouldOfferAugmentChoice(augmentState: AugmentState, score: number): boolean {
-  return score >= augmentState.nextChoiceScore;
+export function shouldOfferAugmentChoice(augmentState: AugmentState, score: number, bonusActive = false): boolean {
+  return !bonusActive && score >= augmentState.nextChoiceScore;
 }
 
 export function chooseAugment(augmentState: AugmentState, augmentId: AugmentId, score: number): AugmentState {
