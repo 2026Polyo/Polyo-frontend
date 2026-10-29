@@ -37,6 +37,7 @@ import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
 interface PlayScreenProps {
   bonusTime: BonusTimeState;
   gameMode: GameMode;
+  hardTimeRemainingMs: number;
   augmentState: AugmentState;
   autoUndoFlash: boolean;
   best: number;
@@ -106,6 +107,7 @@ function PlayScreen({
   bonusTime,
   gameMode,
   augmentState,
+  hardTimeRemainingMs,
   autoUndoFlash,
   best,
   board,
@@ -137,14 +139,18 @@ function PlayScreen({
       />
       <section className="game-area">
         <ScoreBoard best={best} score={score} previewGain={previewGain} />
-        <div className={`bonus-status ${bonusTime.remainingMs > 0 ? "is-active" : ""}`}>
+        <div className={`bonus-status ${gameMode === "hard" ? "hard-status" : ""} ${bonusTime.remainingMs > 0 ? "is-active" : ""}`}>
           <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
-          {gameMode === "normal" && (bonusTime.remainingMs > 0 ? (
+          {gameMode === "hard" ? (
+            <span className="hard-timer" role="timer" aria-label="다음 블록까지 남은 시간">
+              {(hardTimeRemainingMs / 1000).toFixed(1)}초
+            </span>
+          ) : (bonusTime.remainingMs > 0 ? (
             <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
           ) : <span>보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}</span>)}
         </div>
         <div className="board-layout">
-          <AugmentPanel augmentState={augmentState} />
+          {gameMode === "normal" && <AugmentPanel augmentState={augmentState} />}
           <div className="board-stack">
             <div className="board-combo-stage">
               <Board
@@ -183,12 +189,14 @@ function PlayScreen({
               {selectedPiece ? "놓을 칸을 누르세요 · 블록을 다시 누르면 선택 취소" : "블록을 끌어 놓거나, 블록과 놓을 칸을 차례로 누르세요"}
             </p>
           </div>
-          <ItemSlotsView
-            isClearing={isClearing || gravityAnimating}
-            itemSlots={itemSlots}
-            onItemClick={handleItemClick}
-            undoSnapshot={undoSnapshot}
-          />
+          {gameMode === "normal" && (
+            <ItemSlotsView
+              isClearing={isClearing || gravityAnimating}
+              itemSlots={itemSlots}
+              onItemClick={handleItemClick}
+              undoSnapshot={undoSnapshot}
+            />
+          )}
           <button
             aria-label="현재 덱 보기"
             className="deck-view-button"

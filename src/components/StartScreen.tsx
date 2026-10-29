@@ -42,7 +42,6 @@ function StartScreen({
   availableBaseIds,
   baseLoadout,
   best,
-  canStartNewGame,
   loadoutIds,
   maxBase,
   maxSpecial,
@@ -69,22 +68,10 @@ function StartScreen({
         </div>
         <h1 id="start-title">Polyomino</h1>
         <div className="start-actions">
-          <button
-            aria-label="새 게임"
-            aria-describedby={!canStartNewGame ? "new-game-disabled-reason" : undefined}
-            className="primary-action"
-            onClick={onNewGame}
-            title={canStartNewGame ? undefined : "일반 블록 10개를 선택해야 시작할 수 있습니다."}
-            type="button"
-          >
+          <button aria-label="새 게임" className="primary-action" onClick={onNewGame} type="button">
             <Play size={20} aria-hidden="true" />
             새 게임
           </button>
-          {!canStartNewGame && (
-            <p className="start-disabled-hint" id="new-game-disabled-reason">
-              일반 블록 {maxBase}개를 선택해야 시작할 수 있습니다.
-            </p>
-          )}
           <button className="secondary-action" id="start-multiplayer" onClick={onMultiplayer} type="button">
             <Users size={20} aria-hidden="true" />
             멀티
