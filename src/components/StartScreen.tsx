@@ -1,4 +1,4 @@
-import { Layers, Play, Trophy } from "lucide-react";
+import { Layers, Play, Trophy, Users } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
 import type { PieceTemplate } from "../types";
 
@@ -24,6 +24,7 @@ interface StartScreenProps {
   onAddSpecial: (id: string) => void;
   onCloseDeck: () => void;
   onContinue: () => void;
+  onMultiplayer: () => void;
   onNewGame: () => void;
   onOpenDeck: () => void;
   onRemoveBase: (id: string) => void;
@@ -46,6 +47,7 @@ function StartScreen({
   onAddSpecial,
   onCloseDeck,
   onContinue,
+  onMultiplayer,
   onNewGame,
   onOpenDeck,
   onRemoveBase,
@@ -84,6 +86,10 @@ function StartScreen({
               일반 블록 {maxBase}개를 선택해야 시작할 수 있습니다.
             </p>
           )}
+          <button className="secondary-action" id="start-multiplayer" onClick={onMultiplayer} type="button">
+            <Users size={20} aria-hidden="true" />
+            멀티
+          </button>
           <button className="start-deck-action" onClick={onOpenDeck} type="button">
             <Layers size={20} aria-hidden="true" />
             덱 구성
