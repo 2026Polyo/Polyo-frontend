@@ -84,10 +84,12 @@ export function useGameSession() {
   const bonusTimeRef = useRef(bonusTime);
   const bonusTickRef = useRef<number | null>(null);
   const [hardTimeRemainingMs, setHardTimeRemainingMs] = useState(0);
+  const [hardTimeLimitMs, setHardTimeLimitMs] = useState(0);
   const hardTimeRef = useRef(0);
   const hardTimeLimitRef = useRef(0);
   const hardTickRef = useRef<number | null>(null);
   const placementLockRef = useRef(false);
+  const scoreSavedRef = useRef(false);
 
   function updateBonusTime(next: BonusTimeState) {
     bonusTimeRef.current = next;
@@ -103,6 +105,7 @@ export function useGameSession() {
   function resetHardTimeLimit(nextLimit: number) {
     const limit = Math.max(0, nextLimit);
     hardTimeLimitRef.current = limit;
+    setHardTimeLimitMs(limit);
     updateHardTime(limit);
   }
 
@@ -728,7 +731,7 @@ export function useGameSession() {
     return {
       availableBaseIds,
       baseLoadout,
-      best,
+      best: normalBest,
       canStartNewGame,
       loadoutIds,
       startFlow,

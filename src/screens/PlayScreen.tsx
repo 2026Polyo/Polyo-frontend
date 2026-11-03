@@ -38,6 +38,7 @@ interface PlayScreenProps {
   bonusTime: BonusTimeState;
   gameMode: GameMode;
   hardTimeRemainingMs: number;
+  hardTimeLimitMs: number;
   augmentState: AugmentState;
   autoUndoFlash: boolean;
   best: number;
@@ -108,6 +109,7 @@ function PlayScreen({
   gameMode,
   augmentState,
   hardTimeRemainingMs,
+  hardTimeLimitMs,
   autoUndoFlash,
   best,
   board,
@@ -142,8 +144,18 @@ function PlayScreen({
         <div className={`bonus-status ${gameMode === "hard" ? "hard-status" : ""} ${bonusTime.remainingMs > 0 ? "is-active" : ""}`}>
           <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
           {gameMode === "hard" ? (
-            <span className="hard-timer" role="timer" aria-label="다음 블록까지 남은 시간">
-              {(hardTimeRemainingMs / 1000).toFixed(1)}초
+            <span
+              aria-label="다음 블록까지 남은 시간"
+              aria-valuemax={hardTimeLimitMs}
+              aria-valuemin={0}
+              aria-valuenow={hardTimeRemainingMs}
+              className="hard-timer"
+              role="progressbar"
+            >
+              <span
+                className="hard-timer-fill"
+                style={{ width: `${hardTimeLimitMs > 0 ? (hardTimeRemainingMs / hardTimeLimitMs) * 100 : 0}%` }}
+              />
             </span>
           ) : (bonusTime.remainingMs > 0 ? (
             <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
