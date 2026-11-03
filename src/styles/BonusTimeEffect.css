@@ -94,6 +94,42 @@
   filter: drop-shadow(0 0 8px #ffe59780);
 }
 
+.bonus-countdown {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+}
+
+.bonus-countdown strong {
+  color: #fff3bc;
+  font-size: clamp(5rem, 22vw, 9rem);
+  font-weight: 1000;
+  line-height: 1;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 5px #c92c4f;
+  text-shadow: 0 5px 0 #82213e, 0 0 24px #ffbd52;
+  animation: bonus-countdown-pop 0.35s ease-out;
+}
+
+.bonus-countdown span {
+  background: #83304be8;
+  border: 1px solid #ffe3a5;
+  border-radius: 999px;
+  color: #fff3bc;
+  font-size: clamp(0.75rem, 3vw, 1rem);
+  font-weight: 900;
+  margin-top: 12px;
+  padding: 5px 14px;
+}
+
+@keyframes bonus-countdown-pop {
+  from { opacity: 0.5; transform: scale(1.35); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes bonus-frame-glow {
   from { box-shadow: 0 0 12px #fff2a3, 0 0 28px #ffbd5270, inset 0 0 12px #fff2a330; }
   to { box-shadow: 0 0 20px #fff2a3, 0 0 44px #ff76bc90, inset 0 0 22px #fff2a340; }
@@ -123,6 +159,7 @@
   .bonus-sparkles span { transform: translate(-50%, -50%); }
   .bonus-rays { display: none; }
   .bonus-announcement { animation: bonus-title-reduced 1.8s step-end forwards; }
+  .bonus-countdown strong { animation: none; }
 }
 
 @keyframes bonus-title-reduced {
