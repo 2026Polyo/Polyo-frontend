@@ -26,7 +26,7 @@ import { cloneBoard } from "../utils/boardUtils";
 import { createPieceInstance } from "../utils/pieceUtils";
 import { canPlace, getClosestPlacement, getPlacementDistanceSquared, hasMove } from "../utils/placement";
 import { nextTray } from "../utils/tray";
-import useBestScore from "./useBestScore";
+import { getMyBestScores, saveGameScore } from "../api/scores";
 import { useComboEffect } from "./useComboEffect";
 import { useDeckBuilderState } from "./useDeckBuilderState";
 import { useGameAudio } from "./useGameAudio";
@@ -75,7 +75,7 @@ function resolveMarkUpdate(
   return typeof value === "function" ? value(current) : value;
 }
 
-export function useGameSession() {
+export function useGameSession(isAuthenticated = false) {
   const [initialGame] = useState(loadSavedGame);
   const [gameMode, setGameMode] = useState<GameMode>(() => initialGame?.gameMode ?? "normal");
   const [startFlow, setStartFlow] = useState<"mode" | "continue" | null>(null);
@@ -144,6 +144,7 @@ export function useGameSession() {
   );
   const [clearingCells, setClearingCells] = useState<Set<string>>(() => new Set());
   const [score, setScore] = useState<number>(() => initialGame?.score ?? 0);
+  const [databaseBestScores, setDatabaseBestScores] = useState({ normalBestScore: 0, hardBestScore: 0 });
   const [augmentState, setAugmentState] = useState<AugmentState>(
     () => initialGame?.augmentState ?? createInitialAugmentState()
   );
@@ -179,6 +180,13 @@ export function useGameSession() {
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoUndoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audio = useGameAudio();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    void getMyBestScores()
+      .then(setDatabaseBestScores)
+      .catch(() => setDatabaseBestScores({ normalBestScore: 0, hardBestScore: 0 }));
+  }, [isAuthenticated]);
 
   function playPop() {
     audio.resume();
@@ -412,6 +420,23 @@ export function useGameSession() {
   }, [gameOver]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (!isPlaying) {
+      scoreSavedRef.current = false;
+      return;
+    }
+    if (!gameOver || scoreSavedRef.current) return;
+
+    scoreSavedRef.current = true;
+    void saveGameScore(gameMode, score).then((saved) => {
+      setDatabaseBestScores((current) => gameMode === "normal"
+        ? { ...current, normalBestScore: saved.bestScore }
+        : { ...current, hardBestScore: saved.bestScore });
+    }).catch((error: unknown) => {
+      console.error("게임 점수 저장 실패", error);
+    });
+  }, [gameMode, gameOver, isPlaying, score]);
+
+  useEffect(() => {
     if (augmentChoiceOpen) audio.playPopup();
   }, [augmentChoiceOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -502,6 +527,7 @@ export function useGameSession() {
     }
 
     setGameMode(mode);
+    scoreSavedRef.current = false;
     const gameDeck = mode === "hard" ? PIECES.map((piece) => piece.id) : selectedBaseDeck;
     setDeck(gameDeck);
     resetGame(gameDeck, mode === "hard" ? [] : getLoadoutPieces(specialStash, loadoutIds));
@@ -651,7 +677,8 @@ export function useGameSession() {
     setAugmentState((current) => advanceAugmentSchedule(current, score));
   }
 
-  const best = useBestScore(score, gameMode);
+  const best = gameMode === "hard" ? databaseBestScores.hardBestScore : databaseBestScores.normalBestScore;
+  const normalBest = databaseBestScores.normalBestScore;
 
   function buildPlayScreenProps() {
     return {
@@ -660,6 +687,7 @@ export function useGameSession() {
       bonusTime,
       gameMode,
       hardTimeRemainingMs,
+      hardTimeLimitMs,
       best,
       board: {
         board,
