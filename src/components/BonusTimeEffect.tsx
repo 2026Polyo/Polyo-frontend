@@ -2,7 +2,9 @@ import type { CSSProperties } from "react";
 import "../styles/BonusTimeEffect.css";
 
 // Mount once per bonus: the entrance clears the board, while the frame stays lit.
-export default function BonusTimeEffect() {
+export default function BonusTimeEffect({ remainingMs }: { remainingMs: number }) {
+  const countdown = remainingMs > 0 && remainingMs <= 3000 ? Math.ceil(remainingMs / 1000) : null;
+
   return (
     <div className="bonus-effect" aria-hidden="true">
       <div className="bonus-rays" />
@@ -16,6 +18,12 @@ export default function BonusTimeEffect() {
         <strong>보너스 타임!</strong>
         <span className="bonus-announcement-caption">한 칸 블록으로 신나게!</span>
       </div>
+      {countdown !== null && (
+        <div className="bonus-countdown">
+          <strong key={countdown}>{countdown}</strong>
+          <span>보너스 종료까지</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -165,7 +165,7 @@ function PlayScreen({
                 previewCells={board.previewCells}
                 selectedPiece={selectedPiece}
               />
-              {bonusActive && <BonusTimeEffect />}
+              {bonusActive && <BonusTimeEffect remainingMs={bonusTime.remainingMs} />}
               {comboEffectValue !== null && (
                 <div className="combo-burst" aria-live="polite">
                   combo {comboEffectValue}
