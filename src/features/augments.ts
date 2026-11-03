@@ -346,7 +346,9 @@ export function getAugmentedScore({
   extraCells = 0,
   boardFillRatio = 0,
   clearedCellCount = 0,
-  crackCount = 0
+  crackCount = 0,
+  scoreMultiplier = 1,
+  comboMultiplier = 1
 }: {
   augmentState: AugmentState;
   cleared: number;
@@ -358,6 +360,10 @@ export function getAugmentedScore({
   clearedCellCount?: number;
   /** Blocks adjacent to the cleared lines (for 균열 제거). */
   crackCount?: number;
+  /** Mode-specific multiplier for the basic placement and clear scores. */
+  scoreMultiplier?: number;
+  /** Mode-specific multiplier for combo scores. */
+  comboMultiplier?: number;
 }): ScoreBreakdown {
   const placementLevel = getAugmentLevel(augmentState, "placement-score");
   const cellPlacementLevel = getAugmentLevel(augmentState, "cell-placement-bonus");
@@ -374,21 +380,22 @@ export function getAugmentedScore({
 
   const placedCells = piece.cells.length + extraCells;
   // 배치: 기본 점수(칸 수)에 곱연산. 칸 배치 보너스: 칸마다 합연산.
-  const placementScore =
+  const placementScore = (
     placedCells * (1 + placementLevel * PLACEMENT_MULT_PER_LEVEL)
-    + cellPlacementLevel * placedCells * CELL_PLACEMENT_BONUS;
+    + cellPlacementLevel * placedCells * CELL_PLACEMENT_BONUS
+  ) * scoreMultiplier;
   // 제거: 기본 점수에 곱연산. 칸 제거 보너스/균열 제거/과열: 합연산.
   const overheatBonus =
     cleared > 0 ? overheatLevel * OVERHEAT_BONUS * augmentState.placementsSinceClear : 0;
   const clearScore =
-    cleared * 20 * (1 + clearLevel * CLEAR_MULT_PER_LEVEL)
+    cleared * 20 * (1 + clearLevel * CLEAR_MULT_PER_LEVEL) * scoreMultiplier
     + cellClearLevel * clearedCellCount * CELL_CLEAR_BONUS
     + crackLevel * crackCount * CRACK_CLEAR_BONUS
     + overheatBonus;
   const multiLineScore =
-    Math.max(0, cleared - 1) * (MULTI_LINE_BASE_BONUS + multiLineLevel * MULTI_LINE_SCORE_BONUS);
+    Math.max(0, cleared - 1) * (MULTI_LINE_BASE_BONUS + multiLineLevel * MULTI_LINE_SCORE_BONUS) * scoreMultiplier;
   const comboScore =
-    cleared * augmentState.combo * (COMBO_BASE_BONUS + comboLevel * COMBO_CLEAR_SCORE_BONUS);
+    cleared * augmentState.combo * (COMBO_BASE_BONUS + comboLevel * COMBO_CLEAR_SCORE_BONUS) * comboMultiplier;
   const allClearScore = allClear ? allClearLevel * ALL_CLEAR_SCORE_BONUS : 0;
   const boardPressureScore =
     pressureLevel > 0 && boardFillRatio >= BOARD_PRESSURE_THRESHOLD

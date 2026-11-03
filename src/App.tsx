@@ -16,7 +16,7 @@ function App() {
     if (!token || !storedUser) return null;
     try { return JSON.parse(storedUser) as AuthUser; } catch { return null; }
   });
-  const { gamePhase, playScreenProps, startScreenProps } = useGameSession();
+  const { gamePhase, playScreenProps, startScreenProps } = useGameSession(Boolean(user));
 
   if (!user) return <AuthScreen onAuthenticated={setUser} />;
 
