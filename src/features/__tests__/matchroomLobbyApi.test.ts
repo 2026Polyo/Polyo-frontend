@@ -145,3 +145,32 @@ describe("room entry", () => {
     expect(ENTRY_CODE_PATTERN.test(normalizeEntryCode(" k7m3px9q "))).toBe(true);
   });
 });
+
+describe("leaving a room", () => {
+  it("sends DELETE to my membership and accepts 204 with no body", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 204 }));
+    await expect(createMatchRoomApi({ fetcher }).leave(101, signal())).resolves.toBeUndefined();
+    expect(fetcher).toHaveBeenCalledExactlyOnceWith("/api/match-room/101/members/me", {
+      method: "DELETE", credentials: "include", headers: { Accept: "application/json" }, signal: expect.any(AbortSignal)
+    });
+  });
+
+  it("explains that a started game cannot be left", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json(
+      { success: false, data: null, error: { code: "MATCH_ALREADY_STARTED", message: "x" } }, { status: 409 }));
+    await expect(createMatchRoomApi({ fetcher }).leave(101, signal()))
+      .rejects.toMatchObject({ code: "MATCH_ALREADY_STARTED", message: expect.stringContaining("기권") });
+  });
+
+  it("reports a leave-specific network error", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockRejectedValue(new TypeError("offline"));
+    await expect(createMatchRoomApi({ fetcher }).leave(101, signal()))
+      .rejects.toMatchObject({ code: "NETWORK_ERROR", message: expect.stringContaining("나가지 못했어요") });
+  });
+
+  it("rejects an invalid room ID without a request", async () => {
+    const fetcher = vi.fn<typeof fetch>();
+    await expect(createMatchRoomApi({ fetcher }).leave(0, signal())).rejects.toMatchObject({ code: "INVALID_REQUEST" });
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+});

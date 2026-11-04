@@ -1,20 +1,33 @@
-import { Flag, LoaderCircle, Timer, Trophy, Users, WifiOff } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Flag, Swords, WifiOff } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AuthUser } from "../api/auth";
 import Board from "../components/Board";
-import MatchRoomResult from "../components/MatchRoomResult";
+import MatchLobby from "../components/MatchLobby";
 import PieceShape from "../components/PieceShape";
-import { FINISH_REASON_LABELS } from "../features/matchGame";
-import type { MatchPlayerState } from "../features/matchGame";
+import PieceTray from "../components/PieceTray";
+import ScoreBoard from "../components/ScoreBoard";
+import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
+import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
+import { clearActiveRoom } from "../features/activeRoomStorage";
+import { FINISH_REASON_LABELS, ROOM_CLOSED_MESSAGES } from "../features/matchGame";
+import { MatchRoomApiError, matchRoomApi } from "../features/matchroomApi";
+import type { MatchGameState } from "../features/matchGame";
 import type { MatchRoomDetails } from "../features/matchroom";
+import type { EmoteId } from "../features/matchLobby";
+import { useComboEffect } from "../hooks/useComboEffect";
+import { useEmoteBubbles } from "../hooks/useEmoteBubbles";
+import { useGameAudio } from "../hooks/useGameAudio";
 import { useMatchGame } from "../hooks/useMatchGame";
-import { canPlace, getClosestPlacement, getPlacementDistanceSquared } from "../utils/placement";
-import { MAX_SNAP_DISTANCE } from "../constants/config";
-import "../styles/CreateRoomScreen.css";
+import { usePieceSelection } from "../hooks/usePieceSelection";
+import { usePulseLabel } from "../hooks/usePulseLabel";
+import { getClosestPlacement, getPlacementDistanceSquared } from "../utils/placement";
+import "../styles/GameOver.css";
 import "../styles/MatchGameScreen.css";
-import type { PieceInstance, PlacementPosition } from "../types";
+import type { Board as BoardType, PieceInstance } from "../types";
 
 const NO_CELLS = new Set<string>();
+const PLACE_TIMEOUT_MS = 3000;
+const EMPTY_BOARD: BoardType = Array.from({ length: 8 }, () => Array<null>(8).fill(null));
 
 interface MatchGameScreenProps {
   onExit: () => void;
@@ -22,33 +35,74 @@ interface MatchGameScreenProps {
   user: AuthUser;
 }
 
-function PlayerHeading({ active, label, player, secondsLeft }: { active: boolean; label: string; player: MatchPlayerState; secondsLeft: string }) {
-  return (
-    <header className={`match-player-heading${active ? " is-active" : ""}`}>
-      <div><span className="match-player-label">{label}</span><strong>{player.nickname}</strong></div>
-      <div className="match-player-stats">
-        {!player.connected && <span className="match-disconnected"><WifiOff aria-hidden="true" size={16} />연결 끊김</span>}
-        {active && <span className="match-timer"><Timer aria-hidden="true" size={16} />{secondsLeft}초</span>}
-        <span className="match-score">{player.score.toLocaleString()}점</span>
-      </div>
-    </header>
-  );
+/** Changes exactly when some board changed, i.e. once per applied move. */
+function moveSignature(game: MatchGameState | null): string {
+  return game ? game.players.map((player) => `${player.score}:${player.board.flat().join(",")}`).join("|") : "";
 }
 
+// The match plays on the same board, tray, score and effects as solo mode; only the state comes from the server.
 function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
-  const match = useMatchGame(room.roomId);
+  const emoteBubbles = useEmoteBubbles();
+  const showEmote = emoteBubbles.show;
+  // My own emote is shown right away, so a server echo of it is ignored.
+  const onEmote = useCallback((userId: string, emote: EmoteId) => {
+    if (userId !== user.id) showEmote(userId, emote);
+  }, [showEmote, user.id]);
+  const match = useMatchGame(room.roomId, { onEmote });
   const { game } = match;
-  const [selectedUid, setSelectedUid] = useState<string | null>(null);
-  const [hoverCell, setHoverCell] = useState<PlacementPosition | null>(null);
   const [remainingMs, setRemainingMs] = useState(0);
-  const myBoardRef = useRef<HTMLDivElement>(null);
+  const [clearingCells, setClearingCells] = useState<Set<string>>(NO_CELLS);
+  const [clearingUserId, setClearingUserId] = useState<string | null>(null);
   const rivalBoardRef = useRef<HTMLDivElement>(null);
+  const [leaving, setLeaving] = useState(false);
+  const [leaveError, setLeaveError] = useState("");
+  const leaveControllerRef = useRef<AbortController | null>(null);
+  useEffect(() => () => leaveControllerRef.current?.abort(), []);
+  const audio = useGameAudio();
+  const { label: clearLabel, pulseId: clearLabelId, pulse: pulseClearLabel } = usePulseLabel();
 
   const me = game?.players.find((player) => player.userId === user.id);
   const rival = game?.players.find((player) => player.userId !== user.id);
   const playing = game?.status === "PLAYING";
-  const myTurn = playing && game?.turnUserId === user.id;
-  const selectedPiece: PieceInstance | null = (myTurn && game?.tray.find((piece) => piece?.uid === selectedUid)) || null;
+  const myTurn = Boolean(playing && game?.turnUserId === user.id);
+  // True from sending PLACE until the server answers, so a second drop cannot send a duplicate move.
+  const [placing, setPlacing] = useState(false);
+  const canMove = myTurn && !placing;
+  const myBoard = me?.board ?? EMPTY_BOARD;
+  const availablePieces = useMemo(
+    () => (canMove && game ? game.tray.filter((piece): piece is PieceInstance => piece !== null) : []),
+    [game, canMove]
+  );
+
+  useEffect(() => {
+    setPlacing(false);
+  }, [game, match.message]);
+
+  useEffect(() => {
+    if (!placing) return undefined;
+    // Fallback for an answer that never changes state (e.g. the same error twice).
+    const timer = setTimeout(() => setPlacing(false), PLACE_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [placing]);
+
+  // usePieceSelection calls this on drop; the piece leaves the tray when the server's next state arrives.
+  const clearSelectionRef = useRef<() => void>(() => undefined);
+  const onPlace = useCallback((piece: PieceInstance, row: number, col: number) => {
+    audio.resume();
+    setPlacing(true);
+    match.place(piece.uid, row, col);
+    clearSelectionRef.current();
+  }, [audio, match]);
+
+  const selection = usePieceSelection({
+    augmentChoiceOpen: false,
+    availablePieces,
+    board: myBoard,
+    isPlaying: canMove,
+    onPlace
+  });
+  clearSelectionRef.current = selection.clearSelection;
+  const comboEffectValue = useComboEffect(me?.combo ?? 0);
 
   // The server sends time left rather than a clock, so the countdown ignores clock differences.
   useEffect(() => {
@@ -60,29 +114,79 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
     return () => clearInterval(timer);
   }, [game]);
 
-  const placement = useMemo(() => {
-    if (!me || !selectedPiece || !hoverCell) return null;
-    if (canPlace(me.board, selectedPiece, hoverCell.row, hoverCell.col)) return hoverCell;
-    const closest = getClosestPlacement(me.board, selectedPiece, hoverCell);
-    return getPlacementDistanceSquared(closest, hoverCell) <= MAX_SNAP_DISTANCE ** 2 ? closest : null;
-  }, [hoverCell, me, selectedPiece]);
+  // Same feedback as solo play after each move: sound, clear highlight and the good/great/excellent label.
+  const signature = moveSignature(game);
+  const lastSignatureRef = useRef("");
+  useEffect(() => {
+    const previous = lastSignatureRef.current;
+    lastSignatureRef.current = signature;
+    const move = game?.lastMove;
+    if (!previous || !move || previous === signature) return undefined;
+    audio.playPlacement();
+    if (move.cleared === 0) return undefined;
+    audio.playClearFeedback(move.cleared);
+    if (move.userId === user.id) {
+      const tier = getClearTier(move.cleared);
+      if (tier) pulseClearLabel(CLEAR_TIER_LABEL[tier]);
+    }
+    setClearingUserId(move.userId);
+    setClearingCells(new Set(move.clearingCells));
+    const timer = setTimeout(() => setClearingCells(NO_CELLS), CLEAR_HIGHLIGHT_MS);
+    return () => clearTimeout(timer);
+    // Keyed on the signature alone: only a new move should replay feedback.
+  }, [signature]);
 
-  const previewCells = useMemo(() => {
-    if (!selectedPiece || !placement) return NO_CELLS;
-    return new Set(selectedPiece.cells.map(([row, col]) => `${placement.row + row}-${placement.col + col}`));
-  }, [placement, selectedPiece]);
+  useEffect(() => {
+    if (game?.status !== "FINISHED") return;
+    audio.playGameOver();
+    // The server deletes a finished room, so a refresh from here should not try to rejoin it.
+    clearActiveRoom();
+  }, [game?.status]);
 
-  function clearingCellsFor(userId: string | undefined) {
-    return game?.lastMove?.userId === userId && game?.lastMove ? new Set(game.lastMove.clearingCells) : NO_CELLS;
+  function handleCellClick(row: number, col: number) {
+    const piece = selection.selectedPiece;
+    if (!canMove || !piece) return;
+    const anchor = selection.anchorCell;
+    const target = anchor ? { row: row - anchor[0], col: col - anchor[1] } : { row, col };
+    const closest = getClosestPlacement(myBoard, piece, target);
+    if (!closest || getPlacementDistanceSquared(target, closest) > MAX_SNAP_DISTANCE ** 2) return;
+    onPlace(piece, closest.row, closest.col);
   }
 
-  function placeAt(row: number, col: number) {
-    if (!me || !selectedPiece) return;
-    const target = placement ?? { row, col };
-    if (!canPlace(me.board, selectedPiece, target.row, target.col)) return;
-    match.place(selectedPiece.uid, target.row, target.col);
-    setSelectedUid(null);
-    setHoverCell(null);
+  async function leaveRoom() {
+    if (leaving) return;
+    setLeaving(true);
+    setLeaveError("");
+    const controller = new AbortController();
+    leaveControllerRef.current = controller;
+    try {
+      // The server deletes the room when the host leaves and tells the guest with ROOM_CLOSED.
+      await matchRoomApi.leave(room.roomId, controller.signal);
+      onExit();
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      const code = error instanceof MatchRoomApiError ? error.code : "";
+      // Already gone or already out: there is nothing left to leave.
+      if (code === "ROOM_NOT_FOUND" || code === "ROOM_MEMBER_ONLY") {
+        onExit();
+        return;
+      }
+      setLeaveError(error instanceof Error ? error.message : "방에서 나가지 못했어요. 다시 시도해 주세요.");
+      setLeaving(false);
+    }
+  }
+
+  // My own leave also closes my socket with ROOM_CLOSED; that one is not news to me.
+  if (match.closedReason && !leaving) {
+    return (
+      <main className="create-room-screen match-screen">
+        <section className="match-waiting">
+          <h1>방이 닫혔어요.</h1>
+          <p role="alert">{ROOM_CLOSED_MESSAGES[match.closedReason]}</p>
+          <button className="primary-action" onClick={onExit} type="button">방 목록으로</button>
+        </section>
+      </main>
+    );
   }
 
   if (match.fatalError) {
@@ -99,89 +203,143 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
 
   if (!game || !me || !rival) {
     return (
-      <main className="create-room-screen match-screen">
-        <section className="match-waiting" aria-live="polite">
-          <LoaderCircle aria-hidden="true" className="room-spinner" size={32} />
-          <h1>{match.connected ? "상대를 기다리는 중…" : "서버에 연결하는 중…"}</h1>
-          <p><Users aria-hidden="true" size={18} /> 접속 {match.connectedUserIds.length}/2명 · 두 명이 모두 접속하면 바로 시작해요.</p>
-          <MatchRoomResult room={room} title="대기실에 입장했어요." />
-          <button className="secondary-action" onClick={onExit} type="button">나가기</button>
-        </section>
-      </main>
+      <MatchLobby
+        bubbles={emoteBubbles.bubbles}
+        connected={match.connected}
+        connectedUserIds={match.connectedUserIds}
+        members={match.members}
+        exiting={leaving}
+        message={leaveError || match.message}
+        messageCode={leaveError ? "" : match.messageCode}
+        onEmote={(emote) => {
+          showEmote(user.id, emote);
+          match.sendEmote(emote);
+        }}
+        onExit={() => void leaveRoom()}
+        onReady={match.setReady}
+        onStart={match.start}
+        readyUserIds={match.readyUserIds}
+        room={room}
+        user={user}
+      />
     );
   }
 
-  const secondsLeft = (remainingMs / 1000).toFixed(1);
+  const turnLimitMs = (myTurn ? me : rival).turnLimitMs;
   const won = game.winnerUserId === user.id;
+  const selectedPiece = selection.selectedPiece;
+  const turnText = !playing ? "게임 종료"
+    : myTurn ? `내 차례 · ${(remainingMs / 1000).toFixed(1)}초`
+      : `${rival.nickname}님의 차례 · ${(remainingMs / 1000).toFixed(1)}초`;
 
   return (
-    <main className="match-screen">
-      <div className="match-boards">
-        <section aria-label="내 보드" className="match-board">
-          <PlayerHeading active={Boolean(myTurn)} label="나" player={me} secondsLeft={secondsLeft} />
-          <Board
-            board={me.board}
-            boardRef={myBoardRef}
-            clearingCells={clearingCellsFor(me.userId)}
-            hoverCell={hoverCell}
-            onCellClick={placeAt}
-            onCellEnter={setHoverCell}
-            onCellLeave={() => setHoverCell(null)}
-            previewCells={previewCells}
-            previewClearingCells={NO_CELLS}
-            selectedPiece={selectedPiece}
-          />
-        </section>
-        <section aria-label="상대 보드" className="match-board match-board-rival">
-          <PlayerHeading active={playing && !myTurn} label="상대" player={rival} secondsLeft={secondsLeft} />
-          <Board
-            board={rival.board}
-            boardRef={rivalBoardRef}
-            clearingCells={clearingCellsFor(rival.userId)}
-            hoverCell={null}
-            onCellClick={() => undefined}
-            onCellEnter={() => undefined}
-            onCellLeave={() => undefined}
-            previewCells={NO_CELLS}
-            previewClearingCells={NO_CELLS}
-            selectedPiece={null}
-          />
-        </section>
-      </div>
-
-      <section aria-label="공용 블록" className="match-tray-panel">
-        <p aria-live="polite" className="match-turn">
-          {!playing ? "게임 종료" : myTurn ? (selectedPiece ? "내 보드에서 놓을 칸을 누르세요." : "내 차례예요. 블록을 고르세요.") : `${rival.nickname}님의 차례예요.`}
-          {!match.connected && playing && " · 재연결 중…"}
-        </p>
-        {match.message && <p className="match-error" role="alert">{match.message}</p>}
-        <div className="match-tray">
-          {game.tray.map((piece, index) => piece
-            ? (
-              <button
-                aria-label={`${index + 1}번 블록${piece.special ? ` (${piece.special})` : ""}`}
-                aria-pressed={selectedPiece?.uid === piece.uid}
-                className={`match-tray-slot${selectedPiece?.uid === piece.uid ? " is-selected" : ""}`}
-                disabled={!myTurn}
-                key={piece.uid}
-                onClick={() => setSelectedUid(selectedPiece?.uid === piece.uid ? null : piece.uid)}
-                type="button"
-              >
-                <PieceShape cellGap={2} cellSize={14} piece={piece} />
-              </button>
-            )
-            : <span aria-hidden="true" className="match-tray-slot is-empty" key={`empty-${index}`} />)}
+    <main className={`app-shell play-shell match-shell${selection.cursorPoint ? " has-cursor-piece" : ""}`}>
+      <section className="game-area">
+        <ScoreBoard score={me.score} />
+        <div className={`bonus-status hard-status match-turn-status${myTurn ? " is-active" : ""}`}>
+          <span><Swords aria-hidden="true" size={16} /> 1:1 대전</span>
+          <strong aria-live="polite" role="status">{turnText}</strong>
+          {!match.connected && playing && <span className="match-reconnecting"><WifiOff aria-hidden="true" size={14} />재연결 중…</span>}
         </div>
-        {playing && <button className="secondary-action match-forfeit" onClick={match.forfeit} type="button"><Flag aria-hidden="true" size={18} />기권</button>}
+        <div className="board-layout">
+          <aside aria-label="상대 보드" className="match-rival">
+            <div className={`match-rival-heading${playing && !myTurn ? " is-active" : ""}`}>
+              <strong>{rival.nickname}</strong>
+              <span>{rival.score.toLocaleString()}점</span>
+              {!rival.connected && <span className="match-disconnected"><WifiOff aria-hidden="true" size={14} />연결 끊김</span>}
+            </div>
+            <Board
+              board={rival.board}
+              boardRef={rivalBoardRef}
+              clearingCells={clearingUserId === rival.userId ? clearingCells : NO_CELLS}
+              hoverCell={null}
+              onCellClick={() => undefined}
+              onCellEnter={() => undefined}
+              onCellLeave={() => undefined}
+              previewCells={NO_CELLS}
+              previewClearingCells={NO_CELLS}
+              selectedPiece={null}
+            />
+          </aside>
+          <div className="board-stack">
+            <div
+              aria-label="이번 차례 남은 시간"
+              aria-valuemax={turnLimitMs}
+              aria-valuemin={0}
+              aria-valuenow={Math.round(remainingMs)}
+              className={`hard-timer match-turn-timer${myTurn ? "" : " is-rival"}`}
+              role="progressbar"
+            >
+              <span className="hard-timer-fill" style={{ width: `${playing && turnLimitMs > 0 ? (remainingMs / turnLimitMs) * 100 : 0}%` }} />
+            </div>
+            <div className="board-combo-stage">
+              <Board
+                board={me.board}
+                boardRef={selection.boardRef}
+                clearingCells={clearingUserId === me.userId ? clearingCells : NO_CELLS}
+                hoverCell={selection.hoverCell}
+                onCellClick={handleCellClick}
+                onCellEnter={selection.setHoverCell}
+                onCellLeave={() => selection.setHoverCell(null)}
+                previewCells={selection.previewCells}
+                previewClearingCells={selection.previewClearingCells}
+                selectedPiece={selectedPiece}
+              />
+              {comboEffectValue !== null && <div className="combo-burst" aria-live="polite">combo {comboEffectValue}</div>}
+              {clearLabel && <div className="clear-burst" key={clearLabelId} aria-live="polite">{clearLabel}</div>}
+            </div>
+            <PieceTray
+              disabled={!canMove}
+              onEmptySlotClick={selection.clearSelection}
+              onPieceActivate={selection.handlePieceActivate}
+              onPieceSelect={selection.handlePieceSelect}
+              selectedId={selectedPiece?.uid ?? null}
+              tray={game.tray}
+            />
+            {match.message && <p className="match-error" role="alert">{match.message}</p>}
+            <p className="placement-hint" aria-live="polite">
+              {!myTurn ? "상대 차례에는 블록을 놓을 수 없어요"
+                : selectedPiece ? "놓을 칸을 누르세요 · 블록을 다시 누르면 선택 취소" : "블록을 끌어 놓거나, 블록과 놓을 칸을 차례로 누르세요"}
+            </p>
+            {playing && (
+              <button className="secondary-action match-forfeit" onClick={match.forfeit} type="button">
+                <Flag aria-hidden="true" size={18} />기권
+              </button>
+            )}
+          </div>
+        </div>
+        {selection.cursorPiece && selection.cursorPoint && selection.cursorAnchorOffset && (
+          <div
+            className={`cursor-piece ${selection.invalidPreview ? "invalid" : ""}`}
+            style={{
+              left: selection.cursorPoint.x,
+              top: selection.cursorPoint.y,
+              transform: `translate(-${selection.cursorAnchorOffset.x}px, -${selection.cursorAnchorOffset.y}px)`
+            }}
+          >
+            <PieceShape
+              cellGap={selection.boardMetrics.cellGap}
+              cellSize={selection.boardMetrics.cellSize}
+              className="cursor-piece-grid"
+              piece={selection.cursorPiece}
+            />
+          </div>
+        )}
       </section>
 
       {!playing && (
-        <div className="match-result" role="dialog" aria-modal="true" aria-labelledby="match-result-title">
-          <div className="match-result-card">
-            <Trophy aria-hidden="true" size={36} />
-            <h1 id="match-result-title">{won ? "승리!" : "패배"}</h1>
-            <p>{game.finishReason ? FINISH_REASON_LABELS[game.finishReason] : ""}</p>
-            <p>{me.nickname} {me.score.toLocaleString()}점 : {rival.score.toLocaleString()}점 {rival.nickname}</p>
+        <div className="game-over" role="dialog" aria-modal="true" aria-labelledby="match-result-title">
+          <div className="game-over-score" aria-label="내 점수">
+            <span>{me.nickname}</span>
+            <strong>{me.score}</strong>
+          </div>
+          <h2 id="match-result-title">{won ? "승리!" : "패배"}</h2>
+          <p className="match-result-reason">{game.finishReason ? FINISH_REASON_LABELS[game.finishReason] : ""}</p>
+          <div className="game-over-best" aria-label="상대 점수">
+            <span>{rival.nickname}</span>
+            <strong>{rival.score}</strong>
+          </div>
+          <div className="game-over-actions">
             <button className="primary-action" onClick={onExit} type="button">방 목록으로</button>
           </div>
         </div>

@@ -45,6 +45,8 @@ export interface MatchRoomApi {
   list: (page: number, signal: AbortSignal) => Promise<MatchRoomPage>;
   joinById: (roomId: number, signal: AbortSignal) => Promise<MatchRoomDetails>;
   joinByCode: (entryCode: string, signal: AbortSignal) => Promise<MatchRoomDetails>;
+  /** Leaves before the game starts; the server deletes the room when the host leaves. */
+  leave: (roomId: number, signal: AbortSignal) => Promise<void>;
 }
 
 export const ENTRY_CODE_PATTERN = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/;

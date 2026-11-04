@@ -1,124 +1,132 @@
-.match-screen {
-  box-sizing: border-box;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 0 auto;
-  max-width: 980px;
-  min-height: 100vh;
-  padding: 20px 16px;
+/* Match-only additions. The board, tray, score, effects and layout come from the solo play styles. */
+
+/* Six shared pieces instead of three: one row on wide screens, two rows on phones. */
+.match-shell .tray {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
-.match-boards {
-  align-items: start;
-  display: grid;
-  gap: 20px;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+.match-shell .piece-preview {
+  height: 104px;
+  min-width: 0;
+  padding: 6px;
 }
 
-.match-board-rival .board {
+.match-shell .piece-preview .mini-grid {
+  --mini-cell-size: 14px !important;
+  --mini-cell-gap: 2px !important;
+  gap: 2px;
+}
+
+.match-shell .piece-preview .mini-cell {
+  height: var(--mini-cell-size);
+  width: var(--mini-cell-size);
+}
+
+.match-shell .tray:has(.piece-preview:disabled) .piece-preview:not(.empty) {
+  opacity: 0.6;
+}
+
+.match-turn-status {
+  justify-content: center;
+  margin-bottom: 10px;
+  padding: 6px 12px;
+}
+
+.match-turn-status span {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.match-reconnecting,
+.match-disconnected {
+  color: hsl(0 70% 46%);
+}
+
+.match-turn-timer {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+/* The rival's clock is shown in blue so it never reads as "hurry up" for me. */
+.match-turn-timer.is-rival .hard-timer-fill {
+  background: linear-gradient(90deg, var(--blue-700), var(--blue-300));
+}
+
+.match-rival {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: start;
+  max-width: 300px;
+  padding: 12px;
+  width: 100%;
+}
+
+.match-rival .board {
+  gap: 2px;
+  padding: 6px;
   pointer-events: none;
 }
 
-.match-player-heading {
-  align-items: center;
+.match-rival-heading {
+  align-items: baseline;
   border-bottom: 3px solid transparent;
+  color: var(--text-strong);
   display: flex;
-  gap: 8px;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 10px;
   margin-bottom: 8px;
   padding-bottom: 6px;
 }
 
-.match-player-heading.is-active {
-  border-bottom-color: hsl(45 100% 60%);
+.match-rival-heading.is-active {
+  border-bottom-color: var(--score-gold);
 }
 
-.match-player-label {
-  display: block;
-  font-size: 12px;
-  opacity: 0.7;
+.match-rival-heading strong {
+  font-size: 1rem;
+  font-weight: 900;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.match-player-stats {
+.match-rival-heading span {
   align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 14px;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-.match-timer,
-.match-disconnected {
-  align-items: center;
+  color: var(--text-body);
   display: inline-flex;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
   gap: 4px;
 }
 
-.match-timer {
-  color: hsl(45 100% 70%);
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-}
-
-.match-disconnected {
-  color: hsl(0 100% 80%);
-}
-
-.match-tray-panel {
-  background: hsl(0 0% 100% / 0.12);
-  border-radius: 16px;
-  padding: 14px;
-}
-
-.match-turn {
-  font-weight: 700;
-  margin: 0 0 10px;
-}
-
 .match-error {
-  color: hsl(0 100% 85%);
-  margin: 0 0 10px;
-}
-
-.match-tray {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-.match-tray-slot {
-  align-items: center;
-  aspect-ratio: 1;
-  background: hsl(0 0% 100% / 0.1);
-  border: 2px solid transparent;
-  border-radius: 12px;
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  min-width: 0;
-  overflow: hidden;
-  padding: 4px;
-}
-
-.match-tray-slot:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
-.match-tray-slot.is-selected {
-  border-color: hsl(45 100% 60%);
-}
-
-.match-tray-slot.is-empty {
-  background: hsl(0 0% 100% / 0.04);
+  color: hsl(0 100% 92%);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-top: 8px;
+  text-align: center;
 }
 
 .match-forfeit {
-  margin-top: 12px;
+  display: flex;
+  margin: 12px auto 0;
+}
+
+.game-over .match-result-reason {
+  color: var(--text-body);
+  font-weight: 700;
+}
+
+/* Shown only when the socket cannot be used at all. */
+.match-screen {
+  justify-content: center;
 }
 
 .match-waiting {
@@ -132,47 +140,82 @@
   width: 100%;
 }
 
-.match-result {
-  align-items: center;
-  background: hsl(210 50% 10% / 0.6);
-  display: flex;
-  inset: 0;
-  justify-content: center;
-  padding: 16px;
-  position: fixed;
+/* Solo play stacks into one column below 1520px; the match keeps the rival beside the board
+   down to laptop widths so my board and tray stay on screen. */
+@media (min-width: 1101px) and (max-width: 1520px) {
+  .match-shell .game-area {
+    width: min(100%, 1180px);
+  }
+
+  .match-shell .board-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 560px) minmax(0, 1fr);
+  }
+
+  .match-shell .board-stack {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .match-shell .match-rival {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    max-width: 260px;
+  }
 }
 
-.match-result-card {
-  background: white;
-  border-radius: 20px;
-  color: hsl(215 30% 20%);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  max-width: 360px;
-  padding: 28px;
-  text-align: center;
-  width: 100%;
-}
+@media (max-width: 1100px) {
+  .match-rival {
+    grid-column: auto;
+    grid-row: 1;
+    justify-self: center;
+    max-width: 240px;
+  }
 
-.match-result-card h1,
-.match-result-card p {
-  margin: 0;
+  .match-shell .board-stack {
+    grid-row: 2;
+  }
 }
 
 @media (max-width: 720px) {
-  .match-boards {
-    grid-template-columns: minmax(0, 1fr);
+  /* Name and score beside a small board, so my board and both tray rows fit on one screen. */
+  .match-rival {
+    align-items: center;
+    display: grid;
+    gap: 10px;
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) 84px;
+    max-width: none;
+    padding: 8px 10px;
   }
 
-  .match-board-rival {
-    margin: 0 auto;
-    max-width: 220px;
-    width: 100%;
+  .match-rival-heading {
+    margin-bottom: 0;
   }
 
-  .match-tray {
+  .match-rival .board {
+    gap: 1px;
+    padding: 3px;
+  }
+
+  .match-turn-status {
+    margin-bottom: 6px;
+  }
+
+  .match-shell .board-stack {
+    grid-row: 2;
+    width: min(100%, max(240px, calc(100svh - 420px)));
+  }
+
+  .match-shell .tray {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .match-shell .piece-preview {
+    height: 72px;
+  }
+
+  .match-shell .piece-preview .mini-grid {
+    --mini-cell-size: clamp(10px, 3.3vw, 13px) !important;
   }
 }

@@ -19,6 +19,10 @@ const ERROR_MESSAGES = new Map([
   ["ROOM_FULL", "방 정원이 가득 찼어요. 다른 방에 접속해 주세요."],
   ["MATCH_ALREADY_STARTED", "이미 게임이 시작된 방이에요. 다른 방에 접속해 주세요."]
 ]);
+const LEAVE_ERROR_MESSAGES = new Map([
+  ["MATCH_ALREADY_STARTED", "게임이 이미 시작되어 나갈 수 없어요. 게임 중에는 기권해 주세요."],
+  ["ROOM_MEMBER_ONLY", "이미 방에서 나왔어요."]
+]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -47,7 +51,7 @@ function isRoomBase(value: unknown): value is Record<string, unknown> {
     && typeof value.createdAt === "string" && Number.isFinite(Date.parse(value.createdAt));
 }
 
-function isRoomDetails(value: unknown): value is MatchRoomDetails {
+export function isRoomDetails(value: unknown): value is MatchRoomDetails {
   return isRoomBase(value)
     && typeof value.entryCode === "string" && ENTRY_CODE_PATTERN.test(value.entryCode)
     && Array.isArray(value.members) && value.members.length === value.playerCount
@@ -79,10 +83,10 @@ interface RoomApiOptions {
   timeoutMs?: number;
 }
 
-type Operation = "create" | "list" | "join";
+type Operation = "create" | "list" | "join" | "leave";
 
 export function createMatchRoomApi({ baseUrl = "", fetcher = fetch, getAccessToken = () => null, timeoutMs = 15000 }: RoomApiOptions = {}): MatchRoomApi {
-  async function request<T>(path: string, method: "GET" | "POST", body: object | undefined,
+  async function request<T>(path: string, method: "GET" | "POST" | "DELETE", body: object | undefined,
     signal: AbortSignal, operation: Operation, validate: (value: unknown) => value is T): Promise<T> {
     signal.throwIfAborted();
     const controller = new AbortController();
@@ -92,7 +96,8 @@ export function createMatchRoomApi({ baseUrl = "", fetcher = fetch, getAccessTok
     const timer = setTimeout(() => { timedOut = true; controller.abort(); }, timeoutMs);
     const unknownResult = operation === "create" ? UNKNOWN_CREATION
       : operation === "list" ? "방 목록을 불러오지 못했어요. 연결 상태를 확인하고 다시 시도해 주세요."
-        : "접속 결과를 확인하지 못했어요. 같은 방이나 코드로 다시 접속해 주세요.";
+        : operation === "leave" ? "방에서 나가지 못했어요. 연결 상태를 확인하고 다시 시도해 주세요."
+          : "접속 결과를 확인하지 못했어요. 같은 방이나 코드로 다시 접속해 주세요.";
 
     try {
       const accessToken = getAccessToken();
@@ -115,7 +120,13 @@ export function createMatchRoomApi({ baseUrl = "", fetcher = fetch, getAccessTok
         const invalidMessage = operation === "create" ? "방 이름과 공개 설정을 확인해 주세요."
           : operation === "join" ? "방 번호 또는 8자리 입장 코드를 확인해 주세요." : "페이지 정보를 확인해 주세요.";
         throw new MatchRoomApiError(code, code === "INVALID_REQUEST" ? invalidMessage
-          : ERROR_MESSAGES.get(code) ?? (response.status === 401 ? LOGIN_REQUIRED : "요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요."));
+          : (operation === "leave" ? LEAVE_ERROR_MESSAGES.get(code) : undefined) ?? ERROR_MESSAGES.get(code)
+            ?? (response.status === 401 ? LOGIN_REQUIRED : "요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요."));
+      }
+      // Leaving answers 204 with no body.
+      if (operation === "leave") {
+        if (response.status !== 204) throw new MatchRoomApiError("INVALID_RESPONSE", unknownResult);
+        return undefined as T;
       }
       if (response.status !== (operation === "create" ? 201 : 200)
         || !isRecord(result) || result.success !== true || result.error !== null || !validate(result.data)) {
@@ -146,6 +157,10 @@ export function createMatchRoomApi({ baseUrl = "", fetcher = fetch, getAccessTok
       const entryCode = normalizeEntryCode(value);
       if (!ENTRY_CODE_PATTERN.test(entryCode)) throw new MatchRoomApiError("INVALID_REQUEST", "입장 코드는 영문 대문자와 숫자로 된 8자리를 확인해 주세요. (I, O, 0, 1 제외)");
       return request("/code/members", "POST", { entryCode }, signal, "join", isRoomDetails);
+    },
+    leave: async (roomId, signal) => {
+      if (!isPositiveId(roomId)) throw new MatchRoomApiError("INVALID_REQUEST", "방 번호를 확인해 주세요.");
+      await request(`/${roomId}/members/me`, "DELETE", undefined, signal, "leave", (_value): _value is undefined => true);
     }
   };
 }

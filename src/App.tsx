@@ -8,6 +8,7 @@ import StartScreen from "./components/StartScreen";
 import { useGameSession } from "./hooks/useGameSession";
 import PlayScreen from "./screens/PlayScreen";
 import CreateRoomScreen from "./screens/CreateRoomScreen";
+import { clearActiveRoom, loadActiveRoom, saveActiveRoom } from "./features/activeRoomStorage";
 import { matchRoomApi } from "./features/matchroomApi";
 import type { MatchRoomDetails } from "./features/matchroom";
 import MatchGameScreen from "./screens/MatchGameScreen";
@@ -23,7 +24,8 @@ function App() {
   });
   const { gamePhase, playScreenProps, startScreenProps } = useGameSession(Boolean(user));
   const [multiplayerView, setMultiplayerView] = useState<"home" | "lobby" | "create">("home");
-  const [activeRoom, setActiveRoom] = useState<MatchRoomDetails | null>(null);
+  // Restored after a refresh, so a running match picks up where it was instead of being abandoned.
+  const [activeRoom, setActiveRoom] = useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
   const restoreRoomFocus = useRef<string | null>(null);
 
   useEffect(() => {
@@ -35,8 +37,15 @@ function App() {
 
   if (!user) return <AuthScreen onAuthenticated={setUser} />;
 
+  const currentUser = user;
+  function enterRoom(room: MatchRoomDetails) {
+    saveActiveRoom(currentUser.id, room);
+    setActiveRoom(room);
+  }
+
   if (activeRoom) {
     return <MatchGameScreen onExit={() => {
+      clearActiveRoom();
       setActiveRoom(null);
       setMultiplayerView("lobby");
     }} room={activeRoom} user={user} />;
@@ -51,7 +60,7 @@ function App() {
             setMultiplayerView("lobby");
           }}
           onCreateRoom={matchRoomApi.create}
-          onEnterRoom={setActiveRoom}
+          onEnterRoom={enterRoom}
         />
       );
     }
@@ -59,7 +68,7 @@ function App() {
       return <MultiplayerScreen api={matchRoomApi} onBack={() => {
         restoreRoomFocus.current = "start-multiplayer";
         setMultiplayerView("home");
-      }} onCreateRoom={() => setMultiplayerView("create")} onEnterRoom={setActiveRoom} />;
+      }} onCreateRoom={() => setMultiplayerView("create")} onEnterRoom={enterRoom} />;
     }
     return (
       <StartScreen
@@ -67,6 +76,7 @@ function App() {
         onLogout={() => {
           localStorage.removeItem(AUTH_TOKEN_KEY);
           localStorage.removeItem(AUTH_USER_KEY);
+          clearActiveRoom();
           setUser(null);
         }}
         onMultiplayer={() => setMultiplayerView("lobby")}

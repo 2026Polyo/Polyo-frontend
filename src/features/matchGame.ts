@@ -1,6 +1,14 @@
 import type { Board, PieceInstance } from "../types";
+import { isEmoteId } from "./matchLobby";
+import type { EmoteId } from "./matchLobby";
 
 export type FinishReason = "NO_MOVES" | "TIMEOUT" | "FORFEIT";
+export type RoomClosedReason = "ROOM_DELETED" | "LEFT_ROOM";
+
+export const ROOM_CLOSED_MESSAGES: Record<RoomClosedReason, string> = {
+  ROOM_DELETED: "방장이 방을 나가서 방이 사라졌어요.",
+  LEFT_ROOM: "방에서 나왔어요."
+};
 
 export interface MatchPlayerState {
   userId: string;
@@ -32,7 +40,11 @@ export interface MatchGameState {
 
 export type MatchServerMessage =
   | ({ type: "STATE" } & MatchGameState)
-  | { type: "WAITING"; connectedUserIds: string[] }
+  // readyUserIds and members are optional: servers without the ready step leave them out.
+  | { type: "WAITING"; connectedUserIds: string[]; readyUserIds?: string[]; members?: { userId: string; nickname: string }[] }
+  | { type: "EMOTE"; userId: string; emote: EmoteId }
+  // Sent just before the server closes the socket: the host left or deleted the room, or I left it.
+  | { type: "ROOM_CLOSED"; reason: RoomClosedReason }
   | { type: "ERROR"; code: string; message: string };
 
 export const FINISH_REASON_LABELS: Record<FinishReason, string> = {
@@ -53,6 +65,14 @@ function isPlayer(value: unknown): boolean {
     && Array.isArray(value.board) && typeof value.score === "number" && typeof value.turnLimitMs === "number";
 }
 
+function isStringList(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
+function isMember(value: unknown): boolean {
+  return isRecord(value) && typeof value.userId === "string" && typeof value.nickname === "string";
+}
+
 function isTraySlot(value: unknown): boolean {
   return value === null || (isRecord(value) && typeof value.uid === "string"
     && typeof value.color === "string" && Array.isArray(value.cells));
@@ -66,7 +86,17 @@ export function parseServerMessage(raw: string): MatchServerMessage | null {
     return null;
   }
   if (!isRecord(message)) return null;
-  if (message.type === "WAITING" && Array.isArray(message.connectedUserIds)) return message as unknown as MatchServerMessage;
+  if (message.type === "WAITING" && isStringList(message.connectedUserIds)
+    && (message.readyUserIds === undefined || isStringList(message.readyUserIds))
+    && (message.members === undefined || (Array.isArray(message.members) && message.members.every(isMember)))) {
+    return message as unknown as MatchServerMessage;
+  }
+  if (message.type === "ROOM_CLOSED" && (message.reason === "ROOM_DELETED" || message.reason === "LEFT_ROOM")) {
+    return message as unknown as MatchServerMessage;
+  }
+  if (message.type === "EMOTE" && typeof message.userId === "string" && isEmoteId(message.emote)) {
+    return message as unknown as MatchServerMessage;
+  }
   if (message.type === "ERROR" && typeof message.code === "string" && typeof message.message === "string") {
     return message as unknown as MatchServerMessage;
   }
