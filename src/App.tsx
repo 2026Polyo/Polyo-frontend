@@ -9,6 +9,8 @@ import { useGameSession } from "./hooks/useGameSession";
 import PlayScreen from "./screens/PlayScreen";
 import { AUTH_TOKEN_KEY, AUTH_USER_KEY, type AuthUser } from "./api/auth";
 import ShopScreen from "./screens/ShopScreen";
+import { useThemePreview } from "./hooks/useThemePreview";
+import { ThemeScope } from "./components/ThemeScope";
 
 function App() {
   const [shopOpen, setShopOpen] = useState(false);
@@ -18,23 +20,38 @@ function App() {
     if (!token || !storedUser) return null;
     try { return JSON.parse(storedUser) as AuthUser; } catch { return null; }
   });
-  const { gamePhase, playScreenProps, startScreenProps } = useGameSession(Boolean(user));
+  const { themeId, selectTheme } = useThemePreview();
+  const { gamePhase, playScreenProps, startScreenProps } =
+    useGameSession(Boolean(user), themeId);
 
   if (!user) return <AuthScreen onAuthenticated={setUser} />;
 
-  if (shopOpen) return <ShopScreen onGoHome={() => setShopOpen(false)} />;
+  if (shopOpen)
+    return (
+      <ShopScreen
+        onGoHome={() => setShopOpen(false)}
+        onSelectPreviewTheme={(id) => {
+          selectTheme(id);
+          setShopOpen(false);
+        }}
+      />
+    );
 
   if (gamePhase === "start") {
     return (
-      <StartScreen
-        {...startScreenProps}
-        onOpenShop={() => setShopOpen(true)}
-        onLogout={() => {
-          localStorage.removeItem(AUTH_TOKEN_KEY);
-          localStorage.removeItem(AUTH_USER_KEY);
-          setUser(null);
-        }}
-      />
+      <ThemeScope themeId={themeId}>
+        <StartScreen
+          {...startScreenProps}
+          onOpenShop={() => setShopOpen(true)}
+          themeId={themeId}
+          onThemeChange={selectTheme}
+          onLogout={() => {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            setUser(null);
+          }}
+        />
+      </ThemeScope>
     );
   }
 

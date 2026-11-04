@@ -4,15 +4,18 @@ import type { MouseEvent } from "react";
 import type { ShopTheme } from "../features/shop";
 import { getThemePresentation } from "../features/themePresentation";
 import ThemePreview from "./ThemePreview";
+import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
 
 interface ShopThemeDialogProps {
   theme: ShopTheme | null;
   onClose: () => void;
+  onSelectPreviewTheme: (themeId: GameThemeId) => void;
 }
 
 export default function ShopThemeDialog({
   theme,
   onClose,
+  onSelectPreviewTheme,
 }: ShopThemeDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -54,12 +57,24 @@ export default function ShopThemeDialog({
             <strong className="shop-detail-price">
               <Coins size={21} /> {theme.price.toLocaleString("ko-KR")} 코인
             </strong>
+            <button
+              className="secondary-action shop-preview-play"
+              type="button"
+              disabled={getGameTheme(theme.themeId).id !== theme.themeId}
+              onClick={() =>
+                onSelectPreviewTheme(getGameTheme(theme.themeId).id)
+              }
+            >
+              {getGameTheme(theme.themeId).id === theme.themeId
+                ? "게임 미리보기로 선택"
+                : "게임 미리보기 준비 중"}
+            </button>
             <button className="shop-purchase" type="button" disabled>
               서버 연동 후 구매 가능
             </button>
             <small>
-              현재는 미리보기 화면입니다. 구매와 테마 적용은 아직 제공되지
-              않습니다.
+              선택한 테마로 시작 화면의 새 게임·이어하기를 체험할 수 있어요.
+              실제 구매와 보유 테마 장착은 아직 제공되지 않습니다.
             </small>
           </div>
         </>

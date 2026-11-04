@@ -1,6 +1,8 @@
 import { Layers, LogOut, Play, Trophy, ShoppingBag } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
 import type { GameMode, PieceTemplate } from "../types";
+import type { GameThemeId } from "../features/themes/gameThemes";
+import { getGameTheme } from "../features/themes/gameThemes";
 
 const START_PREVIEW_CELLS: string[] = [
   "piece-cyan",
@@ -26,6 +28,8 @@ interface StartScreenProps {
   onModeSelect: (mode: GameMode) => void;
   onCloseStartFlow: () => void;
   onStartFresh: () => void;
+  themeId: GameThemeId;
+  onThemeChange: (themeId: GameThemeId) => void;
   onOpenShop: () => void;
   availableBaseIds: string[];
   baseLoadout: string[];
@@ -53,6 +57,8 @@ function StartScreen({
   onModeSelect,
   onCloseStartFlow,
   onStartFresh,
+  themeId,
+  onThemeChange,
   onOpenShop,
   availableBaseIds,
   baseLoadout,
@@ -86,6 +92,21 @@ function StartScreen({
           ))}
         </div>
         <h1 id="start-title">Polyomino</h1>
+        <label className="theme-preview-select">
+          테마 미리보기
+          <select
+            value={themeId}
+            onChange={(event) =>
+              onThemeChange(getGameTheme(event.target.value).id)
+            }
+          >
+            <option value="theme_classic">기본</option>
+            <option value="theme_neon">네온 나이트</option>
+            <option value="theme_jelly">젤리 팝</option>
+            <option value="theme_minecraft">마인크래프트</option>
+            <option value="theme_cat">고양이 드림</option>
+          </select>
+        </label>
         <div className="start-actions">
           <button aria-label="새 게임" className="primary-action" onClick={onNewGame} type="button">
             <Play size={20} aria-hidden="true" />

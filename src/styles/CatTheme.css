@@ -1,0 +1,320 @@
+.play-shell[data-game-theme="theme_cat"] {
+  --text-strong: #554365;
+  --text-body: #6c587d;
+  --text-muted: #877494;
+  --text-on-board: #6c587d;
+  --board-bg: #ddd5ed;
+  --board-cell-empty: #eee8f6;
+  background: linear-gradient(150deg, #f4effb, #faedf3 65%, #edf5fa);
+}
+.board[data-game-theme="theme_cat"],
+.shop-preview-cat .shop-preview-board {
+  background: #ddd5ed;
+  border: 1px solid #b9a8d0;
+  box-shadow: 0 8px 24px #80699920;
+}
+.board[data-game-theme="theme_cat"] .board-cell,
+.mini-grid[data-game-theme="theme_cat"] .mini-cell,
+.shop-preview-cat .shop-preview-board > span {
+  position: relative;
+  overflow: visible;
+  border: 0;
+  box-shadow: none;
+  border-radius: 7px;
+}
+.board[data-game-theme="theme_cat"] .board-cell {
+  background: #eee8f6;
+}
+.board[data-game-theme="theme_cat"] .board-cell[data-filled="true"],
+.mini-grid[data-game-theme="theme_cat"] .mini-cell[data-filled="true"],
+.shop-preview-cat .shop-preview-board > .shop-preview-filled {
+  background: transparent;
+}
+.cat-tile-face {
+  --cat-gap: var(--board-gap, 3px);
+  position: absolute;
+  display: block;
+  inset: 0;
+  border: 1.5px solid #ad98c3;
+  border-radius: 7px;
+  background: #fff;
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 1;
+  transition:
+    top 240ms ease,
+    right 240ms ease,
+    bottom 240ms ease,
+    left 240ms ease,
+    border-color 240ms ease,
+    border-radius 240ms ease,
+    opacity 180ms ease;
+}
+.cat-tile-face[data-filled="false"] {
+  opacity: 0;
+}
+.cat-tile-face[data-joined~="top"] {
+  top: calc(var(--cat-gap) / -2);
+  border-top-color: transparent;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.cat-tile-face[data-joined~="right"] {
+  right: calc(var(--cat-gap) / -2);
+  border-right-color: transparent;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.cat-tile-face[data-joined~="bottom"] {
+  bottom: calc(var(--cat-gap) / -2);
+  border-bottom-color: transparent;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.cat-tile-face[data-joined~="left"] {
+  left: calc(var(--cat-gap) / -2);
+  border-left-color: transparent;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.mini-grid[data-game-theme="theme_cat"] .cat-tile-face {
+  --cat-gap: var(--mini-cell-gap, 3px);
+}
+.mini-grid[data-game-theme="theme_cat"] .mini-cell[data-filled="false"] {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.board[data-game-theme="theme_cat"] .board-cell.preview {
+  opacity: 0.55;
+  transform: none;
+  filter: none;
+}
+.board[data-game-theme="theme_cat"] .board-cell.preview-clearing {
+  box-shadow: inset 0 0 0 2px #b79bd3;
+  filter: none;
+}
+.board[data-game-theme="theme_cat"] .board-cell.clearing {
+  animation: none;
+  box-shadow: none;
+  filter: none;
+}
+.board[data-game-theme="theme_cat"] .board-cell.clearing > .cat-tile-face {
+  visibility: hidden;
+}
+.cat-board-effects {
+  position: absolute;
+  inset: var(--board-padding, 10px);
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: var(--board-gap, 3px);
+  z-index: 4;
+  pointer-events: none;
+}
+.cat-clear-batch {
+  display: contents;
+}
+.cat-paw-cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+.cat-clear-surface {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 70%;
+  animation: cat-surface-press var(--cat-paw-duration) ease-in-out
+    var(--cat-paw-delay) both;
+}
+.cat-paw-print {
+  position: absolute;
+  inset: 6%;
+  width: 88%;
+  height: 88%;
+  overflow: visible;
+  transform-origin: 50% 70%;
+  animation: cat-paw-press var(--cat-paw-duration) ease-in-out
+    var(--cat-paw-delay) both;
+}
+@keyframes cat-surface-press {
+  0%,
+  20% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.04, 0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.45, 0.12);
+  }
+}
+@keyframes cat-paw-press {
+  0% {
+    opacity: 0;
+    transform: translateY(-12%) scale(0.7, 1.1);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(7%) scale(1.16, 0.58);
+  }
+  65% {
+    opacity: 0.95;
+    transform: translateY(0) scale(0.94, 1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(9%) scale(0.45, 0.12);
+  }
+}
+.shop-preview-cat .shop-preview-board {
+  --cat-gap: 3px;
+}
+.shop-preview.shop-preview-cat {
+  background: linear-gradient(150deg, #f4effb, #faedf3 65%, #edf5fa);
+}
+.shop-preview-cat
+  .shop-preview-board
+  > span:not(.shop-preview-filled):not(.cat-decoration-layer) {
+  background: #eee8f6;
+}
+.mini-grid[data-game-theme="theme_cat"],
+.shop-preview-cat .shop-preview-board {
+  position: relative;
+}
+.cat-decoration-layer {
+  --cat-gap: var(--board-gap, 3px);
+  position: absolute;
+  inset: var(--board-padding, 10px);
+  display: grid;
+  gap: var(--cat-gap);
+  pointer-events: none;
+  z-index: 3;
+}
+.mini-grid[data-game-theme="theme_cat"] > .cat-decoration-layer {
+  --cat-gap: var(--mini-cell-gap, 3px);
+  inset: 0;
+}
+.shop-preview-cat .shop-preview-board > .cat-decoration-layer {
+  position: absolute;
+  --cat-gap: 3px;
+  inset: 9px;
+  aspect-ratio: auto;
+  background: none;
+  box-shadow: none;
+}
+.cat-region-decoration {
+  display: contents;
+}
+.cat-face-slot,
+.cat-ear-slot {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+.cat-expression {
+  --cat-offset-x: -50%;
+  --cat-offset-y: -50%;
+  position: absolute;
+  width: 80%;
+  height: 64%;
+  left: var(--cat-face-x);
+  top: var(--cat-face-y);
+  transform: translate(-50%, -50%);
+  overflow: visible;
+}
+.cat-ear {
+  position: absolute;
+  width: 38%;
+  height: 33%;
+  top: -23%;
+  overflow: visible;
+}
+.cat-ear-left .cat-ear {
+  left: 3%;
+}
+.cat-ear-right .cat-ear {
+  --cat-flip: -1;
+  right: 3%;
+  transform: scaleX(-1);
+}
+.cat-region-decoration[data-cat-phase="exit"] .cat-expression,
+.cat-region-decoration[data-cat-phase="exit"] .cat-ear {
+  animation: cat-squish-out 160ms ease-in both;
+}
+.cat-region-decoration[data-cat-phase="enter"] .cat-expression,
+.cat-region-decoration[data-cat-phase="enter"] .cat-ear {
+  animation: cat-squish-in 380ms ease-out 140ms both;
+}
+@keyframes cat-squish-out {
+  0% {
+    opacity: 1;
+    transform: translate(var(--cat-offset-x, 0%), var(--cat-offset-y, 0%))
+      scale(var(--cat-flip, 1), 1);
+  }
+  35% {
+    opacity: 1;
+    transform: translate(var(--cat-offset-x, 0%), var(--cat-offset-y, 0%))
+      scale(calc(var(--cat-flip, 1) * 1.2), 0.64);
+  }
+  65% {
+    opacity: 0.85;
+    transform: translate(var(--cat-offset-x, 0%), var(--cat-offset-y, 0%))
+      scale(calc(var(--cat-flip, 1) * 0.7), 1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--cat-offset-x, 0%), var(--cat-offset-y, 0%))
+      scale(calc(var(--cat-flip, 1) * 0.12), 0.05);
+  }
+}
+@keyframes cat-squish-in {
+  0% {
+    opacity: 0;
+    transform: translate(var(--cat-offset-x, 0%), var(--cat-offset-y, 0%))
+      scale(calc(var(--cat-flip, 1) * 0.25), 1.4);
+  }
+  24% {
+    opacity: 1;
+    transform: translate(var(--cat-offset-x, 0%), var(--cat-offset-y, 0%))
+      scale(calc(var(--cat-flip, 1) * 1.28), 0.6);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(var(--cat-offset-x, 0%), var(--cat-offset-y, 0%))
+      scale(calc(var(--cat-flip, 1) * 0.84), 1.18);
+  }
+  78% {
+    transform: translate(var(--cat-offset-x, 0%), var(--cat-offset-y, 0%))
+      scale(calc(var(--cat-flip, 1) * 1.06), 0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(var(--cat-offset-x, 0%), var(--cat-offset-y, 0%))
+      scale(var(--cat-flip, 1), 1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cat-tile-face {
+    transition: none;
+  }
+  .cat-decoration-layer .cat-expression,
+  .cat-decoration-layer .cat-ear {
+    animation: none;
+  }
+  .board[data-game-theme="theme_cat"] .board-cell.clearing {
+    animation: none;
+    opacity: 0.25;
+  }
+  .board[data-game-theme="theme_cat"] .board-cell.clearing > .cat-tile-face {
+    visibility: visible;
+  }
+}

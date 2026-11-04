@@ -33,12 +33,15 @@ import { useGameAudio } from "./useGameAudio";
 import { useItemSystem } from "./useItemSystem";
 import { usePieceSelection } from "./usePieceSelection";
 import { usePulseLabel } from "./usePulseLabel";
+import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
+import { createBoardFeedback, type BoardFeedback } from "../features/themes/boardFeedback";
 import type {
   AugmentId,
   AugmentState,
   Board as BoardType,
   BonusTimeState,
   GameMode,
+  ItemType,
   PieceInstance,
   PieceTemplate,
   SpecialMarks,
@@ -75,7 +78,7 @@ function resolveMarkUpdate(
   return typeof value === "function" ? value(current) : value;
 }
 
-export function useGameSession(isAuthenticated = false) {
+export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "theme_classic") {
   const [initialGame] = useState(loadSavedGame);
   const [gameMode, setGameMode] = useState<GameMode>(() => initialGame?.gameMode ?? "normal");
   const [startFlow, setStartFlow] = useState<"mode" | "continue" | null>(null);
@@ -143,6 +146,8 @@ export function useGameSession(isAuthenticated = false) {
       ])
   );
   const [clearingCells, setClearingCells] = useState<Set<string>>(() => new Set());
+  const [boardFeedback, setBoardFeedback] = useState<BoardFeedback | null>(null);
+  const feedbackSequence = useRef(0);
   const [score, setScore] = useState<number>(() => initialGame?.score ?? 0);
   const [databaseBestScores, setDatabaseBestScores] = useState({ normalBestScore: 0, hardBestScore: 0 });
   const [augmentState, setAugmentState] = useState<AugmentState>(
@@ -179,7 +184,7 @@ export function useGameSession(isAuthenticated = false) {
   const [autoUndoFlash, setAutoUndoFlash] = useState(false);
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoUndoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const audio = useGameAudio();
+  const audio = useGameAudio(getGameTheme(themeId).soundMode === "legacy");
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -500,6 +505,7 @@ export function useGameSession(isAuthenticated = false) {
     setTray([null, null, null]);
     clearSelection();
     setClearingCells(new Set());
+    setBoardFeedback(null);
     setScore(0);
     setAugmentState(createInitialAugmentState());
     setAugmentChoiceOpen(false);
@@ -564,6 +570,7 @@ export function useGameSession(isAuthenticated = false) {
     restoreItems(saved);
     pendingContinueRef.current = null;
     setStartFlow(null);
+    setBoardFeedback(null);
     setGamePhase("playing");
   }
 
@@ -604,6 +611,10 @@ export function useGameSession(isAuthenticated = false) {
       comboMultiplier
     });
     audio.playClearFeedback(outcome.cleared);
+    setBoardFeedback(createBoardFeedback(
+      ++feedbackSequence.current, piece, row, col,
+      outcome.displayBoard, outcome.clearingCells
+    ));
     const clearTier = getClearTier(outcome.cleared);
     if (clearTier) pulseClearLabel(CLEAR_TIER_LABEL[clearTier]);
 
@@ -682,6 +693,7 @@ export function useGameSession(isAuthenticated = false) {
 
   function buildPlayScreenProps() {
     return {
+      themeId,
       augmentState,
       autoUndoFlash,
       bonusTime,
@@ -690,6 +702,7 @@ export function useGameSession(isAuthenticated = false) {
       hardTimeLimitMs,
       best,
       board: {
+        feedback: boardFeedback,
         board,
         boardMetrics,
         boardRef,
@@ -710,8 +723,9 @@ export function useGameSession(isAuthenticated = false) {
       comboEffectValue,
       gameOver,
       gravityAnimating,
-      handleItemClick: (item: Parameters<typeof handleItemClick>[0], index: number) => {
+      handleItemClick: (item: ItemType | null, index: number) => {
         if (bonusPaused || tickBonusTime()) return;
+        setBoardFeedback(null);
         handleItemClick(item, index);
       },
       isClearing,
