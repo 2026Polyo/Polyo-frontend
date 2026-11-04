@@ -46,6 +46,7 @@ interface StartScreenProps {
   onContinue: () => void;
   onNewGame: () => void;
   onOpenDeck: () => void;
+  onOpenRanking: () => void;
   onLogout: () => void;
   onRemoveBase: (id: string) => void;
   onRemoveSpecial: (id: string) => void;
@@ -74,6 +75,7 @@ function StartScreen({
   onContinue,
   onNewGame,
   onOpenDeck,
+  onOpenRanking,
   onLogout,
   onRemoveBase,
   onRemoveSpecial,
@@ -115,6 +117,10 @@ function StartScreen({
           <button className="start-deck-action" onClick={onOpenDeck} type="button">
             <Layers size={20} aria-hidden="true" />
             덱 구성
+          </button>
+          <button className="start-ranking-action" onClick={onOpenRanking} type="button">
+            <Trophy size={20} aria-hidden="true" />
+            랭킹
           </button>
         </div>
         <button

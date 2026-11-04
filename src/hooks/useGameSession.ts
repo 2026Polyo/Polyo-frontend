@@ -590,12 +590,18 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
   }
 
   function quitGame() {
+    void saveGameScore(gameMode, score).catch((error: unknown) => {
+      console.error("게임 점수 저장 실패", error);
+    });
     clearGameState();
     setGamePhase("start");
     if (gameMode === "normal") clearSavedGame();
   }
 
   function goHomeFromSettings() {
+    void saveGameScore(gameMode, score).catch((error: unknown) => {
+      console.error("게임 점수 저장 실패", error);
+    });
     setSettingsOpen(false);
     clearSelection();
     setGamePhase("start");
