@@ -103,6 +103,31 @@
   transform: translateY(-1px);
 }
 
+.start-ranking-action {
+  align-items: center;
+  background: hsl(42 100% 50% / 0.14);
+  border: 1px solid hsl(42 100% 70% / 0.55);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  color: hsl(36 90% 97%);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.98rem;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 220px;
+  padding: 10px 20px;
+  transition: background 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.start-ranking-action:hover {
+  background: hsl(42 100% 50% / 0.24);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
 .start-best {
   align-items: center;
   color: var(--score-gold);
