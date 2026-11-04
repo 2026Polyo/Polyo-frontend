@@ -26,7 +26,7 @@ import { cloneBoard } from "../utils/boardUtils";
 import { createPieceInstance } from "../utils/pieceUtils";
 import { canPlace, getClosestPlacement, getPlacementDistanceSquared, hasMove } from "../utils/placement";
 import { nextTray } from "../utils/tray";
-import useBestScore from "./useBestScore";
+import { getMyBestScores, saveGameScore } from "../api/scores";
 import { useComboEffect } from "./useComboEffect";
 import { useDeckBuilderState } from "./useDeckBuilderState";
 import { useGameAudio } from "./useGameAudio";
@@ -47,6 +47,8 @@ import type {
 import type { Dispatch, SetStateAction } from "react";
 
 const SPECIAL_CHOICE_COUNT = 3;
+const HARD_SCORE_MULTIPLIER = 2;
+const HARD_COMBO_MULTIPLIER = 2;
 
 export type GamePhase = "start" | "playing";
 
@@ -73,7 +75,7 @@ function resolveMarkUpdate(
   return typeof value === "function" ? value(current) : value;
 }
 
-export function useGameSession() {
+export function useGameSession(isAuthenticated = false) {
   const [initialGame] = useState(loadSavedGame);
   const [gameMode, setGameMode] = useState<GameMode>(() => initialGame?.gameMode ?? "normal");
   const [startFlow, setStartFlow] = useState<"mode" | "continue" | null>(null);
@@ -82,10 +84,12 @@ export function useGameSession() {
   const bonusTimeRef = useRef(bonusTime);
   const bonusTickRef = useRef<number | null>(null);
   const [hardTimeRemainingMs, setHardTimeRemainingMs] = useState(0);
+  const [hardTimeLimitMs, setHardTimeLimitMs] = useState(0);
   const hardTimeRef = useRef(0);
   const hardTimeLimitRef = useRef(0);
   const hardTickRef = useRef<number | null>(null);
   const placementLockRef = useRef(false);
+  const scoreSavedRef = useRef(false);
 
   function updateBonusTime(next: BonusTimeState) {
     bonusTimeRef.current = next;
@@ -101,6 +105,7 @@ export function useGameSession() {
   function resetHardTimeLimit(nextLimit: number) {
     const limit = Math.max(0, nextLimit);
     hardTimeLimitRef.current = limit;
+    setHardTimeLimitMs(limit);
     updateHardTime(limit);
   }
 
@@ -139,6 +144,7 @@ export function useGameSession() {
   );
   const [clearingCells, setClearingCells] = useState<Set<string>>(() => new Set());
   const [score, setScore] = useState<number>(() => initialGame?.score ?? 0);
+  const [databaseBestScores, setDatabaseBestScores] = useState({ normalBestScore: 0, hardBestScore: 0 });
   const [augmentState, setAugmentState] = useState<AugmentState>(
     () => initialGame?.augmentState ?? createInitialAugmentState()
   );
@@ -175,6 +181,13 @@ export function useGameSession() {
   const autoUndoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audio = useGameAudio();
 
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    void getMyBestScores()
+      .then(setDatabaseBestScores)
+      .catch(() => setDatabaseBestScores({ normalBestScore: 0, hardBestScore: 0 }));
+  }, [isAuthenticated]);
+
   function playPop() {
     audio.resume();
     audio.playPop();
@@ -209,7 +222,9 @@ export function useGameSession() {
 
   const comboEffectValue = useComboEffect(augmentState.combo);
   const { label: clearLabel, pulseId: clearLabelId, pulse: pulseClearLabel } = usePulseLabel();
-  const scoringAugmentState = gameMode === "hard" ? createInitialAugmentState() : augmentState;
+  const scoringAugmentState = augmentState;
+  const scoreMultiplier = gameMode === "hard" ? HARD_SCORE_MULTIPLIER : 1;
+  const comboMultiplier = gameMode === "hard" ? HARD_COMBO_MULTIPLIER : 1;
 
   const previewGain = useMemo<number | null>(() => {
     if (!selectedPiece || !closestPlacementCell || invalidPreview) return null;
@@ -223,7 +238,9 @@ export function useGameSession() {
       goldenCells,
       piece: selectedPiece,
       row: closestPlacementCell.row,
-      preview: true
+      preview: true,
+      scoreMultiplier,
+      comboMultiplier
     }).scoreGain;
   }, [
     augmentState,
@@ -234,7 +251,9 @@ export function useGameSession() {
     ghostCells,
     goldenCells,
     invalidPreview,
-    selectedPiece
+    selectedPiece,
+    scoreMultiplier,
+    comboMultiplier
   ]);
 
   const {
@@ -251,6 +270,7 @@ export function useGameSession() {
     saveUndoSnapshot,
     undoSnapshot
   } = useItemSystem({
+    enabled: gameMode === "normal",
     augmentState,
     board,
     bombCells,
@@ -400,6 +420,23 @@ export function useGameSession() {
   }, [gameOver]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (!isPlaying) {
+      scoreSavedRef.current = false;
+      return;
+    }
+    if (!gameOver || scoreSavedRef.current) return;
+
+    scoreSavedRef.current = true;
+    void saveGameScore(gameMode, score).then((saved) => {
+      setDatabaseBestScores((current) => gameMode === "normal"
+        ? { ...current, normalBestScore: saved.bestScore }
+        : { ...current, hardBestScore: saved.bestScore });
+    }).catch((error: unknown) => {
+      console.error("게임 점수 저장 실패", error);
+    });
+  }, [gameMode, gameOver, isPlaying, score]);
+
+  useEffect(() => {
     if (augmentChoiceOpen) audio.playPopup();
   }, [augmentChoiceOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -490,6 +527,7 @@ export function useGameSession() {
     }
 
     setGameMode(mode);
+    scoreSavedRef.current = false;
     const gameDeck = mode === "hard" ? PIECES.map((piece) => piece.id) : selectedBaseDeck;
     setDeck(gameDeck);
     resetGame(gameDeck, mode === "hard" ? [] : getLoadoutPieces(specialStash, loadoutIds));
@@ -561,7 +599,9 @@ export function useGameSession() {
       ghostCells,
       goldenCells,
       piece,
-      row
+      row,
+      scoreMultiplier,
+      comboMultiplier
     });
     audio.playClearFeedback(outcome.cleared);
     const clearTier = getClearTier(outcome.cleared);
@@ -594,9 +634,7 @@ export function useGameSession() {
       resetHardTimeLimit(Math.max(HARD_MIN_PLACEMENT_MS, hardTimeLimitRef.current - placementDecay));
     }
     if (bonusStarted) bonusTickRef.current = performance.now();
-    if (gameMode === "normal") {
-      setAugmentState((current) => getNextAugmentStateAfterPlacement(current, { cleared: outcome.cleared, trayCompleted }));
-    }
+    setAugmentState((current) => getNextAugmentStateAfterPlacement(current, { cleared: outcome.cleared, trayCompleted }));
     setTray(bonusStarted ? createBonusTray() : refreshedTray);
     clearSelection();
 
@@ -639,7 +677,8 @@ export function useGameSession() {
     setAugmentState((current) => advanceAugmentSchedule(current, score));
   }
 
-  const best = useBestScore(score);
+  const best = gameMode === "hard" ? databaseBestScores.hardBestScore : databaseBestScores.normalBestScore;
+  const normalBest = databaseBestScores.normalBestScore;
 
   function buildPlayScreenProps() {
     return {
@@ -648,6 +687,7 @@ export function useGameSession() {
       bonusTime,
       gameMode,
       hardTimeRemainingMs,
+      hardTimeLimitMs,
       best,
       board: {
         board,
@@ -719,7 +759,7 @@ export function useGameSession() {
     return {
       availableBaseIds,
       baseLoadout,
-      best,
+      best: normalBest,
       canStartNewGame,
       loadoutIds,
       startFlow,

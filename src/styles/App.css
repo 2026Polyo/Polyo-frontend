@@ -465,8 +465,19 @@
 }
 
 .hard-timer {
-  color: var(--danger, hsl(0 70% 52%));
-  font-size: 1.15rem;
-  min-width: 3.4rem;
-  text-align: center;
+  background: hsl(0 0% 100% / 0.5);
+  border: 1px solid hsl(0 70% 52% / 0.35);
+  border-radius: 999px;
+  display: inline-block;
+  height: 12px;
+  overflow: hidden;
+  width: min(240px, 42vw);
+}
+
+.hard-timer-fill {
+  background: linear-gradient(90deg, hsl(8 75% 52%), hsl(42 95% 55%));
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  transition: width 80ms linear;
 }

@@ -21,7 +21,7 @@ function App() {
     if (!token || !storedUser) return null;
     try { return JSON.parse(storedUser) as AuthUser; } catch { return null; }
   });
-  const { gamePhase, playScreenProps, startScreenProps } = useGameSession();
+  const { gamePhase, playScreenProps, startScreenProps } = useGameSession(Boolean(user));
   const [multiplayerView, setMultiplayerView] = useState<"home" | "lobby" | "create">("home");
   const [activeRoom, setActiveRoom] = useState<MatchRoomDetails | null>(null);
   const restoreRoomFocus = useRef<string | null>(null);

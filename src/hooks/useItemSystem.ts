@@ -25,6 +25,7 @@ import type {
 import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 
 interface UseItemSystemArgs {
+  enabled: boolean;
   bonusTime: BonusTimeState;
   restoreBonusTime: (state: BonusTimeState, tray: Tray) => Tray;
   augmentState: AugmentState;
@@ -52,6 +53,7 @@ interface UseItemSystemArgs {
 }
 
 export function useItemSystem({
+  enabled,
   bonusTime,
   restoreBonusTime,
   augmentState,
@@ -93,6 +95,7 @@ export function useItemSystem({
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     const combo = augmentState.combo;
     const prevCombo = comboMilestoneRef.current;
     comboMilestoneRef.current = combo;
@@ -120,7 +123,7 @@ export function useItemSystem({
 
     const gainLevel = getAugmentLevel(augmentState, "item-gain-score");
     if (gainLevel > 0 && placed > 0) setScore((current) => current + placed * gainLevel * ITEM_GAIN_SCORE);
-  }, [augmentState, setScore]);
+  }, [augmentState, enabled, setScore]);
 
   function clearItemSlot(slotIndex: number) {
     setItemSlots((current) =>
