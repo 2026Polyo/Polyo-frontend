@@ -1,3 +1,4 @@
+import { AUTH_TOKEN_KEY } from "../api/auth";
 import { ENTRY_CODE_PATTERN, normalizeEntryCode, toCreateRoomInput, validateRoomForm } from "./matchroom";
 import type { CreatedMatchRoom, CreateRoomHandler, MatchRoomApi, MatchRoomDetails, MatchRoomPage, MatchRoomSummary } from "./matchroom";
 
@@ -74,12 +75,13 @@ function isRoomPage(value: unknown): value is MatchRoomPage {
 interface RoomApiOptions {
   baseUrl?: string;
   fetcher?: typeof fetch;
+  getAccessToken?: () => string | null;
   timeoutMs?: number;
 }
 
 type Operation = "create" | "list" | "join";
 
-export function createMatchRoomApi({ baseUrl = "", fetcher = fetch, timeoutMs = 15000 }: RoomApiOptions = {}): MatchRoomApi {
+export function createMatchRoomApi({ baseUrl = "", fetcher = fetch, getAccessToken = () => null, timeoutMs = 15000 }: RoomApiOptions = {}): MatchRoomApi {
   async function request<T>(path: string, method: "GET" | "POST", body: object | undefined,
     signal: AbortSignal, operation: Operation, validate: (value: unknown) => value is T): Promise<T> {
     signal.throwIfAborted();
@@ -93,10 +95,15 @@ export function createMatchRoomApi({ baseUrl = "", fetcher = fetch, timeoutMs = 
         : "접속 결과를 확인하지 못했어요. 같은 방이나 코드로 다시 접속해 주세요.";
 
     try {
+      const accessToken = getAccessToken();
       const response = await fetcher(`${baseUrl.replace(/\/$/, "")}/api/match-room${path}`, {
         method,
         credentials: "include",
-        headers: body ? { "Content-Type": "application/json", Accept: "application/json" } : { Accept: "application/json" },
+        headers: {
+          ...(body ? { "Content-Type": "application/json" } : {}),
+          Accept: "application/json",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
+        },
         ...(body ? { body: JSON.stringify(body) } : {}),
         signal: controller.signal
       });
@@ -148,5 +155,8 @@ export function createRoomApi(options: RoomApiOptions = {}): CreateRoomHandler {
   return createMatchRoomApi(options).create;
 }
 
-export const matchRoomApi = createMatchRoomApi({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "" });
+export const matchRoomApi = createMatchRoomApi({
+  baseUrl: import.meta.env.VITE_API_BASE_URL ?? "",
+  getAccessToken: () => localStorage.getItem(AUTH_TOKEN_KEY)
+});
 export const createMatchRoom = matchRoomApi.create;

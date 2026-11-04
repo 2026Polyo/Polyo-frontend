@@ -1,8 +1,8 @@
-import { ArrowLeft, ChevronLeft, ChevronRight, Hash, LoaderCircle, Lock, LogIn, Plus, RefreshCw, Users } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Hash, LoaderCircle, Lock, LogIn, Plus, RefreshCw, Swords, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import JoinRoomDialog from "../components/JoinRoomDialog";
 import MatchRoomResult from "../components/MatchRoomResult";
-import type { MatchRoomApi } from "../features/matchroom";
+import type { MatchRoomApi, MatchRoomDetails } from "../features/matchroom";
 import { useMatchRoomLobby } from "../hooks/useMatchRoomLobby";
 import "../styles/CreateRoomScreen.css";
 import "../styles/MultiplayerScreen.css";
@@ -11,9 +11,10 @@ interface MultiplayerScreenProps {
   api: MatchRoomApi;
   onBack: () => void;
   onCreateRoom: () => void;
+  onEnterRoom: (room: MatchRoomDetails) => void;
 }
 
-function MultiplayerScreen({ api, onBack, onCreateRoom }: MultiplayerScreenProps) {
+function MultiplayerScreen({ api, onBack, onCreateRoom, onEnterRoom }: MultiplayerScreenProps) {
   const lobby = useMatchRoomLobby(api);
   const [codeOpen, setCodeOpen] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -62,7 +63,10 @@ function MultiplayerScreen({ api, onBack, onCreateRoom }: MultiplayerScreenProps
               <h2>참가자</h2>
               <ul>{lobby.joinedRoom.members.map((member) => <li key={member.userId}><Users aria-hidden="true" size={18} /><span>{member.nickname}</span>{member.userId === lobby.joinedRoom?.hostUserId && <span className="multiplayer-badge">방장</span>}</li>)}</ul>
             </div>
-            <div className="room-actions"><button className="secondary-action" onClick={lobby.returnToList} type="button">방 목록으로</button></div>
+            <div className="room-actions">
+              <button className="secondary-action" onClick={lobby.returnToList} type="button">방 목록으로</button>
+              <button className="primary-action room-submit" onClick={() => { if (lobby.joinedRoom) onEnterRoom(lobby.joinedRoom); }} type="button"><Swords aria-hidden="true" size={20} />대전 입장</button>
+            </div>
           </div>
         ) : (
           <>

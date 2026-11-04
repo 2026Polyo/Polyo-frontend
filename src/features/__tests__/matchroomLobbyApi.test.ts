@@ -27,6 +27,12 @@ describe("room listing", () => {
     expect(result.page).toBe(2);
   });
 
+  it("sends the login token as a bearer header when one is stored", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(successResponse(page));
+    await createMatchRoomApi({ fetcher, getAccessToken: () => "login-token" }).list(0, signal());
+    expect(fetcher.mock.calls[0][1]?.headers).toEqual({ Accept: "application/json", Authorization: "Bearer login-token" });
+  });
+
   it("accepts empty rooms and full/private waiting rooms", async () => {
     const fetcher = vi.fn<typeof fetch>()
       .mockResolvedValueOnce(successResponse({ ...page, rooms: [], totalElements: 0, totalPages: 0 }))

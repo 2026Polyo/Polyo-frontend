@@ -5,7 +5,7 @@ import RoomOption from "../components/RoomOption";
 import RoomTextField from "../components/RoomTextField";
 import MatchRoomResult from "../components/MatchRoomResult";
 import { getRoomNameLength, ROOM_NAME_MAX_LENGTH } from "../features/matchroom";
-import type { CreateRoomHandler } from "../features/matchroom";
+import type { CreateRoomHandler, MatchRoomDetails } from "../features/matchroom";
 import { useCreateRoom } from "../hooks/useCreateRoom";
 import "../styles/PieceShape.css";
 import "../styles/CreateRoomScreen.css";
@@ -15,9 +15,10 @@ const BRAND_BLOCKS = ["cyan", "lime", "amber", "rose", "violet", "blue", "teal",
 interface CreateRoomScreenProps {
   onClose: () => void;
   onCreateRoom: CreateRoomHandler;
+  onEnterRoom: (room: MatchRoomDetails) => void;
 }
 
-function CreateRoomScreen({ onClose, onCreateRoom }: CreateRoomScreenProps) {
+function CreateRoomScreen({ onClose, onCreateRoom, onEnterRoom }: CreateRoomScreenProps) {
   const room = useCreateRoom(onCreateRoom);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -120,10 +121,16 @@ function CreateRoomScreen({ onClose, onCreateRoom }: CreateRoomScreenProps) {
 
           <div className="room-actions">
             <button className="secondary-action room-cancel" disabled={room.isSubmitting} onClick={onClose} type="button">{room.isComplete ? "닫기" : "취소"}</button>
-            <button className="primary-action room-submit" disabled={!room.isValid || locked} type="submit">
-              {room.isSubmitting ? <LoaderCircle aria-hidden="true" className="room-spinner" size={24} /> : room.isComplete ? <Check aria-hidden="true" size={24} /> : <Plus aria-hidden="true" size={24} />}
-              {room.isSubmitting ? "방 만드는 중…" : room.isComplete ? "생성 완료" : room.submissionError ? "다시 시도" : "방 만들기"}
-            </button>
+            {room.createdRoom ? (
+              <button className="primary-action room-submit" onClick={() => { if (room.createdRoom) onEnterRoom(room.createdRoom); }} type="button">
+                <Check aria-hidden="true" size={24} />대기실 입장
+              </button>
+            ) : (
+              <button className="primary-action room-submit" disabled={!room.isValid || locked} type="submit">
+                {room.isSubmitting ? <LoaderCircle aria-hidden="true" className="room-spinner" size={24} /> : <Plus aria-hidden="true" size={24} />}
+                {room.isSubmitting ? "방 만드는 중…" : room.submissionError ? "다시 시도" : "방 만들기"}
+              </button>
+            )}
           </div>
           <span aria-live="polite" className="room-sr-only">{room.isSubmitting ? "방을 만들고 있어요. 잠시만 기다려 주세요." : ""}</span>
         </form>

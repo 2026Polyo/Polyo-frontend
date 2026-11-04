@@ -11,7 +11,10 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       allowedHosts: true,
-      proxy: { "/api": { target: env.API_PROXY_TARGET || "http://localhost:8080", changeOrigin: true } }
+      proxy: {
+        "/api": { target: env.API_PROXY_TARGET || "http://localhost:8080", changeOrigin: true },
+        "/ws": { target: env.API_PROXY_TARGET || "http://localhost:8080", changeOrigin: true, ws: true }
+      }
     }
   };
 });
