@@ -1,4 +1,4 @@
-import { Layers, LogOut, Play, Trophy } from "lucide-react";
+import { Layers, LogOut, Play, Trophy, ShoppingBag } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
 import type { GameMode, PieceTemplate } from "../types";
 
@@ -13,6 +13,7 @@ interface StartScreenProps {
   onModeSelect: (mode: GameMode) => void;
   onCloseStartFlow: () => void;
   onStartFresh: () => void;
+  onOpenShop: () => void;
   availableBaseIds: string[];
   baseLoadout: string[];
   best: number;
@@ -39,6 +40,7 @@ function StartScreen({
   onModeSelect,
   onCloseStartFlow,
   onStartFresh,
+  onOpenShop,
   availableBaseIds,
   baseLoadout,
   best,
@@ -81,6 +83,9 @@ function StartScreen({
             덱 구성
           </button>
         </div>
+        <button className="start-deck-action" onClick={onOpenShop} type="button">
+          <ShoppingBag size={20} aria-hidden="true" /> 상점
+        </button>
         <div className="start-best" aria-label="Best score">
           <Trophy size={20} aria-hidden="true" />
           <span>Best</span>
