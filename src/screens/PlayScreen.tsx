@@ -33,12 +33,15 @@ import type {
 } from "../types";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
+import type { GameRewardSession } from "../features/gameReward";
+import GameRewardStatus from "../components/GameRewardStatus";
 
 interface PlayScreenProps {
   bonusTime: BonusTimeState;
   gameMode: GameMode;
   hardTimeRemainingMs: number;
   hardTimeLimitMs: number;
+  rewardSession?: GameRewardSession;
   augmentState: AugmentState;
   autoUndoFlash: boolean;
   best: number;
@@ -107,6 +110,7 @@ interface PlayScreenProps {
 function PlayScreen({
   bonusTime,
   gameMode,
+  rewardSession,
   augmentState,
   hardTimeRemainingMs,
   hardTimeLimitMs,
@@ -260,6 +264,14 @@ function PlayScreen({
       )}
       {gameOver && (
         <GameOver
+          rewardContent={
+            rewardSession && (
+              <GameRewardStatus
+                session={rewardSession}
+                className="game-over-reward"
+              />
+            )
+          }
           best={best}
           onGoHome={modals.onGameOverGoHome}
           onRestart={modals.onGameOverRestart}

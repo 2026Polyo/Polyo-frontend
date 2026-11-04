@@ -1,8 +1,8 @@
+import { useState } from "react";
 import "./styles/App.css";
 import "./styles/AuthScreen.css";
 import "./styles/StartScreen.css";
 import "./styles/AutoUndoFlash.css";
-import { useState } from "react";
 import AuthScreen from "./components/AuthScreen";
 import StartScreen from "./components/StartScreen";
 import { useGameSession } from "./hooks/useGameSession";
