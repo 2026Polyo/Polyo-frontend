@@ -315,7 +315,7 @@ export function useGameSession(isAuthenticated = false) {
   const bonusPaused = !isPlaying || gameOver || isClearing || gravityAnimating || selectionBlocked || settingsOpen || deckModalOpen || rerollModalSlot !== null;
 
   useEffect(() => {
-    if (!isPlaying || gameMode !== "hard" || gameOver) {
+    if (!isPlaying || gameMode !== "hard" || gameOver || settingsOpen) {
       hardTickRef.current = null;
       return;
     }
@@ -336,7 +336,7 @@ export function useGameSession(isAuthenticated = false) {
       clearInterval(timer);
       hardTickRef.current = null;
     };
-  }, [clearSelection, gameMode, gameOver, isPlaying]);
+  }, [clearSelection, gameMode, gameOver, isPlaying, settingsOpen]);
 
   function tickBonusTime() {
     const now = performance.now();

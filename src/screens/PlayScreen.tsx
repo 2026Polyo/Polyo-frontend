@@ -143,27 +143,28 @@ function PlayScreen({
         <ScoreBoard best={best} score={score} previewGain={previewGain} />
         <div className={`bonus-status ${gameMode === "hard" ? "hard-status" : ""} ${bonusTime.remainingMs > 0 ? "is-active" : ""}`}>
           <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
-          {gameMode === "hard" ? (
-            <span
-              aria-label="다음 블록까지 남은 시간"
-              aria-valuemax={hardTimeLimitMs}
-              aria-valuemin={0}
-              aria-valuenow={hardTimeRemainingMs}
-              className="hard-timer"
-              role="progressbar"
-            >
-              <span
-                className="hard-timer-fill"
-                style={{ width: `${hardTimeLimitMs > 0 ? (hardTimeRemainingMs / hardTimeLimitMs) * 100 : 0}%` }}
-              />
-            </span>
-          ) : (bonusTime.remainingMs > 0 ? (
+          {gameMode !== "hard" && (bonusTime.remainingMs > 0 ? (
             <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
           ) : <span>보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}</span>)}
         </div>
         <div className="board-layout">
           {gameMode === "normal" && <AugmentPanel augmentState={augmentState} />}
           <div className="board-stack">
+            {gameMode === "hard" && (
+              <div
+                aria-label="다음 블록까지 남은 시간"
+                aria-valuemax={hardTimeLimitMs}
+                aria-valuemin={0}
+                aria-valuenow={hardTimeRemainingMs}
+                className="hard-timer"
+                role="progressbar"
+              >
+                <span
+                  className="hard-timer-fill"
+                  style={{ width: `${hardTimeLimitMs > 0 ? (hardTimeRemainingMs / hardTimeLimitMs) * 100 : 0}%` }}
+                />
+              </div>
+            )}
             <div className="board-combo-stage">
               <Board
                 board={board.board}
