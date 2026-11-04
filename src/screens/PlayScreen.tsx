@@ -35,17 +35,24 @@ import type { Dispatch, RefObject, SetStateAction } from "react";
 import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
 import type { GameRewardSession } from "../features/gameReward";
 import GameRewardStatus from "../components/GameRewardStatus";
+import { ThemeScope } from "../components/ThemeScope";
+import type { GameThemeId } from "../features/themes/gameThemes";
+import type { BoardFeedback } from "../features/themes/boardFeedback";
+import type { SpecialPieceGroups } from "../types";
 
 interface PlayScreenProps {
   bonusTime: BonusTimeState;
   gameMode: GameMode;
   hardTimeRemainingMs: number;
   hardTimeLimitMs: number;
+  themeId?: GameThemeId;
   rewardSession?: GameRewardSession;
   augmentState: AugmentState;
   autoUndoFlash: boolean;
   best: number;
   board: {
+    specialPieceGroups?: SpecialPieceGroups;
+    feedback?: BoardFeedback | null;
     board: BoardType;
     boardMetrics: BoardMetrics;
     boardRef: RefObject<HTMLDivElement | null>;
@@ -107,9 +114,10 @@ interface PlayScreenProps {
   undoSnapshot: UndoSnapshot | null;
 }
 
-function PlayScreen({
+function PlayScreenContent({
   bonusTime,
   gameMode,
+  themeId = "theme_classic",
   rewardSession,
   augmentState,
   hardTimeRemainingMs,
@@ -135,7 +143,7 @@ function PlayScreen({
   const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
 
   return (
-    <main className={`app-shell play-shell ${bonusActive ? "bonus-playing" : ""} ${board.cursorPoint ? "has-cursor-piece" : ""}`}>
+    <main data-game-theme={themeId} className={`app-shell play-shell ${bonusActive ? "bonus-playing" : ""} ${board.cursorPoint ? "has-cursor-piece" : ""}`}>
       <GameSettingsMenu
         open={settings.open}
         onClose={settings.onClose}
@@ -171,6 +179,8 @@ function PlayScreen({
             )}
             <div className="board-combo-stage">
               <Board
+                specialPieceGroups={board.specialPieceGroups}
+                feedback={board.feedback}
                 board={board.board}
                 boardRef={board.boardRef}
                 hoverCell={board.hoverCell}
@@ -290,4 +300,10 @@ function PlayScreen({
   );
 }
 
-export default PlayScreen;
+export default function PlayScreen(props: PlayScreenProps) {
+  return (
+    <ThemeScope themeId={props.themeId ?? "theme_classic"}>
+      <PlayScreenContent {...props} />
+    </ThemeScope>
+  );
+}

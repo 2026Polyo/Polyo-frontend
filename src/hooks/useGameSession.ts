@@ -33,15 +33,23 @@ import { useGameAudio } from "./useGameAudio";
 import { useItemSystem } from "./useItemSystem";
 import { usePieceSelection } from "./usePieceSelection";
 import { usePulseLabel } from "./usePulseLabel";
+import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
+import { createBoardFeedback, type BoardFeedback } from "../features/themes/boardFeedback";
+import {
+  normalizeSpecialPieceGroups,
+  placeSpecialPieceGroups
+} from "../features/themes/specialAppearance";
 import type {
   AugmentId,
   AugmentState,
   Board as BoardType,
   BonusTimeState,
   GameMode,
+  ItemType,
   PieceInstance,
   PieceTemplate,
   SpecialMarks,
+  SpecialPieceGroups,
   Tray
 } from "../types";
 import type { Dispatch, SetStateAction } from "react";
@@ -75,7 +83,7 @@ function resolveMarkUpdate(
   return typeof value === "function" ? value(current) : value;
 }
 
-export function useGameSession(isAuthenticated = false) {
+export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "theme_classic") {
   const [initialGame] = useState(loadSavedGame);
   const [gameMode, setGameMode] = useState<GameMode>(() => initialGame?.gameMode ?? "normal");
   const [startFlow, setStartFlow] = useState<"mode" | "continue" | null>(null);
@@ -110,6 +118,9 @@ export function useGameSession(isAuthenticated = false) {
   }
 
   const [board, setBoard] = useState<BoardType>(() => initialGame?.board ?? cloneBoard(EMPTY_BOARD));
+  const [specialPieceGroups, setSpecialPieceGroups] = useState<SpecialPieceGroups>(
+    () => initialGame?.specialPieceGroups ?? {}
+  );
   const [deck, setDeck] = useState<string[]>(() => initialGame?.deck ?? DEFAULT_DECK);
   const [specialPieces, setSpecialPieces] = useState<PieceTemplate[]>(
     () => initialGame?.specialPieces ?? []
@@ -143,6 +154,8 @@ export function useGameSession(isAuthenticated = false) {
       ])
   );
   const [clearingCells, setClearingCells] = useState<Set<string>>(() => new Set());
+  const [boardFeedback, setBoardFeedback] = useState<BoardFeedback | null>(null);
+  const feedbackSequence = useRef(0);
   const [score, setScore] = useState<number>(() => initialGame?.score ?? 0);
   const [databaseBestScores, setDatabaseBestScores] = useState({ normalBestScore: 0, hardBestScore: 0 });
   const [augmentState, setAugmentState] = useState<AugmentState>(
@@ -179,7 +192,7 @@ export function useGameSession(isAuthenticated = false) {
   const [autoUndoFlash, setAutoUndoFlash] = useState(false);
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoUndoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const audio = useGameAudio();
+  const audio = useGameAudio(getGameTheme(themeId).soundMode === "legacy");
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -271,6 +284,8 @@ export function useGameSession(isAuthenticated = false) {
     undoSnapshot
   } = useItemSystem({
     enabled: gameMode === "normal",
+    specialPieceGroups,
+    setSpecialPieceGroups,
     augmentState,
     board,
     bombCells,
@@ -370,6 +385,7 @@ export function useGameSession(isAuthenticated = false) {
   useEffect(() => {
     if (!noMovesLeft || !canUndo) return;
     if (!autoUndo()) return;
+    setBoardFeedback(null);
     setAutoUndoFlash(true);
     if (autoUndoTimerRef.current !== null) clearTimeout(autoUndoTimerRef.current);
     autoUndoTimerRef.current = setTimeout(() => setAutoUndoFlash(false), 1500);
@@ -382,6 +398,7 @@ export function useGameSession(isAuthenticated = false) {
       gameMode,
       bonusTime,
       augmentState: scoringAugmentState,
+      specialPieceGroups,
       board,
       bombCells,
       boostCells,
@@ -401,6 +418,7 @@ export function useGameSession(isAuthenticated = false) {
     Math.ceil(bonusTime.remainingMs / 1000),
     augmentState,
     board,
+    specialPieceGroups,
     bombCells,
     boostCells,
     deck,
@@ -495,11 +513,13 @@ export function useGameSession(isAuthenticated = false) {
     hardTickRef.current = null;
     bonusTickRef.current = null;
     setBoard(cloneBoard(EMPTY_BOARD));
+    setSpecialPieceGroups({});
     setSpecialPieces([]);
     setSpecialMarks(createSpecialMarks());
     setTray([null, null, null]);
     clearSelection();
     setClearingCells(new Set());
+    setBoardFeedback(null);
     setScore(0);
     setAugmentState(createInitialAugmentState());
     setAugmentChoiceOpen(false);
@@ -553,6 +573,7 @@ export function useGameSession(isAuthenticated = false) {
     clearGameState();
     setGameMode("normal");
     setBoard(saved.board);
+    setSpecialPieceGroups(saved.specialPieceGroups);
     setDeck(saved.deck);
     setSpecialPieces(saved.specialPieces);
     setSpecialMarks(createSpecialMarks(saved));
@@ -564,6 +585,7 @@ export function useGameSession(isAuthenticated = false) {
     restoreItems(saved);
     pendingContinueRef.current = null;
     setStartFlow(null);
+    setBoardFeedback(null);
     setGamePhase("playing");
   }
 
@@ -604,10 +626,18 @@ export function useGameSession(isAuthenticated = false) {
       comboMultiplier
     });
     audio.playClearFeedback(outcome.cleared);
+    setBoardFeedback(createBoardFeedback(
+      ++feedbackSequence.current, piece, row, col,
+      outcome.displayBoard, outcome.clearingCells
+    ));
     const clearTier = getClearTier(outcome.cleared);
     if (clearTier) pulseClearLabel(CLEAR_TIER_LABEL[clearTier]);
 
     setBoard(outcome.displayBoard);
+    const nextGroups = placeSpecialPieceGroups(
+      board, specialPieceGroups, piece, row, col, outcome.displayBoard
+    );
+    setSpecialPieceGroups(nextGroups);
     setClearingCells(outcome.clearingCells);
     setScore((current) => current + outcome.scoreGain);
     setSpecialMarks({
@@ -642,6 +672,7 @@ export function useGameSession(isAuthenticated = false) {
       if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
       clearTimerRef.current = setTimeout(() => {
         setBoard(outcome.settledBoard);
+        setSpecialPieceGroups(normalizeSpecialPieceGroups(outcome.settledBoard, nextGroups));
         setClearingCells(new Set());
       }, CLEAR_HIGHLIGHT_MS);
     }
@@ -682,6 +713,7 @@ export function useGameSession(isAuthenticated = false) {
 
   function buildPlayScreenProps() {
     return {
+      themeId,
       augmentState,
       autoUndoFlash,
       bonusTime,
@@ -690,6 +722,8 @@ export function useGameSession(isAuthenticated = false) {
       hardTimeLimitMs,
       best,
       board: {
+        specialPieceGroups,
+        feedback: boardFeedback,
         board,
         boardMetrics,
         boardRef,
@@ -710,8 +744,9 @@ export function useGameSession(isAuthenticated = false) {
       comboEffectValue,
       gameOver,
       gravityAnimating,
-      handleItemClick: (item: Parameters<typeof handleItemClick>[0], index: number) => {
+      handleItemClick: (item: ItemType | null, index: number) => {
         if (bonusPaused || tickBonusTime()) return;
+        setBoardFeedback(null);
         handleItemClick(item, index);
       },
       isClearing,

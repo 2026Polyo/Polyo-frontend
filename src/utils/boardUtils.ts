@@ -7,6 +7,8 @@ export function cloneBoard(board: Board): Board {
 }
 
 export interface GravitySimulation {
+  /** Original cell key → current key per frame, for visual piece ownership. */
+  frameMoves: Map<string, string>[];
   /** Board states for the fall animation, one per visible step (excludes the start board). */
   frames: Board[];
   /** Final settled board after all falls and line clears. */
@@ -26,6 +28,15 @@ export function simulateGravity(board: Board): GravitySimulation {
     row.map((cell, c) => (cell ? `${r}-${c}` : null))
   );
   const frames: Board[] = [];
+  const frameMoves: Map<string, string>[] = [];
+  const captureFrame = () => {
+    frames.push(cloneBoard(colors));
+    const positions = new Map<string, string>();
+    ids.forEach((line, r) => line.forEach((id, c) => {
+      if (id) positions.set(id, `${r}-${c}`);
+    }));
+    frameMoves.push(positions);
+  };
 
   const dropOneStep = (): boolean => {
     let moved = false;
@@ -47,7 +58,7 @@ export function simulateGravity(board: Board): GravitySimulation {
   let safety = SIZE * SIZE * 4;
   for (;;) {
     while (dropOneStep()) {
-      frames.push(cloneBoard(colors));
+      captureFrame();
       if (--safety <= 0) break;
     }
 
@@ -63,7 +74,7 @@ export function simulateGravity(board: Board): GravitySimulation {
         ids[r][c] = null;
       }
     });
-    frames.push(cloneBoard(colors));
+    captureFrame();
     if (--safety <= 0) break;
   }
 
@@ -75,7 +86,7 @@ export function simulateGravity(board: Board): GravitySimulation {
     }
   }
 
-  return { frames, finalBoard: colors, moved };
+  return { frames, frameMoves, finalBoard: colors, moved };
 }
 
 export function isBoardEmpty(board: Board): boolean {

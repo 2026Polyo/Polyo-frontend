@@ -1,0 +1,507 @@
+.play-shell[data-game-theme="theme_jelly"] {
+  --surface-card: #fffaff;
+  --surface-card-soft: #f5eefe;
+  --surface-card-border: #dbd0ec;
+  --text-strong: #4e3e69;
+  --text-body: #6c5c81;
+  --text-muted: #8d7d9f;
+  --text-on-board: #6c5c81;
+  --accent: #a365bb;
+  --accent-strong: #785090;
+  --tray-slot: #fff8ff;
+  --tray-slot-border: #e0d1ee;
+  --tray-slot-hover: #f2e8fc;
+  --tray-slot-empty: #ebe3f6;
+  --panel-dark: #f6f0fc;
+  --panel-dark-border: #dfd3ed;
+  --panel-slot: #e5d9f2;
+  --panel-slot-hover: #dac8ed;
+  --panel-slot-empty: #ece4f7;
+  background: linear-gradient(160deg, #fff2f6, #f3edff 60%, #e9f8fb);
+  color: var(--text-body);
+}
+
+.play-shell[data-game-theme="theme_jelly"] .undo-item,
+.play-shell[data-game-theme="theme_jelly"] .undo-item-label,
+.play-shell[data-game-theme="theme_jelly"] .undo-items-head strong,
+.play-shell[data-game-theme="theme_jelly"] .deck-view-button {
+  color: var(--text-body);
+}
+.play-shell[data-game-theme="theme_jelly"] .tray {
+  box-shadow:
+    inset 0 2px 5px #9a78b51f,
+    0 3px 10px #9a78b51a;
+}
+
+.board[data-game-theme="theme_jelly"],
+.shop-preview-jelly .shop-preview-board {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 0 0, #ffffff80, #ffffff00 65%),
+    linear-gradient(140deg, #ffffff4d, #dacded33 52%, #b9e0e92e), #d7c9ee3d;
+  border: 1px solid #ffffffe0;
+  border-radius: 18px;
+  backdrop-filter: blur(10px) saturate(1.15);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    inset 1px 0 0 #ffffff91,
+    inset 0 -1px 0 #b8a1d73b,
+    0 4px 0 -1px #b9a6d75c,
+    0 14px 32px #86729424;
+}
+
+/* 반사광은 타일 아래에 고정해 입력과 애니메이션을 가리지 않는다. */
+.board[data-game-theme="theme_jelly"]::before,
+.shop-preview-jelly .shop-preview-board::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    118deg,
+    #ffffff00 8%,
+    #ffffff35 9%,
+    #ffffff0a 28%,
+    #ffffff00 29%,
+    #ffffff00 64%,
+    #ffffff21 65%,
+    #ffffff00 81%
+  );
+  box-shadow: inset 0 0 0 1px #ffffff40;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.board[data-game-theme="theme_jelly"] .board-cell {
+  position: relative;
+  z-index: 1;
+  background: #ffffff14;
+  border: 0;
+  border-radius: 14%;
+  box-shadow:
+    inset 0 0 0 1px #b69bce30,
+    inset 0 1px 0 #ffffff66;
+}
+.shop-preview-jelly .shop-preview-board > span {
+  position: relative;
+  z-index: 1;
+}
+.shop-preview-jelly .shop-preview-board > span:not(.shop-preview-filled) {
+  background: #ffffff14;
+  border-radius: 14%;
+  box-shadow:
+    inset 0 0 0 1px #b69bce30,
+    inset 0 1px 0 #ffffff66;
+}
+
+.board[data-game-theme="theme_jelly"] .board-cell[data-filled="true"] {
+  background: transparent;
+  box-shadow: none;
+}
+
+.jelly-tile-face,
+.shop-preview-jelly .shop-preview-board .shop-preview-filled {
+  border: 1px solid color-mix(in srgb, var(--theme-tile-color) 54%, white);
+  border-radius: 15% 14% 16% 14% / 14% 16% 14% 15%;
+  /* 가장자리의 진한 젤, 투명한 속, 아래쪽으로 굴절된 빛을 겹친다. */
+  background:
+    radial-gradient(ellipse 48% 18% at 34% 12%, #ffffffb3, #ffffff00 90%),
+    radial-gradient(ellipse 46% 26% at 65% 86%, #ffffff85, #ffffff00 100%),
+    radial-gradient(
+      ellipse at 48% 44%,
+      color-mix(in srgb, var(--theme-tile-color) 42%, transparent) 12%,
+      color-mix(in srgb, var(--theme-tile-color) 88%, transparent) 76%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--theme-tile-color) 56%, #fff5fc),
+      color-mix(in srgb, var(--theme-tile-color) 73%, #fff5fc) 52%,
+      color-mix(in srgb, var(--theme-tile-color) 78%, #846294)
+    );
+  box-shadow:
+    inset 2px 2px 3px #ffffff94,
+    inset -2px -3px 4px
+      color-mix(in srgb, var(--theme-tile-color) 55%, #61437555),
+    inset 0 -1px 1px #ffffffb3,
+    0 2px 3px #73518c24;
+}
+
+.jelly-tile-face {
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.jelly-tile-face[data-special] {
+  border: 2px solid color-mix(in srgb, var(--theme-tile-color) 65%, #4c365b);
+  outline: 1px solid #ffffffe0;
+  outline-offset: -3px;
+}
+.jelly-tile-face[data-special="ghost"],
+.jelly-tile-face[data-special="echo"] {
+  border-style: dashed;
+}
+.jelly-tile-face[data-special="line"],
+.jelly-tile-face[data-special="golden"] {
+  border-style: double;
+  border-width: 3px;
+}
+.jelly-tile-face[data-special="fill"] {
+  border-style: dotted;
+}
+
+.jelly-tile-face::before,
+.shop-preview-jelly .shop-preview-filled::before {
+  content: "";
+  position: absolute;
+  inset: 7% 8% 47% 7%;
+  border-radius: 20% 24% 40% 32%;
+  border-top: 2px solid #ffffffc7;
+  background: linear-gradient(155deg, #ffffff7a, #ffffff00 70%);
+  transform: rotate(-8deg);
+  pointer-events: none;
+}
+
+.jelly-tile-face::after,
+.shop-preview-jelly .shop-preview-filled::after {
+  content: "";
+  position: absolute;
+  right: 13%;
+  bottom: 10%;
+  width: 27%;
+  height: 11%;
+  border-radius: 50%;
+  background: #ffffff82;
+  transform: rotate(-24deg);
+  pointer-events: none;
+}
+
+.mini-grid[data-game-theme="theme_jelly"] .mini-cell[data-filled="true"] {
+  position: relative;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.shop-preview-jelly .shop-preview-filled {
+  position: relative;
+}
+
+.board[data-game-theme="theme_jelly"] .board-cell.preview {
+  opacity: 0.6;
+}
+.board[data-game-theme="theme_jelly"] .board-cell.preview-clearing {
+  outline: 2px solid #ffffffc4;
+  outline-offset: -3px;
+}
+.board[data-game-theme="theme_jelly"] .board-cell.clearing {
+  animation: none;
+  filter: none;
+  box-shadow: none;
+}
+.board[data-game-theme="theme_jelly"] .board-cell.clearing > .jelly-tile-face {
+  visibility: hidden;
+}
+.jelly-tile-reveal {
+  animation: jelly-tile-reveal step-end both;
+}
+@keyframes jelly-tile-reveal {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.board-jelly-effects {
+  position: absolute;
+  inset: var(--board-padding, 10px);
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: var(--board-gap, 3px);
+  overflow: clip;
+  overflow-clip-margin: var(--board-padding, 10px);
+  pointer-events: none;
+  z-index: 4;
+}
+.jelly-effect-batch {
+  display: contents;
+}
+.jelly-effect-cell {
+  position: relative;
+  min-width: 0;
+  pointer-events: none;
+}
+.jelly-landing {
+  display: grid;
+  gap: var(--board-gap, 3px);
+  transform-origin: center bottom;
+  animation: jelly-landing var(--jelly-landing-time) linear both;
+  z-index: 1;
+}
+.jelly-landing > .jelly-tile-face {
+  position: relative;
+  inset: auto;
+  transform-origin: center bottom;
+  animation: jelly-landing-squish var(--jelly-landing-time) linear both;
+}
+@keyframes jelly-landing {
+  0% {
+    transform: translateY(-26px) scale(1.12);
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-2px) scale(1);
+    opacity: 1;
+  }
+  99.9% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+}
+/* 블록 모양과 칸 간격을 유지하며 타일 하나하나가 바닥에 눌리고 복원된다. */
+@keyframes jelly-landing-squish {
+  0%,
+  45% {
+    transform: scale(1);
+  }
+  60% {
+    transform: scale(1.09, 0.84);
+  }
+  77% {
+    transform: scale(0.96, 1.07);
+  }
+  90% {
+    transform: scale(1.025, 0.975);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.jelly-clear-intact {
+  transform-origin: center;
+  animation-name: jelly-clear-hold, jelly-cut-squish;
+  animation-timing-function: step-end, ease-out;
+  animation-fill-mode: both;
+}
+.jelly-clear-new {
+  animation-name: jelly-clear-new, jelly-cut-squish;
+}
+/* 가로·세로·교차 참격 모두 실제 충격 방향을 축으로 삼아 늘였다가 되돌린다. */
+@keyframes jelly-cut-squish {
+  0%,
+  100% {
+    transform: rotate(var(--jelly-cut-angle)) scale(1)
+      rotate(calc(-1 * var(--jelly-cut-angle)));
+  }
+  35% {
+    transform: rotate(var(--jelly-cut-angle)) scale(1.12, 0.88)
+      rotate(calc(-1 * var(--jelly-cut-angle)));
+  }
+  68% {
+    transform: rotate(var(--jelly-cut-angle)) scale(0.97, 1.03)
+      rotate(calc(-1 * var(--jelly-cut-angle)));
+  }
+}
+.jelly-clear {
+  animation: jelly-cut-nudge var(--jelly-cut-duration) ease-out
+    var(--jelly-slash-time) both;
+}
+@keyframes jelly-cut-nudge {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(var(--jelly-impact-x), var(--jelly-impact-y));
+  }
+}
+@keyframes jelly-clear-hold {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes jelly-clear-new {
+  0% {
+    opacity: 0;
+  }
+  .01%,
+  99.99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.jelly-drop > i,
+.jelly-shard > i {
+  position: absolute;
+  display: block;
+  aspect-ratio: 1;
+  animation-duration: var(--jelly-duration);
+  animation-delay: var(--jelly-delay);
+  animation-fill-mode: both;
+  pointer-events: none;
+}
+.jelly-drop {
+  z-index: 3;
+}
+.jelly-drop > i {
+  translate: -50% -50%;
+  border-radius: 50% 50% 40% 50%;
+  background: var(--theme-tile-color);
+  border: 0;
+  box-shadow: none;
+  animation-name: jelly-droplet;
+  animation-timing-function: ease-out;
+}
+@keyframes jelly-droplet {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  6% {
+    opacity: 1;
+  }
+  65% {
+    opacity: 0.85;
+    transform: translate(var(--jelly-x), var(--jelly-y)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(var(--jelly-x) * 1.2),
+        calc(var(--jelly-y) + 20px)
+      )
+      scale(0.15);
+  }
+}
+.jelly-shard {
+  z-index: 2;
+}
+.jelly-shard > i {
+  aspect-ratio: auto;
+  border-radius: var(--jelly-shape);
+  background:
+    radial-gradient(ellipse at 28% 18%, #ffffffb8, #ffffff00 58%),
+    radial-gradient(ellipse at 65% 83%, #ffffff6b, #ffffff00 65%),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--theme-tile-color) 67%, white),
+      color-mix(in srgb, var(--theme-tile-color) 88%, transparent)
+    );
+  box-shadow:
+    inset 0 1px 1px #ffffffab,
+    inset -1px -2px 2px #71558533;
+  animation-name: jelly-shatter;
+  animation-timing-function: ease-out;
+}
+@keyframes jelly-shatter {
+  0% {
+    opacity: 0;
+    border-radius: var(--jelly-shape);
+    transform: translate(var(--jelly-impact-x), var(--jelly-impact-y)) rotate(0)
+      scale(1);
+  }
+  1% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 1;
+    border-radius: var(--jelly-relaxed-shape);
+    transform: translate(
+        calc(var(--jelly-impact-x) + var(--jelly-x) * 0.65),
+        calc(var(--jelly-impact-y) + var(--jelly-y) * 0.65)
+      )
+      rotate(calc(var(--jelly-rotation) * 0.6)) scale(0.85, 1.05);
+  }
+  100% {
+    opacity: 0;
+    border-radius: var(--jelly-shape);
+    transform: translate(
+        calc(var(--jelly-impact-x) + var(--jelly-x)),
+        calc(var(--jelly-impact-y) + var(--jelly-y) + 36px)
+      )
+      rotate(var(--jelly-rotation)) scale(0.1);
+  }
+}
+.jelly-slash {
+  position: relative;
+  z-index: 5;
+  pointer-events: none;
+}
+.jelly-slash > i {
+  position: absolute;
+  display: block;
+  background: linear-gradient(90deg, #ffffff00, #fff 15%, #fff 85%, #ffffff00);
+  box-shadow:
+    0 0 7px #fff,
+    0 0 14px #fca4e6;
+  animation: jelly-slash 200ms cubic-bezier(0.12, 0.7, 0.25, 1)
+    var(--jelly-slash-time) both;
+}
+.jelly-slash-row > i {
+  height: 3px;
+  left: -2%;
+  right: -2%;
+  top: 50%;
+  transform-origin: left center;
+}
+.jelly-slash-col > i {
+  width: 3px;
+  top: -2%;
+  bottom: -2%;
+  left: 50%;
+  transform-origin: center top;
+  background: linear-gradient(#ffffff00, #fff 15%, #fff 85%, #ffffff00);
+}
+@keyframes jelly-slash {
+  0% {
+    opacity: 0;
+    scale: 0.01;
+  }
+  12% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 1;
+    scale: 1.03;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.06;
+  }
+}
+
+.shop-preview.shop-preview-jelly {
+  background: linear-gradient(145deg, #fff0f5, #eee6ff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-jelly-effects {
+    display: none;
+  }
+  .jelly-tile-reveal {
+    animation: none;
+  }
+  .board[data-game-theme="theme_jelly"]
+    .board-cell.clearing
+    > .jelly-tile-face {
+    visibility: visible;
+    opacity: 0.3;
+  }
+}

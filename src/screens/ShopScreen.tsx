@@ -14,6 +14,7 @@ import ThemePreview from "../components/ThemePreview";
 import type { ShopTheme } from "../features/shop";
 import { useShopCatalog, type ShopCatalogState } from "../hooks/useShopCatalog";
 import "../styles/ShopScreen.css";
+import type { GameThemeId } from "../features/themes/gameThemes";
 
 interface ShopCatalogProps {
   state: ShopCatalogState;
@@ -55,7 +56,13 @@ function ShopCatalog({ state, onRetry, onPreview }: ShopCatalogProps) {
   );
 }
 
-export default function ShopScreen({ onGoHome }: { onGoHome: () => void }) {
+export default function ShopScreen({
+  onGoHome,
+  onSelectPreviewTheme,
+}: {
+  onGoHome: () => void;
+  onSelectPreviewTheme: (themeId: GameThemeId) => void;
+}) {
   const { catalog, page, sort, setPage, changeSort, retry } = useShopCatalog();
   const [selectedTheme, setSelectedTheme] = useState<ShopTheme | null>(null);
   const previewTrigger = useRef<HTMLButtonElement | null>(null);
@@ -98,7 +105,7 @@ export default function ShopScreen({ onGoHome }: { onGoHome: () => void }) {
           <p>마음에 드는 블록으로 나만의 보드를 완성해 보세요.</p>
         </div>
         <div className="shop-hero-art">
-          <ThemePreview themeId="theme_classic" />
+          <ThemePreview themeId="theme_cat" />
         </div>
       </section>
       <p className="shop-demo-note">
@@ -157,7 +164,11 @@ export default function ShopScreen({ onGoHome }: { onGoHome: () => void }) {
       <footer className="shop-footer">
         <ShoppingBag size={15} /> 나만의 색으로, 한 칸씩.
       </footer>
-      <ShopThemeDialog theme={selectedTheme} onClose={closePreview} />
+      <ShopThemeDialog
+        theme={selectedTheme}
+        onClose={closePreview}
+        onSelectPreviewTheme={onSelectPreviewTheme}
+      />
     </main>
   );
 }
