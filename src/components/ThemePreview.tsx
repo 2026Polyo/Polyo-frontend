@@ -57,6 +57,8 @@ export default function ThemePreview({ themeId }: { themeId: string }) {
           >
             {cat && cell >= 0 && (
               <CatTile
+                row={Math.floor(index / 8)}
+                col={index % 8}
                 joined={getCatConnections(
                   (r, c) =>
                     r >= 0 &&

@@ -16,6 +16,7 @@ import {
 import { getThemeTileStyle } from "../features/themes/gameThemes";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useGameTheme } from "./ThemeScope";
+import { getSpecialAppearance } from "../features/themes/specialAppearance";
 
 const JellyParticles = memo(function JellyParticles({
   cell,
@@ -90,6 +91,7 @@ const JellyBatch = memo(function JellyBatch({
           {batch.placed.map((cell) => (
             <span
               className="jelly-tile-face"
+              data-special={getSpecialAppearance(cell.color)}
               key={`${cell.row}-${cell.col}`}
               style={{
                 gridRow: cell.row - batch.bounds!.row + 1,
@@ -124,6 +126,7 @@ const JellyBatch = memo(function JellyBatch({
         >
           <span
             className={`jelly-tile-face jelly-clear-intact ${placedKeys.has(`${cell.row}-${cell.col}`) ? "jelly-clear-new" : ""}`}
+            data-special={getSpecialAppearance(cell.color)}
             style={{
               animationDelay: `${placedKeys.has(`${cell.row}-${cell.col}`) ? JELLY_LANDING_MS : 0}ms, ${JELLY_SLASH_MS}ms`,
               animationDuration: `${placedKeys.has(`${cell.row}-${cell.col}`) ? JELLY_BREAK_MS - JELLY_LANDING_MS : JELLY_BREAK_MS}ms, ${JELLY_BREAK_MS - JELLY_SLASH_MS}ms`,

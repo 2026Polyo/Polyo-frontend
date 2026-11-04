@@ -134,6 +134,24 @@
   pointer-events: none;
 }
 
+.jelly-tile-face[data-special] {
+  border: 2px solid color-mix(in srgb, var(--theme-tile-color) 65%, #4c365b);
+  outline: 1px solid #ffffffe0;
+  outline-offset: -3px;
+}
+.jelly-tile-face[data-special="ghost"],
+.jelly-tile-face[data-special="echo"] {
+  border-style: dashed;
+}
+.jelly-tile-face[data-special="line"],
+.jelly-tile-face[data-special="golden"] {
+  border-style: double;
+  border-width: 3px;
+}
+.jelly-tile-face[data-special="fill"] {
+  border-style: dotted;
+}
+
 .jelly-tile-face::before,
 .shop-preview-jelly .shop-preview-filled::before {
   content: "";

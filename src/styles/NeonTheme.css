@@ -108,6 +108,22 @@
   border: 1px dashed var(--theme-tile-color);
 }
 
+.board[data-game-theme="theme_neon"]
+  .board-cell[data-filled="true"][data-special],
+.mini-grid[data-game-theme="theme_neon"]
+  .mini-cell[data-filled="true"][data-special] {
+  background: radial-gradient(
+    ellipse at 35% 28%,
+    color-mix(in srgb, var(--theme-tile-color) 48%, white),
+    var(--theme-tile-color)
+  );
+  box-shadow:
+    inset 0 0 0 1px #ffffffb3,
+    inset 0 0 0 2px var(--theme-tile-color),
+    0 0 8px color-mix(in srgb, var(--theme-tile-color) 80%, transparent),
+    0 0 18px color-mix(in srgb, var(--theme-tile-color) 40%, transparent);
+}
+
 .board[data-game-theme="theme_neon"] .board-cell.preview {
   opacity: 0.7;
 }
@@ -192,7 +208,7 @@
 
 @keyframes neon-pixel-melt {
   0% {
-    background-color: #02050b;
+    background-color: var(--pixel-surface, #02050b);
     color: var(--pixel-color);
     opacity: 1;
     transform: translate(0, 0) scale(1);

@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import type { Board } from "../types";
+import type { SpecialPieceGroups } from "../types";
 import {
   MAX_EFFECT_BATCHES,
   type BoardFeedback,
@@ -17,9 +18,11 @@ import CatTile from "./CatTile";
 export default function CatBoardEffects({
   feedback,
   board,
+  specialPieceGroups,
 }: {
   feedback: BoardFeedback | null;
   board: Board;
+  specialPieceGroups?: SpecialPieceGroups;
 }) {
   const reducedMotion = useReducedMotion();
   const [batches, setBatches] = useState<CatClearBatch[]>([]);
@@ -37,7 +40,7 @@ export default function CatBoardEffects({
     }
     if (lastId.current === feedback.id) return;
     lastId.current = feedback.id;
-    const batch = createCatClearBatch(feedback, board);
+    const batch = createCatClearBatch(feedback, board, specialPieceGroups);
     if (!batch.cells.length) return;
     while (active.current.length >= MAX_EFFECT_BATCHES)
       clearTimeout(active.current.shift()!.timer);
@@ -49,7 +52,7 @@ export default function CatBoardEffects({
     }, CAT_PAW_LIFETIME_MS);
     active.current.push({ batch, timer });
     setBatches(active.current.map((item) => item.batch));
-  }, [feedback, board, reducedMotion]);
+  }, [feedback, board, specialPieceGroups, reducedMotion]);
   useLayoutEffect(
     () => () => {
       active.current.forEach(({ timer }) => clearTimeout(timer));
@@ -82,7 +85,12 @@ export default function CatBoardEffects({
               }
             >
               <span className="cat-clear-surface">
-                <CatTile joined={cell.joined} />
+                <CatTile
+                  joined={cell.joined}
+                  color={cell.color}
+                  row={cell.row}
+                  col={cell.col}
+                />
               </span>
               <svg className="cat-paw-print" viewBox="0 0 100 100">
                 <g fill="#f1b4cf" stroke="#d792b5" strokeWidth="2">

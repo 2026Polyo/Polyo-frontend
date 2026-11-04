@@ -20,8 +20,16 @@ import { useMemo } from "react";
 import CatDecorations from "./CatDecorations";
 import type { CatCell } from "../features/themes/catRegions";
 import CatBoardEffects from "./CatBoardEffects";
+import {
+  catConnectionGroup,
+  getSpecialAppearance,
+} from "../features/themes/specialAppearance";
+import type { SpecialPieceGroups } from "../types";
+import { SPECIAL_LABELS } from "../features/specials";
+const EMPTY_SPECIAL_GROUPS: SpecialPieceGroups = {};
 
 interface BoardProps {
+  specialPieceGroups?: SpecialPieceGroups;
   feedback?: BoardFeedback | null;
   board: BoardType;
   boardRef: React.RefObject<HTMLDivElement | null>;
@@ -36,6 +44,7 @@ interface BoardProps {
 }
 
 function Board({
+  specialPieceGroups = EMPTY_SPECIAL_GROUPS,
   feedback = null,
   board,
   boardRef,
@@ -77,7 +86,11 @@ function Board({
             const isPreview = previewCells.has(key);
             const isClearing = clearingCells.has(key);
             const isPreviewClearing = previewClearingCells.has(key);
-            const isSpecial = cell ? SPECIAL_COLORS.has(cell) : false;
+            const renderedColor =
+              isPreview && selectedPiece ? selectedPiece.color : cell;
+            const isSpecial = renderedColor
+              ? SPECIAL_COLORS.has(renderedColor)
+              : false;
             const isPlaced =
               (theme.tileStyle === "jelly" ||
                 theme.tileStyle === "minecraft") &&
@@ -93,15 +106,18 @@ function Board({
 
             return (
               <button
-                aria-label={`${rowIndex + 1} row ${colIndex + 1} column`}
+                aria-label={`${rowIndex + 1} row ${colIndex + 1} column${isSpecial ? ` · ${SPECIAL_LABELS[getSpecialAppearance(renderedColor)!]}` : ""}`}
+                title={
+                  isSpecial
+                    ? SPECIAL_LABELS[getSpecialAppearance(renderedColor)!]
+                    : undefined
+                }
                 className={`board-cell ${cell ? colorClass[cell] : previewClass} ${isPreview ? "preview" : ""} ${isPreviewClearing ? "preview-clearing" : ""} ${isClearing ? "clearing" : ""} ${isSpecial ? "special" : ""}`}
                 key={key}
                 data-cell-key={key}
                 data-filled={Boolean(cell || (isPreview && selectedPiece))}
-                style={getThemeTileStyle(
-                  theme,
-                  cell ?? (isPreview ? selectedPiece?.color : undefined),
-                )}
+                data-special={getSpecialAppearance(renderedColor)}
+                style={getThemeTileStyle(theme, renderedColor)}
                 onClick={() => onCellClick(rowIndex, colIndex)}
                 onPointerEnter={(event) => {
                   if (event.pointerType !== "touch")
@@ -116,16 +132,29 @@ function Board({
               >
                 {theme.tileStyle === "cat" && (
                   <CatTile
+                    row={rowIndex}
+                    col={colIndex}
+                    color={renderedColor}
                     filled={Boolean(cell || (isPreview && selectedPiece))}
                     joined={getCatConnections(
-                      cell
-                        ? isClearing
-                          ? isCatFilled
-                          : isCatRemaining
+                      isPreview && selectedPiece
+                        ? (r, c) => previewCells.has(`${r}-${c}`)
                         : (r, c) =>
-                            Boolean(
-                              selectedPiece && previewCells.has(`${r}-${c}`),
-                            ),
+                            (isClearing
+                              ? isCatFilled(r, c)
+                              : isCatRemaining(r, c)) &&
+                            catConnectionGroup(
+                              board,
+                              specialPieceGroups,
+                              rowIndex,
+                              colIndex,
+                            ) ===
+                              catConnectionGroup(
+                                board,
+                                specialPieceGroups,
+                                r,
+                                c,
+                              ),
                       rowIndex,
                       colIndex,
                     )}
@@ -136,6 +165,7 @@ function Board({
                     <span
                       key={isPlaced ? feedback?.id : "rest"}
                       className={`jelly-tile-face ${isPlaced ? "jelly-tile-reveal" : ""}`}
+                      data-special={getSpecialAppearance(renderedColor)}
                       style={
                         isPlaced
                           ? { animationDuration: `${JELLY_LANDING_MS}ms` }
@@ -157,11 +187,21 @@ function Board({
           }),
         )}
         {theme.effects === "cat" && (
-          <CatBoardEffects feedback={feedback} board={board} />
+          <CatBoardEffects
+            feedback={feedback}
+            board={board}
+            specialPieceGroups={specialPieceGroups}
+          />
         )}
         {theme.effects === "pixel" && <BoardEffects feedback={feedback} />}
         {theme.tileStyle === "cat" && (
-          <CatDecorations cells={catCells} rows={8} cols={8} />
+          <CatDecorations
+            cells={catCells}
+            rows={8}
+            cols={8}
+            board={board}
+            specialPieceGroups={specialPieceGroups}
+          />
         )}
         {theme.effects === "jelly" && <JellyBoardEffects feedback={feedback} />}
         {theme.effects === "minecraft" && (

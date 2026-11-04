@@ -38,6 +38,7 @@ import GameRewardStatus from "../components/GameRewardStatus";
 import { ThemeScope } from "../components/ThemeScope";
 import type { GameThemeId } from "../features/themes/gameThemes";
 import type { BoardFeedback } from "../features/themes/boardFeedback";
+import type { SpecialPieceGroups } from "../types";
 
 interface PlayScreenProps {
   bonusTime: BonusTimeState;
@@ -50,6 +51,7 @@ interface PlayScreenProps {
   autoUndoFlash: boolean;
   best: number;
   board: {
+    specialPieceGroups?: SpecialPieceGroups;
     feedback?: BoardFeedback | null;
     board: BoardType;
     boardMetrics: BoardMetrics;
@@ -177,6 +179,7 @@ function PlayScreenContent({
             )}
             <div className="board-combo-stage">
               <Board
+                specialPieceGroups={board.specialPieceGroups}
                 feedback={board.feedback}
                 board={board.board}
                 boardRef={board.boardRef}

@@ -14,6 +14,7 @@ import {
 } from "../features/themes/boardFeedback";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useGameTheme } from "./ThemeScope";
+import { getSpecialAppearance } from "../features/themes/specialAppearance";
 
 interface EffectCell extends FeedbackCell {
   particles: PixelParticle[];
@@ -41,6 +42,9 @@ const PixelCell = memo(function PixelCell({
           gridRow: cell.row + 1,
           gridColumn: cell.col + 1,
           "--pixel-color": getThemeTileColor(theme, cell.color),
+          "--pixel-surface": getSpecialAppearance(cell.color)
+            ? "color-mix(in srgb, var(--pixel-color) 75%, white)"
+            : "#02050b",
         } as CSSProperties
       }
     >

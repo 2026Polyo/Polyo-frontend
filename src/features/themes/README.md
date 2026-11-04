@@ -16,6 +16,7 @@
 | `boardFeedback.ts` | 성공한 배치의 위치와 제거 전 색상 스냅샷. 게임 계산과 시각 효과의 접점 |
 | `jellyFeedback.ts`, `minecraftFeedback.ts`, `catFeedback.ts` | 테마별 애니메이션 자료 계산 |
 | `catRegions.ts`, `catConnections.ts` | 흰 영역 연결·얼굴/귀 위치·표정 선택 |
+| `specialAppearance.ts` | 특수 종류 판별·고양이 털 무늬·표시용 조각 소유 정보 관리 |
 | `../../components/*BoardEffects.tsx`, `BoardEffects.tsx` | 애니메이션 표시·동시 효과 상한·타이머 정리 |
 | `../../styles/*Theme.css` | 테마 ID 아래로 범위를 제한한 스타일 |
 | `themePreview.ts`, `../../hooks/useThemePreview.ts` | 게임 저장과 독립된 로컬 미리보기 선택 |
@@ -28,6 +29,8 @@
 - 효과는 개수와 수명을 제한하고 초기화·언마운트·동작 줄이기에서 정리한다. 동일한 피드백 ID는 설정 변경만으로 다시 재생하지 않는다.
 - CSS는 `[data-game-theme]`와 전용 클래스 아래에 둔다. 필드·트레이 격자의 클릭 크기와 간격은 유지한다.
 - 새 테마를 추가할 때 `GameThemeId`, 정의와 조회, 공통 타일/효과, 시작 화면 옵션, 상점 메타데이터·임시 상품을 함께 확인한다. 상점은 공통 8×8 미리보기를 쓴다.
+- 특수 블록은 `data-special`로 구분한다. 네온의 내부 채움과 젤리 윤곽선은 필드·미니 타일·시각 효과에서 같은 종류 정보를 사용한다. 고양이는 일반 칸끼리만 자유롭게 합쳐지고, 특수 칸은 `specialPieceGroups`의 조각 uid가 같은 칸끼리 연결한다.
+- `specialPieceGroups`는 표시 전용 좌표→조각 uid 정보다. 점수나 특수 능력 판정에는 사용하지 않는다. 현재 게임·되돌리기 저장에 포함하고 제거 후 정리한다. 중력의 프레임 이동 지도에 따라 옮겨야 한다. 원래 저장에 조각 정보가 없으면 서로 다른 특수 조각을 추측해서 합치지 않고 칸별로 분리한다.
 - 이미지 자산은 `src/asset/theme/`에 포함하며 출처·파일 해시는 해당 README와 provenance를 유지한다. 게임 실행 중 원격 이미지를 가져오지 않는다.
 
 ## 추후 API 연결

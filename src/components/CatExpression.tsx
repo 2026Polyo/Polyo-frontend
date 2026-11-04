@@ -14,12 +14,17 @@ export default function CatExpression({
       viewBox="0 0 100 80"
       aria-hidden="true"
     >
-      <g fill="none" stroke="#d5cfd9" strokeWidth="5" strokeLinecap="round">
+      <g
+        fill="none"
+        stroke="var(--cat-stripes, #d5cfd9)"
+        strokeWidth="5"
+        strokeLinecap="round"
+      >
         <path d="M42 5l-2 9M51 4v10M60 5l2 9" />
       </g>
       <g
-        fill="#39323f"
-        stroke="#39323f"
+        fill="var(--cat-ink, #39323f)"
+        stroke="var(--cat-ink, #39323f)"
         strokeWidth="3.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -40,7 +45,7 @@ export default function CatExpression({
               ry="20"
               transform="rotate(12 75 34)"
             />
-            <g fill="#fff" stroke="none">
+            <g fill="var(--cat-shine, #fff)" stroke="none">
               <ellipse cx="20" cy="24" rx="9" ry="10" />
               <ellipse cx="70" cy="24" rx="9" ry="10" />
               <circle cx="31" cy="44" r="3" />
@@ -51,7 +56,7 @@ export default function CatExpression({
           <>
             <ellipse cx="25" cy="35" rx="12" ry="14" />
             <ellipse cx="75" cy="35" rx="12" ry="14" />
-            <g fill="#fff" stroke="none">
+            <g fill="var(--cat-shine, #fff)" stroke="none">
               <ellipse cx="21" cy="29" rx="4.5" ry="6" />
               <ellipse cx="71" cy="29" rx="4.5" ry="6" />
               <circle cx="30" cy="41" r="3" />
@@ -98,7 +103,7 @@ export default function CatExpression({
         {expression === "grin" && (
           <>
             <path d="M17 42q33 14 66 0q-4 27-33 27q-29 0-33-27z" fill="#fff" />
-            <path d="M31 47v16M44 51v17M57 51v17M70 47v16" fill="none" />
+            <path d="M31 47v16M44 51v17M57 51v17M70 47v16" fill="none" stroke="#39323f" />
           </>
         )}
       </g>

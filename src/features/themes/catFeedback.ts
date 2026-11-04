@@ -1,6 +1,8 @@
 import { uniqueFeedbackCells, type BoardFeedback } from "./boardFeedback";
 import { getCatConnections } from "./catConnections";
 import type { Board } from "../../types";
+import type { SpecialPieceGroups } from "../../types";
+import { catConnectionGroup } from "./specialAppearance";
 
 export const CAT_PAW_PRESS_MS = 460;
 export const CAT_PAW_STAGGER_MS = 40;
@@ -9,7 +11,11 @@ export const CAT_PAW_LIFETIME_MS =
   CAT_PAW_PRESS_MS + CAT_PAW_MAX_STAGGER_MS + 60;
 
 /** Snapshot only occupied removed cells, in upper-left row order. Never changes game clearing time. */
-export function createCatClearBatch(feedback: BoardFeedback, board: Board) {
+export function createCatClearBatch(
+  feedback: BoardFeedback,
+  board: Board,
+  groups: SpecialPieceGroups = {},
+) {
   const cells = uniqueFeedbackCells(feedback.cleared)
     .filter(({ row, col }) => Boolean(board[row]?.[col]))
     .sort((a, b) => a.row - b.row || a.col - b.col);
@@ -23,7 +29,10 @@ export function createCatClearBatch(feedback: BoardFeedback, board: Board) {
       ...cell,
       delay: index * step,
       joined: getCatConnections(
-        (r, c) => Boolean(board[r]?.[c]),
+        (r, c) =>
+          Boolean(board[r]?.[c]) &&
+          catConnectionGroup(board, groups, cell.row, cell.col) ===
+            catConnectionGroup(board, groups, r, c),
         cell.row,
         cell.col,
       ),

@@ -8,6 +8,8 @@ import MinecraftTile from "./MinecraftTile";
 import CatTile from "./CatTile";
 import { getCatConnections } from "../features/themes/catConnections";
 import CatDecorations from "./CatDecorations";
+import { getSpecialAppearance } from "../features/themes/specialAppearance";
+import { SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../features/specials";
 
 interface PieceShapeProps {
   piece: PieceInstance;
@@ -30,6 +32,11 @@ function PieceShape({
     <span
       className={`mini-grid ${className}`}
       data-game-theme={theme.id}
+      title={
+        getSpecialAppearance(piece.color)
+          ? `${SPECIAL_LABELS[getSpecialAppearance(piece.color)!]}: ${SPECIAL_SUMMARIES[getSpecialAppearance(piece.color)!]}`
+          : undefined
+      }
       style={
         {
           gridTemplateColumns: `repeat(${bounds.cols}, var(--mini-cell-size))`,
@@ -48,12 +55,18 @@ function PieceShape({
             className={`mini-cell ${filled ? filledColorClass : ""}`}
             data-col={col}
             data-filled={filled ? "true" : "false"}
+            data-special={
+              filled ? getSpecialAppearance(piece.color) : undefined
+            }
             data-row={row}
             style={filled ? getThemeTileStyle(theme, piece.color) : undefined}
             key={`${row}-${col}`}
           >
             {filled && theme.tileStyle === "cat" && (
               <CatTile
+                row={row}
+                col={col}
+                color={piece.color}
                 joined={getCatConnections(
                   (r, c) =>
                     piece.cells.some(([pr, pc]) => pr === r && pc === c),
@@ -63,7 +76,11 @@ function PieceShape({
               />
             )}
             {filled && theme.tileStyle === "jelly" && (
-              <span className="jelly-tile-face" aria-hidden="true" />
+              <span
+                className="jelly-tile-face"
+                data-special={getSpecialAppearance(piece.color)}
+                aria-hidden="true"
+              />
             )}
             {filled && theme.tileStyle === "minecraft" && (
               <MinecraftTile color={piece.color} />
@@ -77,6 +94,7 @@ function PieceShape({
           rows={bounds.rows}
           cols={bounds.cols}
           identity={piece.uid}
+          color={piece.color}
         />
       )}
     </span>

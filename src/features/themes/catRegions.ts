@@ -18,7 +18,10 @@ export interface CatRegion {
 }
 
 /** Small player-local flood fill; never reads colours, mutates the board or consumes gameplay randomness. */
-export function getCatRegions(input: readonly CatCell[]): CatRegion[] {
+export function getCatRegions(
+  input: readonly CatCell[],
+  groupAt: (row: number, col: number) => string = () => "normal",
+): CatRegion[] {
   const occupied = new Set(
     input
       .filter(
@@ -40,7 +43,10 @@ export function getCatRegions(input: readonly CatCell[]): CatRegion[] {
         [r + 1, c],
         [r, c - 1],
       ]) {
-        if (pending.delete(`${nr},${nc}`)) cells.push([nr, nc]);
+        if (pending.has(`${nr},${nc}`) && groupAt(nr, nc) === groupAt(r, c)) {
+          pending.delete(`${nr},${nc}`);
+          cells.push([nr, nc]);
+        }
       }
     }
     cells.sort(([ar, ac], [br, bc]) => ar - br || ac - bc);
@@ -51,10 +57,11 @@ export function getCatRegions(input: readonly CatCell[]): CatRegion[] {
     };
     // The mean can fall in the empty part of an L or a ring. Only allow a face
     // whose whole footprint lies inside the component, including its centre.
+    const component = new Set(cells.map(([r, c]) => `${r},${c}`));
     const fits = ({ row, col }: typeof centre) =>
       [-0.4, 0, 0.4].every((dy) =>
         [-0.4, 0, 0.4].every((dx) =>
-          occupied.has(`${Math.floor(row + dy)},${Math.floor(col + dx)}`),
+          component.has(`${Math.floor(row + dy)},${Math.floor(col + dx)}`),
         ),
       );
     const candidates = [

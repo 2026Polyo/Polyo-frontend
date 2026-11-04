@@ -35,6 +35,10 @@ import { usePieceSelection } from "./usePieceSelection";
 import { usePulseLabel } from "./usePulseLabel";
 import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
 import { createBoardFeedback, type BoardFeedback } from "../features/themes/boardFeedback";
+import {
+  normalizeSpecialPieceGroups,
+  placeSpecialPieceGroups
+} from "../features/themes/specialAppearance";
 import type {
   AugmentId,
   AugmentState,
@@ -45,6 +49,7 @@ import type {
   PieceInstance,
   PieceTemplate,
   SpecialMarks,
+  SpecialPieceGroups,
   Tray
 } from "../types";
 import type { Dispatch, SetStateAction } from "react";
@@ -113,6 +118,9 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
   }
 
   const [board, setBoard] = useState<BoardType>(() => initialGame?.board ?? cloneBoard(EMPTY_BOARD));
+  const [specialPieceGroups, setSpecialPieceGroups] = useState<SpecialPieceGroups>(
+    () => initialGame?.specialPieceGroups ?? {}
+  );
   const [deck, setDeck] = useState<string[]>(() => initialGame?.deck ?? DEFAULT_DECK);
   const [specialPieces, setSpecialPieces] = useState<PieceTemplate[]>(
     () => initialGame?.specialPieces ?? []
@@ -276,6 +284,8 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     undoSnapshot
   } = useItemSystem({
     enabled: gameMode === "normal",
+    specialPieceGroups,
+    setSpecialPieceGroups,
     augmentState,
     board,
     bombCells,
@@ -375,6 +385,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
   useEffect(() => {
     if (!noMovesLeft || !canUndo) return;
     if (!autoUndo()) return;
+    setBoardFeedback(null);
     setAutoUndoFlash(true);
     if (autoUndoTimerRef.current !== null) clearTimeout(autoUndoTimerRef.current);
     autoUndoTimerRef.current = setTimeout(() => setAutoUndoFlash(false), 1500);
@@ -387,6 +398,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       gameMode,
       bonusTime,
       augmentState: scoringAugmentState,
+      specialPieceGroups,
       board,
       bombCells,
       boostCells,
@@ -406,6 +418,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     Math.ceil(bonusTime.remainingMs / 1000),
     augmentState,
     board,
+    specialPieceGroups,
     bombCells,
     boostCells,
     deck,
@@ -500,6 +513,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     hardTickRef.current = null;
     bonusTickRef.current = null;
     setBoard(cloneBoard(EMPTY_BOARD));
+    setSpecialPieceGroups({});
     setSpecialPieces([]);
     setSpecialMarks(createSpecialMarks());
     setTray([null, null, null]);
@@ -559,6 +573,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     clearGameState();
     setGameMode("normal");
     setBoard(saved.board);
+    setSpecialPieceGroups(saved.specialPieceGroups);
     setDeck(saved.deck);
     setSpecialPieces(saved.specialPieces);
     setSpecialMarks(createSpecialMarks(saved));
@@ -619,6 +634,10 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     if (clearTier) pulseClearLabel(CLEAR_TIER_LABEL[clearTier]);
 
     setBoard(outcome.displayBoard);
+    const nextGroups = placeSpecialPieceGroups(
+      board, specialPieceGroups, piece, row, col, outcome.displayBoard
+    );
+    setSpecialPieceGroups(nextGroups);
     setClearingCells(outcome.clearingCells);
     setScore((current) => current + outcome.scoreGain);
     setSpecialMarks({
@@ -653,6 +672,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
       clearTimerRef.current = setTimeout(() => {
         setBoard(outcome.settledBoard);
+        setSpecialPieceGroups(normalizeSpecialPieceGroups(outcome.settledBoard, nextGroups));
         setClearingCells(new Set());
       }, CLEAR_HIGHLIGHT_MS);
     }
@@ -702,6 +722,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       hardTimeLimitMs,
       best,
       board: {
+        specialPieceGroups,
         feedback: boardFeedback,
         board,
         boardMetrics,
