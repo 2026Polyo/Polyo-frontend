@@ -44,6 +44,17 @@ function App() {
     }
   }, [multiplayerView]);
 
+  useEffect(() => {
+    function handleAuthExpired() {
+      setUser(null);
+      setShopOpen(false);
+      setRankingOpen(false);
+    }
+
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+    return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+  }, []);
+
   if (!user) return <AuthScreen onAuthenticated={setUser} />;
 
   const currentUser = user;
