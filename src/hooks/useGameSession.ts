@@ -29,11 +29,11 @@ import { nextTray } from "../utils/tray";
 import { getMyBestScores, saveGameScore } from "../api/scores";
 import { useComboEffect } from "./useComboEffect";
 import { useDeckBuilderState } from "./useDeckBuilderState";
-import { useGameAudio } from "./useGameAudio";
+import { useThemeAudio } from "./useThemeAudio";
 import { useItemSystem } from "./useItemSystem";
 import { usePieceSelection } from "./usePieceSelection";
 import { usePulseLabel } from "./usePulseLabel";
-import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
+import type { GameThemeId } from "../features/themes/gameThemes";
 import { createBoardFeedback, type BoardFeedback } from "../features/themes/boardFeedback";
 import {
   normalizeSpecialPieceGroups,
@@ -192,7 +192,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
   const [autoUndoFlash, setAutoUndoFlash] = useState(false);
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoUndoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const audio = useGameAudio(getGameTheme(themeId).soundMode === "legacy");
+  const audio = useThemeAudio(themeId, gamePhase === "playing");
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -631,7 +631,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       scoreMultiplier,
       comboMultiplier
     });
-    audio.playClearFeedback(outcome.cleared);
+    audio.playClearFeedback(outcome.cleared, outcome.clearingCells.size);
     setBoardFeedback(createBoardFeedback(
       ++feedbackSequence.current, piece, row, col,
       outcome.displayBoard, outcome.clearingCells

@@ -27,8 +27,8 @@ export interface GameAudio {
   playPop: () => void;
   /** The "block placed" track sound. */
   playPlacement: () => void;
-  /** Plays the good/great clear cue plus the escalating combo cue (cleared > 0). */
-  playClearFeedback: (cleared: number) => void;
+  /** Legacy uses line count; theme audio also accepts removed cells for special-block clears. */
+  playClearFeedback: (cleared: number, removedCells?: number) => void;
   /** Reset the combo-sound escalation back to the first step. */
   resetComboSound: () => void;
   playGameOver: () => void;
