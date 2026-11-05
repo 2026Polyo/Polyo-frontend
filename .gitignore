@@ -35,3 +35,6 @@ coverage/
 *.swo
 .DS_Store
 Thumbs.db
+
+
+*.tsbuildinfo
