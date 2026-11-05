@@ -15,7 +15,7 @@ import { matchRoomApi } from "./features/matchroomApi";
 import type { MatchRoomDetails } from "./features/matchroom";
 import MatchGameScreen from "./screens/MatchGameScreen";
 import MultiplayerScreen from "./screens/MultiplayerScreen";
-import { AUTH_TOKEN_KEY, AUTH_USER_KEY, type AuthUser } from "./api/auth";
+import { AUTH_EXPIRED_EVENT, AUTH_TOKEN_KEY, AUTH_USER_KEY, type AuthUser } from "./api/auth";
 import ShopScreen from "./screens/ShopScreen";
 import { useThemePreview } from "./hooks/useThemePreview";
 import { ThemeScope } from "./components/ThemeScope";
