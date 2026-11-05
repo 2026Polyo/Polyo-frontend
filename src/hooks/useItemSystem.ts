@@ -10,6 +10,10 @@ import {
   type SavedItemState
 } from "../features/items";
 import { cloneBoard, simulateGravity } from "../utils/boardUtils";
+import {
+  moveSpecialPieceGroups,
+  normalizeSpecialPieceGroups
+} from "../features/themes/specialAppearance";
 import { rerollOnePiece } from "../utils/tray";
 import type {
   AugmentState,
@@ -19,6 +23,7 @@ import type {
   ItemType,
   PieceTemplate,
   SavedGame,
+  SpecialPieceGroups,
   Tray,
   UndoSnapshot
 } from "../types";
@@ -28,6 +33,8 @@ interface UseItemSystemArgs {
   enabled: boolean;
   bonusTime: BonusTimeState;
   restoreBonusTime: (state: BonusTimeState, tray: Tray) => Tray;
+  specialPieceGroups: SpecialPieceGroups;
+  setSpecialPieceGroups: Dispatch<SetStateAction<SpecialPieceGroups>>;
   augmentState: AugmentState;
   board: Board;
   bombCells: Set<string>;
@@ -56,6 +63,8 @@ export function useItemSystem({
   enabled,
   bonusTime,
   restoreBonusTime,
+  specialPieceGroups,
+  setSpecialPieceGroups,
   augmentState,
   board,
   bombCells,
@@ -152,6 +161,7 @@ export function useItemSystem({
       bonusTime,
       augmentState,
       board: cloneBoard(board),
+      specialPieceGroups: { ...specialPieceGroups },
       bombCells: [...bombCells],
       boostCells: [...boostCells],
       ghostCells: [...ghostCells],
@@ -176,6 +186,7 @@ export function useItemSystem({
     setAugmentState(getSavedAugmentState(undoSnapshot as unknown as SavedGame));
     setBoard(cloneBoard(undoSnapshot.board));
     setTray(undoSnapshot.bonusTime ? restoreBonusTime(undoSnapshot.bonusTime, undoSnapshot.tray) : undoSnapshot.tray);
+    setSpecialPieceGroups(normalizeSpecialPieceGroups(undoSnapshot.board, undoSnapshot.specialPieceGroups));
     setScore(undoSnapshot.score);
     setGhostCells(new Set(undoSnapshot.ghostCells ?? []));
     setGoldenCells(new Set(undoSnapshot.goldenCells ?? []));
@@ -230,7 +241,7 @@ export function useItemSystem({
   function handleGravity(slotIndex: number) {
     if (isClearing || gravityAnimating || itemSlots[slotIndex] !== "gravity") return;
 
-    const { frames, finalBoard, moved } = simulateGravity(board);
+    const { frames, frameMoves, finalBoard, moved } = simulateGravity(board);
     if (!frames.length) return;
 
     clearSelection();
@@ -243,6 +254,7 @@ export function useItemSystem({
     gravityTimerRef.current = setInterval(() => {
       if (frameIndex < frames.length) {
         setBoard(frames[frameIndex]);
+        setSpecialPieceGroups(moveSpecialPieceGroups(specialPieceGroups, frameMoves[frameIndex]));
         frameIndex += 1;
         return;
       }
@@ -253,6 +265,7 @@ export function useItemSystem({
       const remap = (cells: Set<string>) =>
         new Set([...cells].flatMap((key) => (moved.has(key) ? [moved.get(key)!] : [])));
       setBoard(finalBoard);
+      setSpecialPieceGroups(moveSpecialPieceGroups(specialPieceGroups, moved));
       setGhostCells(remap);
       setGoldenCells(remap);
       setBombCells(remap);

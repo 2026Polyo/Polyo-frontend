@@ -1,0 +1,268 @@
+.play-shell[data-game-theme="theme_neon"] {
+  --surface-card: #101827;
+  --surface-card-soft: #121f30;
+  --surface-card-border: #2a3a50;
+  --text-strong: #dfebf6;
+  --text-body: #bdcbdc;
+  --text-muted: #8294ad;
+  --text-on-accent: #e3f3ff;
+  --tray-slot: #0b111e;
+  --tray-slot-border: #27364d;
+  --tray-slot-hover: #142239;
+  --tray-slot-empty: #070d16;
+  --panel-dark: #101b2b;
+  --panel-dark-border: #293d56;
+  --panel-slot: #17263b;
+  --panel-slot-hover: #20334d;
+  --panel-slot-empty: #0c1523;
+  background: #060a12;
+  color: var(--text-body);
+}
+
+.board[data-game-theme="theme_neon"] {
+  isolation: isolate;
+  background: #040712;
+  border-color: transparent;
+  border-radius: 3px;
+  box-shadow: 0 16px 40px #00000060;
+}
+
+.board[data-game-theme="theme_neon"]::before,
+.shop-preview-neon .shop-preview-board::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  /* 네 모서리는 연결하지 않고 네 개의 직선만 표시한다. */
+  background:
+    linear-gradient(#fff, #fff) center top /
+      calc(100% - var(--field-line-gap, 24px)) 1px no-repeat,
+    linear-gradient(#fff, #fff) center bottom /
+      calc(100% - var(--field-line-gap, 24px)) 1px no-repeat,
+    linear-gradient(#fff, #fff) left center / 1px
+      calc(100% - var(--field-line-gap, 24px)) no-repeat,
+    linear-gradient(#fff, #fff) right center / 1px
+      calc(100% - var(--field-line-gap, 24px)) no-repeat;
+  opacity: 0.2;
+  animation: neon-field-pulse 4.2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes neon-field-pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.theme-field-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.theme-field-image {
+  position: absolute;
+  left: var(--field-image-position-x);
+  top: var(--field-image-position-y);
+  /* 높이만 정해 원본 비율을 유지하고 주 피사체를 같은 위치에 고정한다. */
+  width: auto;
+  max-width: none;
+  height: var(--field-image-height);
+  transform: translate(
+    calc(-1 * var(--field-image-focus-x)),
+    calc(-1 * var(--field-image-focus-y))
+  );
+  opacity: 0.94;
+  pointer-events: none;
+}
+
+.board[data-game-theme="theme_neon"] .board-cell {
+  position: relative;
+  background: #04071224;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px #879ab614;
+}
+
+.board[data-game-theme="theme_neon"] .board-cell[data-filled="true"],
+.mini-grid[data-game-theme="theme_neon"] .mini-cell[data-filled="true"] {
+  background: #02050b;
+  border: 0;
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--theme-tile-color) 50%, white),
+    inset 0 0 0 2px var(--theme-tile-color),
+    inset 0 0 8px color-mix(in srgb, var(--theme-tile-color) 10%, transparent),
+    0 0 5px color-mix(in srgb, var(--theme-tile-color) 75%, transparent),
+    0 0 14px color-mix(in srgb, var(--theme-tile-color) 30%, transparent);
+}
+
+.board[data-game-theme="theme_neon"] .board-cell.piece-ghost,
+.mini-grid[data-game-theme="theme_neon"] .mini-cell.piece-ghost {
+  border: 1px dashed var(--theme-tile-color);
+}
+
+.board[data-game-theme="theme_neon"]
+  .board-cell[data-filled="true"][data-special],
+.mini-grid[data-game-theme="theme_neon"]
+  .mini-cell[data-filled="true"][data-special] {
+  background: radial-gradient(
+    ellipse at 35% 28%,
+    color-mix(in srgb, var(--theme-tile-color) 48%, white),
+    var(--theme-tile-color)
+  );
+  box-shadow:
+    inset 0 0 0 1px #ffffffb3,
+    inset 0 0 0 2px var(--theme-tile-color),
+    0 0 8px color-mix(in srgb, var(--theme-tile-color) 80%, transparent),
+    0 0 18px color-mix(in srgb, var(--theme-tile-color) 40%, transparent);
+}
+
+.board[data-game-theme="theme_neon"] .board-cell.preview {
+  opacity: 0.7;
+}
+
+.board[data-game-theme="theme_neon"] .board-cell.preview-clearing {
+  outline: 1px solid #fff;
+  outline-offset: -4px;
+}
+
+.board[data-game-theme="theme_neon"] .board-cell.clearing {
+  animation: none;
+  opacity: 0;
+}
+
+.board-pixel-effects {
+  position: absolute;
+  inset: var(--board-padding, 10px);
+  overflow: clip;
+  overflow-clip-margin: var(--board-padding, 10px);
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: var(--board-gap, 3px);
+  pointer-events: none;
+  z-index: 4;
+}
+
+.pixel-effect-batch {
+  display: contents;
+}
+.pixel-effect-cell {
+  position: relative;
+  min-width: 0;
+}
+.pixel-effect-cell > i {
+  position: absolute;
+  display: block;
+  border-radius: 0;
+  animation-fill-mode: both;
+  animation-delay: var(--pixel-delay);
+  animation-duration: var(--pixel-duration);
+  aspect-ratio: 1;
+  pointer-events: none;
+}
+
+.pixel-effect-place > i {
+  translate: -50% -50%;
+  background: var(--pixel-color);
+  box-shadow: 0 0 2px var(--pixel-color);
+  animation-name: neon-pixel-burst;
+  animation-timing-function: cubic-bezier(0.16, 0.55, 0.36, 1);
+}
+
+.pixel-effect-clear > i {
+  /* 외곽 조각만 원래 타일의 네온 선을 가진다. 내부에 새 격자선을 만들지 않는다. */
+  background: #02050b;
+  color: var(--pixel-color);
+  border-style: solid;
+  border-color: color-mix(in srgb, currentColor 50%, white);
+  border-width: var(--melt-top) var(--melt-right) var(--melt-bottom)
+    var(--melt-left);
+  box-shadow:
+    inset var(--melt-left) 0 0 currentColor,
+    inset calc(-1 * var(--melt-right)) 0 0 currentColor,
+    inset 0 var(--melt-top) 0 currentColor,
+    inset 0 calc(-1 * var(--melt-bottom)) 0 currentColor;
+  transform-origin: center bottom;
+  animation-name: neon-pixel-melt;
+  animation-timing-function: linear;
+}
+
+@keyframes neon-pixel-burst {
+  0% {
+    opacity: 0.95;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--pixel-x), var(--pixel-y)) scale(0);
+  }
+}
+
+@keyframes neon-pixel-melt {
+  0% {
+    background-color: var(--pixel-surface, #02050b);
+    color: var(--pixel-color);
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  38% {
+    background-color: #fff;
+    color: #fff;
+    opacity: 0.9;
+    transform: translate(0, 0) scale(1);
+  }
+  72% {
+    background-color: #fff;
+    color: #fff;
+    opacity: 0.5;
+    transform: translate(
+        calc(var(--pixel-x) * 0.35),
+        calc(var(--pixel-y) * 0.3)
+      )
+      scale(0.5);
+  }
+  100% {
+    background-color: #fff;
+    color: #fff;
+    opacity: 0;
+    transform: translate(var(--pixel-x), var(--pixel-y)) scale(0);
+  }
+}
+
+.theme-preview-select {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--text-strong);
+}
+.theme-preview-select select {
+  padding: 8px 12px;
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-card);
+  color: var(--text-strong);
+  font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board[data-game-theme="theme_neon"]::before,
+  .shop-preview-neon .shop-preview-board::before {
+    animation: none;
+    opacity: 0.32;
+  }
+  .board-pixel-effects {
+    display: none;
+  }
+  .board[data-game-theme="theme_neon"] .board-cell.clearing {
+    opacity: 0.25;
+  }
+}

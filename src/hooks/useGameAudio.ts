@@ -35,7 +35,7 @@ export interface GameAudio {
   playPopup: () => void;
 }
 
-export function useGameAudio(): GameAudio {
+export function useGameAudio(enabled = true): GameAudio {
   const ctxRef = useRef<AudioContext | null>(null);
   const trackRef = useRef<AudioBuffer | null>(null);
   const popRef = useRef<AudioBuffer | null>(null);
@@ -48,6 +48,7 @@ export function useGameAudio(): GameAudio {
   const gameOverRef = useRef<AudioBuffer | null>(null);
 
   useEffect(() => {
+    if (!enabled || typeof AudioContext === "undefined") return;
     const ctx = new AudioContext();
     ctxRef.current = ctx;
     const decode = (url: string) =>
@@ -69,12 +70,15 @@ export function useGameAudio(): GameAudio {
       .catch(() => undefined);
     decode(gameOverSound).then((decoded) => { gameOverRef.current = decoded; }).catch(() => undefined);
 
-    return () => { ctx.close().catch(() => undefined); };
-  }, []);
+    return () => {
+      if (ctxRef.current === ctx) ctxRef.current = null;
+      ctx.close().catch(() => undefined);
+    };
+  }, [enabled]);
 
   function play(buffer: AudioBuffer | null | undefined) {
     const ctx = ctxRef.current;
-    if (!ctx || !buffer) return;
+    if (!enabled || !ctx || ctx.state === "closed" || !buffer) return;
     const src = ctx.createBufferSource();
     src.buffer = buffer;
     src.connect(ctx.destination);

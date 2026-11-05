@@ -5,6 +5,7 @@ import { getSavedAugmentState } from "./augments";
 import { getSavedItemState, type SavedItemState } from "./items";
 import { isValidSpecialPiece } from "./specials";
 import { cloneBoard } from "../utils/boardUtils";
+import { normalizeSpecialPieceGroups } from "./themes/specialAppearance";
 import type {
   AugmentState,
   BonusTimeState,
@@ -14,6 +15,7 @@ import type {
   PieceInstance,
   PieceTemplate,
   SavedGame,
+  SpecialPieceGroups,
   Tray,
   UndoSnapshot
 } from "../types";
@@ -21,6 +23,7 @@ import type {
 export interface LoadedGame extends SavedItemState {
   gameMode: GameMode;
   bonusTime: BonusTimeState;
+  specialPieceGroups: SpecialPieceGroups;
   augmentState: AugmentState;
   board: Board;
   bombCells: string[];
@@ -37,6 +40,7 @@ export interface LoadedGame extends SavedItemState {
 export interface CurrentGameSnapshot {
   gameMode: GameMode;
   bonusTime: BonusTimeState;
+  specialPieceGroups?: SpecialPieceGroups;
   augmentState: AugmentState;
   board: Board;
   bombCells: Set<string>;
@@ -109,6 +113,9 @@ export function loadSavedGame(): LoadedGame | null {
       bonusTime: getSavedBonusTime(savedGame.bonusTime, isValidTray),
       augmentState: getSavedAugmentState(savedGame),
       board: cloneBoard(savedGame.board as Board),
+      specialPieceGroups: normalizeSpecialPieceGroups(
+        savedGame.board as Board, savedGame.specialPieceGroups
+      ),
       bombCells: toStringArray(savedGame.bombCells),
       boostCells: toStringArray(savedGame.boostCells),
       deck: isValidDeck(savedGame.deck) ? normalizeSavedDeck(savedGame.deck) : DEFAULT_DECK,
@@ -140,6 +147,7 @@ export function clearSavedGame(): void {
 export function saveCurrentGame({
   gameMode,
   bonusTime,
+  specialPieceGroups,
   augmentState,
   board,
   bombCells,
@@ -163,6 +171,7 @@ export function saveCurrentGame({
         bonusTime,
         augmentState,
         board,
+        specialPieceGroups: normalizeSpecialPieceGroups(board, specialPieceGroups),
         bombCells: [...bombCells],
         boostCells: [...boostCells],
         deck,

@@ -1,10 +1,12 @@
+import { useEffect, useRef, useState } from "react";
 import "./styles/App.css";
 import "./styles/AuthScreen.css";
 import "./styles/StartScreen.css";
+import "./styles/RankingScreen.css";
 import "./styles/AutoUndoFlash.css";
-import { useEffect, useRef, useState } from "react";
 import AuthScreen from "./components/AuthScreen";
 import StartScreen from "./components/StartScreen";
+import RankingScreen from "./components/RankingScreen";
 import { useGameSession } from "./hooks/useGameSession";
 import PlayScreen from "./screens/PlayScreen";
 import CreateRoomScreen from "./screens/CreateRoomScreen";
@@ -14,15 +16,22 @@ import type { MatchRoomDetails } from "./features/matchroom";
 import MatchGameScreen from "./screens/MatchGameScreen";
 import MultiplayerScreen from "./screens/MultiplayerScreen";
 import { AUTH_TOKEN_KEY, AUTH_USER_KEY, type AuthUser } from "./api/auth";
+import ShopScreen from "./screens/ShopScreen";
+import { useThemePreview } from "./hooks/useThemePreview";
+import { ThemeScope } from "./components/ThemeScope";
 
 function App() {
+  const [shopOpen, setShopOpen] = useState(false);
+  const [rankingOpen, setRankingOpen] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(() => {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
     const storedUser = localStorage.getItem(AUTH_USER_KEY);
     if (!token || !storedUser) return null;
     try { return JSON.parse(storedUser) as AuthUser; } catch { return null; }
   });
-  const { gamePhase, playScreenProps, startScreenProps } = useGameSession(Boolean(user));
+  const { themeId, selectTheme } = useThemePreview();
+  const { gamePhase, playScreenProps, startScreenProps } =
+    useGameSession(Boolean(user), themeId);
   const [multiplayerView, setMultiplayerView] = useState<"home" | "lobby" | "create">("home");
   // Restored after a refresh, so a running match picks up where it was instead of being abandoned.
   const [activeRoom, setActiveRoom] = useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
@@ -51,6 +60,17 @@ function App() {
     }} room={activeRoom} user={user} />;
   }
 
+  if (shopOpen)
+    return (
+      <ShopScreen
+        onGoHome={() => setShopOpen(false)}
+        onSelectPreviewTheme={(id) => {
+          selectTheme(id);
+          setShopOpen(false);
+        }}
+      />
+    );
+
   if (gamePhase === "start") {
     if (multiplayerView === "create") {
       return (
@@ -70,17 +90,31 @@ function App() {
         setMultiplayerView("home");
       }} onCreateRoom={() => setMultiplayerView("create")} onEnterRoom={enterRoom} />;
     }
+    if (rankingOpen) {
+      return (
+        <ThemeScope themeId={themeId}>
+          <RankingScreen currentUserId={user.id} onBack={() => setRankingOpen(false)} />
+        </ThemeScope>
+      );
+    }
+
     return (
-      <StartScreen
-        {...startScreenProps}
-        onLogout={() => {
-          localStorage.removeItem(AUTH_TOKEN_KEY);
-          localStorage.removeItem(AUTH_USER_KEY);
-          clearActiveRoom();
-          setUser(null);
-        }}
-        onMultiplayer={() => setMultiplayerView("lobby")}
-      />
+      <ThemeScope themeId={themeId}>
+        <StartScreen
+          {...startScreenProps}
+          onMultiplayer={() => setMultiplayerView("lobby")}
+          onOpenRanking={() => setRankingOpen(true)}
+          onOpenShop={() => setShopOpen(true)}
+          themeId={themeId}
+          onThemeChange={selectTheme}
+          onLogout={() => {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            clearActiveRoom();
+            setUser(null);
+          }}
+        />
+      </ThemeScope>
     );
   }
 
