@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import trackSound from "../asset/sound/track.mp3";
 import popSound from "../asset/sound/pop.mp3";
 import popupSound from "../asset/sound/popup.mp3";
@@ -35,8 +35,9 @@ export interface GameAudio {
   playPopup: () => void;
 }
 
-export function useGameAudio(enabled = true): GameAudio {
-  const ctxRef = useRef<AudioContext | null>(null);
+export function useGameAudio(enabled = true, sharedContext?: RefObject<AudioContext | null>): GameAudio {
+  const ownContext = useRef<AudioContext | null>(null);
+  const ctxRef = sharedContext ?? ownContext;
   const trackRef = useRef<AudioBuffer | null>(null);
   const popRef = useRef<AudioBuffer | null>(null);
   const popupRef = useRef<AudioBuffer | null>(null);
@@ -49,32 +50,40 @@ export function useGameAudio(enabled = true): GameAudio {
 
   useEffect(() => {
     if (!enabled || typeof AudioContext === "undefined") return;
-    const ctx = new AudioContext();
+    let ctx: AudioContext;
+    try { ctx = new AudioContext(); } catch { return; }
+    let disposed = false;
     ctxRef.current = ctx;
     const decode = (url: string) =>
-      fetch(url).then((res) => res.arrayBuffer()).then((buf) => ctx.decodeAudioData(buf));
-    decode(trackSound).then((decoded) => { trackRef.current = decoded; }).catch(() => undefined);
-    decode(popSound).then((decoded) => { popRef.current = decoded; }).catch(() => undefined);
-    decode(popupSound).then((decoded) => { popupRef.current = decoded; }).catch(() => undefined);
+      fetch(url).then((res) => {
+        if (!res.ok) throw new Error("Audio unavailable");
+        return res.arrayBuffer();
+      }).then((buf) => ctx.decodeAudioData(buf));
+    decode(trackSound).then((decoded) => { if (!disposed) trackRef.current = decoded; }).catch(() => undefined);
+    decode(popSound).then((decoded) => { if (!disposed) popRef.current = decoded; }).catch(() => undefined);
+    decode(popupSound).then((decoded) => { if (!disposed) popupRef.current = decoded; }).catch(() => undefined);
     Promise.all([decode(goodM), decode(goodFm)])
-      .then((buffers) => { goodRef.current = buffers; })
+      .then((buffers) => { if (!disposed) goodRef.current = buffers; })
       .catch(() => undefined);
     Promise.all([decode(greatM), decode(greatFm)])
-      .then((buffers) => { greatRef.current = buffers; })
+      .then((buffers) => { if (!disposed) greatRef.current = buffers; })
       .catch(() => undefined);
     Promise.all([decode(excellentM), decode(excellentFm)])
-      .then((buffers) => { excellentRef.current = buffers; })
+      .then((buffers) => { if (!disposed) excellentRef.current = buffers; })
       .catch(() => undefined);
     Promise.all(COMBO_SOUNDS.map(decode))
-      .then((buffers) => { comboRef.current = buffers; })
+      .then((buffers) => { if (!disposed) comboRef.current = buffers; })
       .catch(() => undefined);
-    decode(gameOverSound).then((decoded) => { gameOverRef.current = decoded; }).catch(() => undefined);
+    decode(gameOverSound).then((decoded) => { if (!disposed) gameOverRef.current = decoded; }).catch(() => undefined);
 
     return () => {
+      disposed = true;
       if (ctxRef.current === ctx) ctxRef.current = null;
+      trackRef.current = popRef.current = popupRef.current = gameOverRef.current = null;
+      goodRef.current = []; greatRef.current = []; excellentRef.current = []; comboRef.current = [];
       ctx.close().catch(() => undefined);
     };
-  }, [enabled]);
+  }, [enabled, ctxRef]);
 
   function play(buffer: AudioBuffer | null | undefined) {
     const ctx = ctxRef.current;
