@@ -234,6 +234,11 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
 
   return (
     <main className={`app-shell play-shell match-shell${selection.cursorPoint ? " has-cursor-piece" : ""}`}>
+      {playing && (
+        <button className="secondary-action match-forfeit" onClick={match.forfeit} type="button">
+          <Flag aria-hidden="true" size={18} />기권
+        </button>
+      )}
       <section className="game-area">
         <ScoreBoard score={me.score} />
         <div className={`bonus-status hard-status match-turn-status${myTurn ? " is-active" : ""}`}>
@@ -301,11 +306,6 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
               {!myTurn ? "상대 차례에는 블록을 놓을 수 없어요"
                 : selectedPiece ? "놓을 칸을 누르세요 · 블록을 다시 누르면 선택 취소" : "블록을 끌어 놓거나, 블록과 놓을 칸을 차례로 누르세요"}
             </p>
-            {playing && (
-              <button className="secondary-action match-forfeit" onClick={match.forfeit} type="button">
-                <Flag aria-hidden="true" size={18} />기권
-              </button>
-            )}
           </div>
         </div>
         {selection.cursorPiece && selection.cursorPoint && selection.cursorAnchorOffset && (
