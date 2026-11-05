@@ -99,9 +99,28 @@ describe("restrained jelly and varied cat vocals", () => {
     const player = createThemeAudioPlayer(ctx, JELLY_THEME.sounds, () => 0.3);
     for (let i = 0; i < 10; i++) player.play("placement");
     player.play("clear", 4);
-    expect(sources.every(s => s.buffer!.duration <= 0.33)).toBe(true);
-    expect(gains.every(g => g.gain.value <= 0.42)).toBe(true);
+    expect(sources.every(s => s.buffer!.duration <= 0.35)).toBe(true);
+    expect(gains.every(g => g.gain.value <= 0.52)).toBe(true);
     expect(sources.filter(s => !s.stop.mock.calls.length)).toHaveLength(3);
     player.dispose();
+  });
+  it("keeps every jelly variation audible above the weak-bass range at its actual playback gain", () => {
+    for (const event of ["placement", "clear"] as const) {
+      const cue = JELLY_THEME.sounds[event];
+      if (cue?.kind !== "synth") throw Error("Jelly synthesis cue missing");
+      for (let variant = 0; variant < (cue.variants ?? 1); variant++) {
+        const pcm = createThemeSound(cue.preset, 48000, variant);
+        const alpha = Math.exp(-2 * Math.PI * 450 / 48000);
+        let energy = 0, highEnergy = 0, previous = 0, high = 0;
+        for (const sample of pcm) {
+          const value = sample * cue.volume;
+          high = alpha * (high + value - previous); previous = value;
+          energy += value * value; highEnergy += high * high;
+        }
+        // Proxy for small-speaker audibility: preserve energy outside deep bass.
+        expect(Math.sqrt(highEnergy / pcm.length)).toBeGreaterThan(0.03);
+        expect(highEnergy / energy).toBeGreaterThan(0.22);
+      }
+    }
   });
 });

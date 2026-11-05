@@ -19,8 +19,8 @@ export function getThemeSoundDuration(preset: ThemeSynthPreset, variant = 0): nu
   if (preset === "neon-clear") return 1.12;
   if (preset === "cat-placement") return CAT_LENGTHS[variantIndex(variant)];
   if (preset === "cat-clear") return 0.34;
-  if (preset === "jelly-placement") return 0.19;
-  if (preset === "jelly-clear") return 0.32;
+  if (preset === "jelly-placement") return 0.23;
+  if (preset === "jelly-clear") return 0.34;
   if (preset === "mc-pickup") return 0.13;
   if (preset.endsWith("-hit")) return 0.08;
   if (preset.startsWith("mc-amethyst_block")) return 0.32;
@@ -79,11 +79,16 @@ export function createThemeSound(preset: ThemeSynthPreset, sampleRate: number, v
       value = (Math.sin(phase) * 0.36 + Math.sin(phase * 1.5) * 0.08 + low * 0.12) * Math.sin(Math.PI * p) ** 1.4;
     } else if (preset === "jelly-placement" || preset === "jelly-clear") {
       const clear = preset === "jelly-clear";
-      phase += 2 * Math.PI * (95 + v * 8 + (clear ? 170 : 110) * Math.exp(-t * 22)) / sampleRate;
+      // Put the elastic body in the audible mids, with a small damped wobble.
+      const wobble = 24 * Math.sin(2 * Math.PI * 20 * t) * Math.exp(-t * 15);
+      phase += 2 * Math.PI * ((clear ? 330 : 310) + v * 11
+        + (clear ? 180 : 210) * Math.exp(-t * 22) + wobble) / sampleRate;
       low += (noise - low) * noiseAlpha;
-      const bounce = Math.sin(phase) * 0.53 + Math.sin(phase * 2.03) * 0.07;
-      const swipe = clear ? low * 0.09 * Math.exp(-t * 55) : 0;
-      value = (bounce + swipe) * Math.exp(-t * (clear ? 13 : 23));
+      const bounce = Math.sin(phase) * 0.38;
+      const skin = Math.sin(phase * 2.08) * 0.19 * Math.exp(-t * 5);
+      const pop = Math.sin(2 * Math.PI * (1100 * t - 250 * t * t)) * 0.13 * Math.exp(-t * 22);
+      const swipe = clear ? low * 0.035 * Math.exp(-t * 40) : 0;
+      value = (bounce + skin + pop + swipe) * Math.exp(-t * (clear ? 10 : 14));
     } else if (preset === "mc-pickup") {
       phase += 2 * Math.PI * (470 + 1550 * Math.exp(-t * 36)) / sampleRate;
       value = (Math.sin(phase) * 0.55 + Math.sin(phase * 1.98) * 0.08) * Math.exp(-t * 34);

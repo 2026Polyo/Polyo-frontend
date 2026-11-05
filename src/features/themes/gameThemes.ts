@@ -110,8 +110,8 @@ export const JELLY_THEME: GameTheme = {
   effects: "jelly",
   soundMode: "custom",
   sounds: {
-    placement: { kind: "synth", preset: "jelly-placement", volume: 0.42, variants: 3 },
-    clear: { kind: "synth", preset: "jelly-clear", volume: 0.38, variants: 2 },
+    placement: { kind: "synth", preset: "jelly-placement", volume: 0.52, variants: 3 },
+    clear: { kind: "synth", preset: "jelly-clear", volume: 0.48, variants: 2 },
   },
   background: null,
 };
