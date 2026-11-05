@@ -1,6 +1,6 @@
 import PiecePreview from "./PiecePreview";
 import "../styles/PieceTray.css";
-import type { PieceInstance, Tray, CellCoord } from "../types";
+import type { PieceInstance, CellCoord } from "../types";
 
 interface PieceTrayProps {
   disabled: boolean;
@@ -8,7 +8,8 @@ interface PieceTrayProps {
   onPieceSelect: (piece: PieceInstance, event: React.PointerEvent<HTMLButtonElement>, anchorCell: CellCoord) => void;
   onPieceActivate: (piece: PieceInstance) => void;
   selectedId: string | null;
-  tray: Tray;
+  /** Three slots in solo play; the match shares six. */
+  tray: readonly (PieceInstance | null)[];
 }
 
 function PieceTray({
