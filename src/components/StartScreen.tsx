@@ -1,4 +1,4 @@
-import { Layers, LogOut, Play, Trophy, ShoppingBag } from "lucide-react";
+import { Layers, LogOut, Play, Trophy, ShoppingBag, Users } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
 import type { GameMode, PieceTemplate } from "../types";
 import type { GameThemeId } from "../features/themes/gameThemes";
@@ -44,6 +44,7 @@ interface StartScreenProps {
   onAddSpecial: (id: string) => void;
   onCloseDeck: () => void;
   onContinue: () => void;
+  onMultiplayer: () => void;
   onNewGame: () => void;
   onOpenDeck: () => void;
   onOpenRanking: () => void;
@@ -73,6 +74,7 @@ function StartScreen({
   onAddSpecial,
   onCloseDeck,
   onContinue,
+  onMultiplayer,
   onNewGame,
   onOpenDeck,
   onOpenRanking,
@@ -113,6 +115,10 @@ function StartScreen({
           <button aria-label="새 게임" className="primary-action" onClick={onNewGame} type="button">
             <Play size={20} aria-hidden="true" />
             새 게임
+          </button>
+          <button className="secondary-action" id="start-multiplayer" onClick={onMultiplayer} type="button">
+            <Users size={20} aria-hidden="true" />
+            멀티
           </button>
           <button className="start-deck-action" onClick={onOpenDeck} type="button">
             <Layers size={20} aria-hidden="true" />
