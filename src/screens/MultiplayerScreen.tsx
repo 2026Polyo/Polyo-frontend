@@ -1,7 +1,6 @@
-import { ArrowLeft, ChevronLeft, ChevronRight, Hash, LoaderCircle, Lock, LogIn, Plus, RefreshCw, Swords, Users } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Hash, LoaderCircle, Lock, LogIn, Plus, RefreshCw, Users } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import JoinRoomDialog from "../components/JoinRoomDialog";
-import MatchRoomResult from "../components/MatchRoomResult";
 import type { MatchRoomApi, MatchRoomDetails } from "../features/matchroom";
 import { useMatchRoomLobby } from "../hooks/useMatchRoomLobby";
 import "../styles/CreateRoomScreen.css";
@@ -20,7 +19,12 @@ function MultiplayerScreen({ api, onBack, onCreateRoom, onEnterRoom }: Multiplay
   const headingRef = useRef<HTMLHeadingElement>(null);
   const codeTriggerRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => { headingRef.current?.focus(); }, [lobby.joinedRoom, lobby.page]);
+  useEffect(() => { headingRef.current?.focus(); }, [lobby.page]);
+
+  // A joined room goes straight to its waiting room instead of a confirmation step.
+  useEffect(() => {
+    if (lobby.joinedRoom) onEnterRoom(lobby.joinedRoom);
+  }, [lobby.joinedRoom, onEnterRoom]);
 
   function openCode(trigger: HTMLElement) {
     if (lobby.joining) return;
@@ -45,31 +49,16 @@ function MultiplayerScreen({ api, onBack, onCreateRoom, onEnterRoom }: Multiplay
         <div className="multiplayer-heading">
           <div className="multiplayer-title-group">
             <button aria-label="메인 화면으로" className="room-close" disabled={lobby.joining} onClick={onBack} type="button"><ArrowLeft aria-hidden="true" size={24} /></button>
-            <div><h1 id="multiplayer-title" ref={headingRef} tabIndex={-1}>{lobby.joinedRoom ? "접속 완료" : "멀티"}</h1><p>{lobby.joinedRoom ? "참가자와 입장 코드를 확인해 보세요." : "함께할 방을 찾아보세요."}</p></div>
+            <div><h1 id="multiplayer-title" ref={headingRef} tabIndex={-1}>멀티</h1><p>함께할 방을 찾아보세요.</p></div>
           </div>
-          {!lobby.joinedRoom && (
-            <div className="multiplayer-top-actions room-actions">
+          <div className="multiplayer-top-actions room-actions">
               <button className="secondary-action" disabled={lobby.joining} id="lobby-join-code" onClick={(event) => openCode(event.currentTarget)} type="button"><Hash aria-hidden="true" size={20} />코드로 접속</button>
               <button className="primary-action room-submit" disabled={lobby.joining} id="lobby-create-room" onClick={onCreateRoom} type="button"><Plus aria-hidden="true" size={20} />방 만들기</button>
-            </div>
-          )}
+          </div>
         </div>
         <div className="room-divider" />
 
-        {lobby.joinedRoom ? (
-          <div className="multiplayer-result">
-            <MatchRoomResult room={lobby.joinedRoom} title="방에 접속했어요." />
-            <div className="multiplayer-members">
-              <h2>참가자</h2>
-              <ul>{lobby.joinedRoom.members.map((member) => <li key={member.userId}><Users aria-hidden="true" size={18} /><span>{member.nickname}</span>{member.userId === lobby.joinedRoom?.hostUserId && <span className="multiplayer-badge">방장</span>}</li>)}</ul>
-            </div>
-            <div className="room-actions">
-              <button className="secondary-action" onClick={lobby.returnToList} type="button">방 목록으로</button>
-              <button className="primary-action room-submit" onClick={() => { if (lobby.joinedRoom) onEnterRoom(lobby.joinedRoom); }} type="button"><Swords aria-hidden="true" size={20} />대전 입장</button>
-            </div>
-          </div>
-        ) : (
-          <>
+        <>
             <div className="multiplayer-list-heading">
               <div><h2>방 목록</h2><span>{lobby.data ? `총 ${lobby.data.totalElements}개 · 최신순` : "최신순"}</span></div>
               <button className="multiplayer-refresh" disabled={lobby.loading || lobby.joining} onClick={lobby.refresh} type="button"><RefreshCw aria-hidden="true" size={18} />새로고침</button>
@@ -113,8 +102,7 @@ function MultiplayerScreen({ api, onBack, onCreateRoom, onEnterRoom }: Multiplay
                 <button aria-label="다음 페이지" className="room-close" disabled={lobby.page + 1 >= lobby.data.totalPages || lobby.joining} onClick={() => lobby.setPage(lobby.page + 1)} type="button"><ChevronRight aria-hidden="true" size={20} /></button>
               </nav>
             )}
-          </>
-        )}
+        </>
       </section>
       {codeOpen && <JoinRoomDialog busy={lobby.joining} error={lobby.joinError} onClose={closeCode} onSubmit={async (entryCode) => {
         const success = await lobby.joinByCode(entryCode);

@@ -67,16 +67,9 @@ export function useMatchRoomLobby(api: MatchRoomApi) {
     setRevision((current) => current + 1);
   }
 
-  function returnToList() {
-    joinedRef.current = false;
-    setJoinedRoom(null);
-    setJoinError(null);
-    refresh();
-  }
-
   return {
     page, data, loading, listError, joinError, joining, joiningRoomId, joinedRoom,
-    setPage, refresh, returnToList,
+    setPage, refresh,
     clearJoinError: () => setJoinError(null),
     joinById: (roomId: number) => join((signal) => api.joinById(roomId, signal), roomId),
     joinByCode: (entryCode: string) => join((signal) => api.joinByCode(entryCode, signal), null)
