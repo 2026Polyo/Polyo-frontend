@@ -96,6 +96,6 @@ describe("cat connected surfaces", () => {
     expect(new Set(Object.values(getGameTheme("theme_cat").palette))).toEqual(
       new Set(["#ffffff"]),
     );
-    expect(getGameTheme("theme_cat").soundMode).toBe("pending");
+    expect(getGameTheme("theme_cat").soundMode).toBe("custom");
   });
 });

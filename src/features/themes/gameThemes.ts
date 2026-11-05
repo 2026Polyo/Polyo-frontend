@@ -1,7 +1,9 @@
 import spaceImage from "../../asset/theme/neon-space.jpg";
+import catMeow from "../../asset/sound/cat/meow.mp3";
 import type { CSSProperties } from "react";
 import { MINECRAFT_MATERIALS } from "./minecraftMaterials";
 import { colorClass } from "../../constants/gameData";
+import type { ThemeSynthPreset } from "./themeSoundSynthesis";
 
 export type GameThemeId =
   | "theme_classic"
@@ -11,10 +13,11 @@ export type GameThemeId =
   | "theme_cat";
 export type ThemeSoundEvent = "placement" | "clear";
 
-export interface ThemeSoundCue {
-  src: string;
-  volume: number;
-}
+export type ThemeSoundCue =
+  | { kind: "file"; src: string; volume: number; playbackRates?: readonly number[] }
+  | { kind: "files"; sources: readonly string[]; volume: number; rate?: number }
+  | { kind: "synth"; preset: ThemeSynthPreset; volume: number; variants?: number }
+  | { kind: "minecraft"; volume: number };
 
 export interface GameTheme {
   id: GameThemeId;
@@ -22,7 +25,7 @@ export interface GameTheme {
   tileStyle: "classic" | "neon" | "jelly" | "minecraft" | "cat";
   palette: Readonly<Record<string, string>>;
   effects: "classic" | "pixel" | "jelly" | "minecraft" | "cat";
-  soundMode: "legacy" | "pending";
+  soundMode: "legacy" | "custom" | "pending";
   sounds: Readonly<Record<ThemeSoundEvent, ThemeSoundCue | null>>;
   background: {
     src: string;
@@ -69,8 +72,11 @@ export const NEON_THEME: GameTheme = {
     boost: "#ff71e7",
   },
   effects: "pixel",
-  soundMode: "pending",
-  sounds: { placement: null, clear: null },
+  soundMode: "custom",
+  sounds: {
+    placement: { kind: "synth", preset: "neon-placement", volume: 0.28 },
+    clear: { kind: "synth", preset: "neon-clear", volume: 0.32 },
+  },
   background: {
     src: spaceImage,
     focalPoint: { x: 67, y: 39.5 },
@@ -104,8 +110,11 @@ export const JELLY_THEME: GameTheme = {
     boost: "#ed83b3",
   },
   effects: "jelly",
-  soundMode: "pending",
-  sounds: { placement: null, clear: null },
+  soundMode: "custom",
+  sounds: {
+    placement: { kind: "synth", preset: "jelly-placement", volume: 0.52, variants: 3 },
+    clear: { kind: "synth", preset: "jelly-clear", volume: 0.48, variants: 2 },
+  },
   background: null,
 };
 
@@ -120,8 +129,8 @@ export const MINECRAFT_THEME: GameTheme = {
     ]),
   ),
   effects: "minecraft",
-  soundMode: "pending",
-  sounds: { placement: null, clear: null },
+  soundMode: "custom",
+  sounds: { placement: { kind: "minecraft", volume: 0.46 }, clear: { kind: "minecraft", volume: 0.4 } },
   background: null,
 };
 
@@ -133,8 +142,16 @@ export const CAT_THEME: GameTheme = {
     Object.keys(colorClass).map((color) => [color, "#ffffff"]),
   ),
   effects: "cat",
-  soundMode: "pending",
-  sounds: { placement: null, clear: null },
+  soundMode: "custom",
+  sounds: {
+    placement: {
+      kind: "file",
+      src: catMeow,
+      volume: 0.5,
+      playbackRates: [-3, -1.5, 0, 1.5, 3].map(semitones => 2 ** (semitones / 12)),
+    },
+    clear: { kind: "synth", preset: "cat-clear", volume: 0.35, variants: 3 },
+  },
   background: null,
 };
 

@@ -6,6 +6,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     test: {
+      include: ["src/**/*.test.{ts,tsx}"],
       globals: true,
       environment: "node"
     },
