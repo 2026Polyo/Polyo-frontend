@@ -2,7 +2,7 @@ import spaceImage from "../../asset/theme/neon-space.jpg";
 import type { CSSProperties } from "react";
 import { MINECRAFT_MATERIALS } from "./minecraftMaterials";
 import { colorClass } from "../../constants/gameData";
-import type { NeonSoundPreset } from "./neonSound";
+import type { ThemeSynthPreset } from "./themeSoundSynthesis";
 
 export type GameThemeId =
   | "theme_classic"
@@ -14,7 +14,8 @@ export type ThemeSoundEvent = "placement" | "clear";
 
 export type ThemeSoundCue =
   | { kind: "file"; src: string; volume: number }
-  | { kind: "synth"; preset: NeonSoundPreset; volume: number };
+  | { kind: "synth"; preset: ThemeSynthPreset; volume: number; variants?: number }
+  | { kind: "minecraft"; volume: number };
 
 export interface GameTheme {
   id: GameThemeId;
@@ -107,8 +108,11 @@ export const JELLY_THEME: GameTheme = {
     boost: "#ed83b3",
   },
   effects: "jelly",
-  soundMode: "pending",
-  sounds: { placement: null, clear: null },
+  soundMode: "custom",
+  sounds: {
+    placement: { kind: "synth", preset: "jelly-placement", volume: 0.42, variants: 3 },
+    clear: { kind: "synth", preset: "jelly-clear", volume: 0.38, variants: 2 },
+  },
   background: null,
 };
 
@@ -123,8 +127,8 @@ export const MINECRAFT_THEME: GameTheme = {
     ]),
   ),
   effects: "minecraft",
-  soundMode: "pending",
-  sounds: { placement: null, clear: null },
+  soundMode: "custom",
+  sounds: { placement: { kind: "minecraft", volume: 0.46 }, clear: { kind: "minecraft", volume: 0.4 } },
   background: null,
 };
 
@@ -136,8 +140,11 @@ export const CAT_THEME: GameTheme = {
     Object.keys(colorClass).map((color) => [color, "#ffffff"]),
   ),
   effects: "cat",
-  soundMode: "pending",
-  sounds: { placement: null, clear: null },
+  soundMode: "custom",
+  sounds: {
+    placement: { kind: "synth", preset: "cat-placement", volume: 0.5, variants: 6 },
+    clear: { kind: "synth", preset: "cat-clear", volume: 0.35, variants: 3 },
+  },
   background: null,
 };
 

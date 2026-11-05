@@ -47,13 +47,14 @@ describe("player-scoped game themes", () => {
     ).toBeUndefined();
   });
 
-  it("provides neon sounds and keeps other unfinished themes silent", () => {
+  it("provides custom field sounds for all four themes", () => {
     expect(getGameTheme("theme_neon").soundMode).toBe("custom");
     expect(getThemeSound("theme_neon", "placement")?.kind).toBe("synth");
     expect(getThemeSound("theme_neon", "clear")?.kind).toBe("synth");
     for (const id of ["theme_jelly", "theme_minecraft", "theme_cat"]) {
-      expect(getGameTheme(id).soundMode).toBe("pending");
-      expect(getThemeSound(id, "placement")).toBeNull();
+      expect(getGameTheme(id).soundMode).toBe("custom");
+      expect(getThemeSound(id, "placement")).not.toBeNull();
+      expect(getThemeSound(id, "clear")).not.toBeNull();
     }
     expect(getGameTheme("theme_classic").soundMode).toBe("legacy");
   });

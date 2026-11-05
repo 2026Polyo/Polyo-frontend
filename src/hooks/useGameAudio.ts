@@ -1,4 +1,5 @@
 import { useEffect, useRef, type RefObject } from "react";
+import type { FeedbackCell } from "../features/themes/boardFeedback";
 import trackSound from "../asset/sound/track.mp3";
 import popSound from "../asset/sound/pop.mp3";
 import popupSound from "../asset/sound/popup.mp3";
@@ -26,9 +27,9 @@ export interface GameAudio {
   resume: () => void;
   playPop: () => void;
   /** The "block placed" track sound. */
-  playPlacement: () => void;
+  playPlacement: (color?: string) => void;
   /** Legacy uses line count; theme audio also accepts removed cells for special-block clears. */
-  playClearFeedback: (cleared: number, removedCells?: number) => void;
+  playClearFeedback: (cleared: number, removedCells?: number, cells?: readonly FeedbackCell[]) => void;
   /** Reset the combo-sound escalation back to the first step. */
   resetComboSound: () => void;
   playGameOver: () => void;

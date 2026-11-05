@@ -616,7 +616,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     placementLockRef.current = true;
     queueMicrotask(() => { placementLockRef.current = false; });
     audio.resume();
-    audio.playPlacement();
+    audio.playPlacement(piece.color);
 
     const outcome = resolvePlacement({
       augmentState: scoringAugmentState,
@@ -631,11 +631,12 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       scoreMultiplier,
       comboMultiplier
     });
-    audio.playClearFeedback(outcome.cleared, outcome.clearingCells.size);
-    setBoardFeedback(createBoardFeedback(
+    const feedback = createBoardFeedback(
       ++feedbackSequence.current, piece, row, col,
       outcome.displayBoard, outcome.clearingCells
-    ));
+    );
+    audio.playClearFeedback(outcome.cleared, outcome.clearingCells.size, feedback.cleared);
+    setBoardFeedback(feedback);
     const clearTier = getClearTier(outcome.cleared);
     if (clearTier) pulseClearLabel(CLEAR_TIER_LABEL[clearTier]);
 

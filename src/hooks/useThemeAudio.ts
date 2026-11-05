@@ -11,14 +11,14 @@ export function routeThemeAudio(
 ): GameAudio {
   return {
     ...shared,
-    playPlacement: () => {
+    playPlacement: color => {
       const player = customFields ? getPlayer() : null;
-      if (player) player.play("placement");
+      if (player) player.play("placement", 1, { color });
       else shared.playPlacement();
     },
-    playClearFeedback: (cleared, removedCells = cleared) => {
+    playClearFeedback: (cleared, removedCells = cleared, cells) => {
       shared.playClearFeedback(cleared);
-      if (customFields && removedCells > 0) getPlayer()?.play("clear", Math.max(1, cleared));
+      if (customFields && removedCells > 0) getPlayer()?.play("clear", Math.max(1, cleared), { cells });
     },
   };
 }

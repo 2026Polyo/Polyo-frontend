@@ -171,13 +171,13 @@ describe("jelly visual feedback", () => {
     expect(Math.hypot(intersection.x, intersection.y)).toBeCloseTo(8);
   });
 
-  it("isolates jelly, neon and classic visuals and leaves audio pending", () => {
+  it("isolates jelly, neon and classic visuals and provides jelly audio", () => {
     const theme = getGameTheme("theme_jelly");
     for (const color of Object.keys(colorClass))
       expect(theme.palette[color]).toMatch(/^#[\da-f]{6}$/i);
-    expect(theme.soundMode).toBe("pending");
-    expect(getThemeSound(theme.id, "placement")).toBeNull();
-    expect(getThemeSound(theme.id, "clear")).toBeNull();
+    expect(theme.soundMode).toBe("custom");
+    expect(getThemeSound(theme.id, "placement")?.kind).toBe("synth");
+    expect(getThemeSound(theme.id, "clear")?.kind).toBe("synth");
     const piece = {
       id: "single",
       uid: "single",
