@@ -1,4 +1,5 @@
 import spaceImage from "../../asset/theme/neon-space.jpg";
+import catMeow from "../../asset/sound/cat/meow.mp3";
 import type { CSSProperties } from "react";
 import { MINECRAFT_MATERIALS } from "./minecraftMaterials";
 import { colorClass } from "../../constants/gameData";
@@ -13,7 +14,8 @@ export type GameThemeId =
 export type ThemeSoundEvent = "placement" | "clear";
 
 export type ThemeSoundCue =
-  | { kind: "file"; src: string; volume: number }
+  | { kind: "file"; src: string; volume: number; playbackRates?: readonly number[] }
+  | { kind: "files"; sources: readonly string[]; volume: number; rate?: number }
   | { kind: "synth"; preset: ThemeSynthPreset; volume: number; variants?: number }
   | { kind: "minecraft"; volume: number };
 
@@ -142,7 +144,12 @@ export const CAT_THEME: GameTheme = {
   effects: "cat",
   soundMode: "custom",
   sounds: {
-    placement: { kind: "synth", preset: "cat-placement", volume: 0.5, variants: 6 },
+    placement: {
+      kind: "file",
+      src: catMeow,
+      volume: 0.5,
+      playbackRates: [-3, -1.5, 0, 1.5, 3].map(semitones => 2 ** (semitones / 12)),
+    },
     clear: { kind: "synth", preset: "cat-clear", volume: 0.35, variants: 3 },
   },
   background: null,

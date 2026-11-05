@@ -6,7 +6,7 @@ export const MINECRAFT_SOUND_FAMILIES = ["stone", "metal", "slime", "coral", "ny
 export type MinecraftSoundFamily = typeof MINECRAFT_SOUND_FAMILIES[number];
 export type MinecraftSoundPreset = `mc-${MinecraftSoundFamily}-${"place" | "hit" | "break"}` | "mc-pickup";
 
-/** Mojang bedrock-samples blocks.json + sounds.json; see the research table in docx. */
+/** Block-to-material mapping; Java original event names are resolved in minecraftOriginalAudio.ts. */
 export const MINECRAFT_SOUND_PROFILES: Readonly<Record<string, { blockId: string; family: MinecraftSoundFamily }>> = {
   cyan: { blockId: "diamond_block", family: "metal" },
   lime: { blockId: "slime_block", family: "slime" },

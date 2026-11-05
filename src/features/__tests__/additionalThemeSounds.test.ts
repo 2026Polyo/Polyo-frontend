@@ -3,13 +3,23 @@ import { fakeAudioContext } from "./audioTestContext";
 import { CAT_THEME, JELLY_THEME, MINECRAFT_THEME } from "../themes/gameThemes";
 import { MINECRAFT_MATERIALS } from "../themes/minecraftMaterials";
 import { MINECRAFT_SOUND_PROFILES, MINECRAFT_SOUND_FAMILIES, getMinecraftSoundFamily, createMinecraftClearSoundPlan } from "../themes/minecraftSound";
-import { createThemeSound, createSoundVariantPicker, type ThemeSynthPreset } from "../themes/themeSoundSynthesis";
+import { createThemeSound, type ThemeSynthPreset } from "../themes/themeSoundSynthesis";
 import { createThemeAudioPlayer } from "../themes/themeAudio";
+import { preloadThemeFiles } from "../themes/themeFileAudio";
+import { MINECRAFT_AUDIO_BANK } from "../../asset/sound/minecraft/bank";
+import type { MinecraftOriginalBank } from "../themes/minecraftOriginalAudio";
 import { createMinecraftEffectBatch, MINECRAFT_ITEM_END_MS, MINECRAFT_MINING_MS } from "../themes/minecraftFeedback";
 import { JELLY_SLASH_MS, JELLY_BREAK_MS, JELLY_EFFECT_LIFETIME_MS } from "../themes/jellyFeedback";
 import { JELLY_CLEAR_SOUND_END_MS } from "../themes/jellyClearSound";
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+
+function fakeMinecraftBank(ctx: AudioContext): MinecraftOriginalBank {
+  return {
+    buffers: new Map(MINECRAFT_AUDIO_BANK.files.map((_, index) => [index, ctx.createBuffer(1, 800, ctx.sampleRate)])),
+    events: MINECRAFT_AUDIO_BANK.events,
+  };
+}
 
 describe("material-aware Minecraft sound", () => {
   it("covers every authored block with its researched sound family", () => {
@@ -37,9 +47,10 @@ describe("material-aware Minecraft sound", () => {
     expect(JSON.stringify(cells)).toBe(original);
     expect(createMinecraftClearSoundPlan([])).toEqual([]);
   });
-  it("bounds dense clears by material families and cancels scheduled pickups with their batch", () => {
+  it("bounds dense clears by material families and cancels scheduled pickups with their batch", async () => {
     const fake = fakeAudioContext();
-    const player = createThemeAudioPlayer(fake.ctx, MINECRAFT_THEME.sounds, () => 0.4);
+    const player = createThemeAudioPlayer(fake.ctx, MINECRAFT_THEME.sounds, () => 0.4, async () => fakeMinecraftBank(fake.ctx));
+    await player.ready;
     const colors = Object.keys(MINECRAFT_SOUND_PROFILES);
     const cells = Array.from({ length: 64 }, (_, i) => ({ row: Math.floor(i / 8), col: i % 8, color: colors[i % colors.length] }));
     const plan = createMinecraftClearSoundPlan(cells);
@@ -56,20 +67,62 @@ describe("material-aware Minecraft sound", () => {
     player.dispose();
     expect(fake.sources.every(s => s.stop.mock.calls.length)).toBe(true);
   });
-  it("selects a different buffer for stone, wood, slime, wool and amethyst placements", () => {
-    const { ctx, sources } = fakeAudioContext();
-    const player = createThemeAudioPlayer(ctx, MINECRAFT_THEME.sounds, () => 0.4);
-    for (const color of ["blue", "pink", "lime", "boost", "echo"]) player.play("placement", 1, { color });
-    expect(new Set(sources.map(s => s.buffer)).size).toBe(5);
+  it("routes each block to the correct original sample family and pitch", async () => {
+    const { ctx, sources, gains } = fakeAudioContext();
+    const bank = fakeMinecraftBank(ctx);
+    const player = createThemeAudioPlayer(ctx, MINECRAFT_THEME.sounds, () => 0.4, async () => bank);
+    await player.ready;
+    const expected = {
+      cyan: "dig/stone", lime: "mob/slime/big", amber: "dig/coral", rose: "block/nylium/break",
+      violet: "dig/stone", blue: "dig/stone", teal: "block/netherwart/break", orange: "dig/stone",
+      pink: "block/cherry_wood/break", green: "block/moss/break", indigo: "dig/stone",
+      ghost: "dig/stone", line: "dig/stone", echo: "block/amethyst/place", golden: "dig/stone",
+      bomb: "dig/grass", fill: "dig/stone", boost: "dig/cloth",
+    };
+    expect(Object.keys(expected).sort()).toEqual(Object.keys(MINECRAFT_MATERIALS).sort());
+    for (const [color, path] of Object.entries(expected)) {
+      player.play("placement", 1, { color });
+      const source = sources[sources.length - 1];
+      const index = [...bank.buffers].find(([, buffer]) => source.buffer === buffer)?.[0];
+      expect(index).toBeDefined();
+      expect(MINECRAFT_AUDIO_BANK.files[index!].id).toMatch(new RegExp(`^${path}[12]$`));
+      expect(source.playbackRate.value).toBeCloseTo(["cyan", "golden", "fill"].includes(color) ? 1.2 : 0.8);
+    }
+    expect(gains[3].gain.value).toBeCloseTo(0.46 * 0.85);
     player.dispose();
+  });
+
+  it("plays only the latest fresh placement after loading, and drops disposed or failed requests", async () => {
+    const now = vi.spyOn(performance, "now").mockReturnValue(0);
+    for (const scenario of ["ready", "stale", "disposed", "failed"]) {
+      now.mockReturnValue(0);
+      const { ctx, sources } = fakeAudioContext("suspended");
+      const bank = fakeMinecraftBank(ctx);
+      let complete!: () => void;
+      const player = createThemeAudioPlayer(ctx, MINECRAFT_THEME.sounds, () => 0.4, () =>
+        new Promise((resolve, reject) => {
+          complete = () => scenario === "failed" ? reject(new Error("offline")) : resolve(bank);
+        }));
+      player.play("placement", 1, { color: "pink" });
+      player.play("placement", 1, { color: "echo" });
+      if (scenario === "disposed") player.dispose();
+      if (scenario === "stale") now.mockReturnValue(500);
+      complete();
+      await player.ready;
+      expect(sources).toHaveLength(scenario === "ready" ? 1 : 0);
+      if (scenario === "ready") {
+        const sample = bank.events["block.amethyst_block.place"][0];
+        expect(sources[0].buffer).toBe(bank.buffers.get(sample.file));
+      }
+      player.dispose();
+    }
   });
 });
 
 describe("restrained jelly and varied cat vocals", () => {
   it("produces valid, smoothly bounded PCM without consuming gameplay randomness", () => {
     const random = vi.spyOn(Math, "random").mockImplementation(() => { throw Error("Gameplay random consumed"); });
-    const presets: ThemeSynthPreset[] = ["jelly-placement", "jelly-clear", "cat-placement", "cat-clear", "mc-pickup",
-      ...MINECRAFT_SOUND_FAMILIES.flatMap(family => [`mc-${family}-place`, `mc-${family}-hit`, `mc-${family}-break`] as ThemeSynthPreset[])];
+    const presets: ThemeSynthPreset[] = ["jelly-placement", "jelly-clear", "cat-clear"];
     for (const rate of [8000, 48000]) {
       for (const preset of presets) {
         const pcm = createThemeSound(preset, rate, 1);
@@ -82,19 +135,55 @@ describe("restrained jelly and varied cat vocals", () => {
       }
     }
     expect(random).not.toHaveBeenCalled();
-    expect(() => createThemeSound("cat-placement", Infinity)).toThrow(RangeError);
+    expect(() => createThemeSound("cat-clear", Infinity)).toThrow(RangeError);
   });
-  it("plays six distinct cat takes and never repeats the previous take across shuffle bags", () => {
+  it("loads one cat recording and shuffles five pitches without immediate repeats", async () => {
     const { ctx, sources } = fakeAudioContext();
+    const cue = CAT_THEME.sounds.placement;
+    if (cue?.kind !== "file" || !cue.playbackRates) throw Error("Cat pitch variants missing");
+    const fetcher = vi.fn(async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) }));
+    vi.stubGlobal("fetch", fetcher);
+    const decode = vi.fn(async () => ctx.createBuffer(1, 800, ctx.sampleRate));
+    Object.assign(ctx, { decodeAudioData: decode });
+    const preload = preloadThemeFiles(ctx, cue);
     const player = createThemeAudioPlayer(ctx, CAT_THEME.sounds, () => 0.3);
-    for (let i = 0; i < 30; i++) player.play("placement");
-    expect(new Set(sources.slice(0, 6).map(s => s.buffer)).size).toBe(6);
-    for (let i = 1; i < sources.length; i++) expect(sources[i].buffer).not.toBe(sources[i - 1].buffer);
+    const recordings = await preload;
+    await player.ready;
+    expect(recordings).toHaveLength(1);
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect(decode).toHaveBeenCalledOnce();
+    const rates = new Set(cue.playbackRates);
+    expect(rates.size).toBe(5);
+    expect(rates.has(1)).toBe(true);
+    for (let round = 0; round < 4; round++) {
+      for (let i = 0; i < 5; i++) player.play("placement");
+      const played = sources.slice(round * 5, round * 5 + 5);
+      expect(new Set(played.map(source => source.playbackRate.value))).toEqual(rates);
+    }
+    for (let i = 1; i < sources.length; i++) {
+      expect(sources[i].playbackRate.value).not.toBe(sources[i - 1].playbackRate.value);
+    }
+    expect(sources.every(source => source.buffer === recordings[0].buffer)).toBe(true);
     player.dispose();
-    const a = createSoundVariantPicker(() => 0.2), b = createSoundVariantPicker(() => 0.2);
-    expect(a("cat", 6)).toBe(b("cat", 6));
-    a("cat", 6); a("cat", 6);
-    expect(b("cat", 6)).not.toBeUndefined();
+  });
+  it("can play remaining recordings in a file group if one file fails to load", async () => {
+    const { ctx, sources } = fakeAudioContext();
+    vi.stubGlobal("fetch", vi.fn()
+      .mockResolvedValueOnce({ ok: false })
+      .mockResolvedValue({ ok: true, arrayBuffer: async () => new ArrayBuffer(8) }));
+    Object.assign(ctx, { decodeAudioData: async () => ctx.createBuffer(1, 800, ctx.sampleRate) });
+    const player = createThemeAudioPlayer(ctx, {
+      placement: { kind: "files", sources: ["missing.wav", "first.wav", "second.wav", "third.wav", "fourth.wav"], volume: 0.5 },
+      clear: CAT_THEME.sounds.clear,
+    }, () => 0.3);
+    player.play("clear", 1);
+    const clear = sources[0].buffer;
+    await player.ready;
+    for (let i = 0; i < 8; i++) player.play("placement");
+    expect(new Set(sources.slice(1).map(source => source.buffer)).size).toBe(4);
+    expect(sources.slice(1).every(source => source.buffer !== clear)).toBe(true);
+    expect(sources[0].stop).not.toHaveBeenCalled();
+    player.dispose();
   });
   it("keeps jelly short and low in noisy texture, with bounded gains and voice counts", () => {
     const { ctx, sources, gains } = fakeAudioContext();

@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
 import { createThemeAudioPlayer, type ThemeAudioPlayer } from "../features/themes/themeAudio";
+import { preloadMinecraftOriginalAudio } from "../features/themes/minecraftOriginalAudio";
+import { preloadThemeFiles } from "../features/themes/themeFileAudio";
 import { useGameAudio, type GameAudio } from "./useGameAudio";
 
 /** UI, game-over, clear voice and combo cues are shared; only field cues are replaced. */
@@ -29,6 +31,13 @@ export function useThemeAudio(themeId: GameThemeId, active = true): GameAudio {
   const context = useRef<AudioContext | null>(null);
   const shared = useGameAudio(true, context);
   const player = useRef<ThemeAudioPlayer | null>(null);
+  useEffect(() => {
+    const ctx = context.current;
+    if (active || !ctx) return;
+    const cue = theme.sounds.placement;
+    if (cue?.kind === "minecraft") void preloadMinecraftOriginalAudio(ctx).catch(() => undefined);
+    if (cue?.kind === "file" || cue?.kind === "files") void preloadThemeFiles(ctx, cue);
+  }, [active, theme]);
   useEffect(() => {
     const ctx = context.current;
     if (!active || theme.soundMode !== "custom" || !ctx) return;
