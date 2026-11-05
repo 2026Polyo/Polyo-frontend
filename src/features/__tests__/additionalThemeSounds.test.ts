@@ -6,6 +6,8 @@ import { MINECRAFT_SOUND_PROFILES, MINECRAFT_SOUND_FAMILIES, getMinecraftSoundFa
 import { createThemeSound, createSoundVariantPicker, type ThemeSynthPreset } from "../themes/themeSoundSynthesis";
 import { createThemeAudioPlayer } from "../themes/themeAudio";
 import { createMinecraftEffectBatch, MINECRAFT_ITEM_END_MS, MINECRAFT_MINING_MS } from "../themes/minecraftFeedback";
+import { JELLY_SLASH_MS, JELLY_BREAK_MS, JELLY_EFFECT_LIFETIME_MS } from "../themes/jellyFeedback";
+import { JELLY_CLEAR_SOUND_END_MS } from "../themes/jellyClearSound";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -99,7 +101,8 @@ describe("restrained jelly and varied cat vocals", () => {
     const player = createThemeAudioPlayer(ctx, JELLY_THEME.sounds, () => 0.3);
     for (let i = 0; i < 10; i++) player.play("placement");
     player.play("clear", 4);
-    expect(sources.every(s => s.buffer!.duration <= 0.35)).toBe(true);
+    expect(sources.slice(0, 10).every(s => s.buffer!.duration <= 0.24)).toBe(true);
+    expect(sources[10].buffer!.duration).toBe(JELLY_CLEAR_SOUND_END_MS / 1000);
     expect(gains.every(g => g.gain.value <= 0.52)).toBe(true);
     expect(sources.filter(s => !s.stop.mock.calls.length)).toHaveLength(3);
     player.dispose();
@@ -112,15 +115,38 @@ describe("restrained jelly and varied cat vocals", () => {
         const pcm = createThemeSound(cue.preset, 48000, variant);
         const alpha = Math.exp(-2 * Math.PI * 450 / 48000);
         let energy = 0, highEnergy = 0, previous = 0, high = 0;
-        for (const sample of pcm) {
-          const value = sample * cue.volume;
+        const start = event === "clear" ? Math.floor(JELLY_SLASH_MS * 48) : 0;
+        for (let i = start; i < pcm.length; i++) {
+          const value = pcm[i] * cue.volume;
           high = alpha * (high + value - previous); previous = value;
           energy += value * value; highEnergy += high * high;
         }
         // Proxy for small-speaker audibility: preserve energy outside deep bass.
-        expect(Math.sqrt(highEnergy / pcm.length)).toBeGreaterThan(0.03);
+        expect(Math.sqrt(highEnergy / (pcm.length - start))).toBeGreaterThan(0.03);
         expect(highEnergy / energy).toBeGreaterThan(0.22);
       }
     }
+  });
+  it("aligns jelly's separate swipe and fragments with the visual removal", () => {
+    const rate = 48000, pcm = createThemeSound("jelly-clear", rate);
+    const rms = (from: number, to: number) => {
+      const segment = pcm.slice(Math.floor(from * rate), Math.floor(to * rate));
+      return Math.sqrt(segment.reduce((sum, sample) => sum + sample * sample, 0) / segment.length);
+    };
+    expect(rms(0, JELLY_SLASH_MS / 1000)).toBe(0);
+    expect(rms(JELLY_SLASH_MS / 1000, JELLY_BREAK_MS / 1000)).toBeGreaterThan(0.01);
+    expect(rms(JELLY_BREAK_MS / 1000, 0.64)).toBeGreaterThan(0.03);
+    expect(JELLY_CLEAR_SOUND_END_MS).toBeLessThan(JELLY_EFFECT_LIFETIME_MS);
+  });
+  it("retains two jelly removals so rapid valid clears do not cancel the first before its slash", () => {
+    const { ctx, sources } = fakeAudioContext();
+    const player = createThemeAudioPlayer(ctx, JELLY_THEME.sounds, () => 0.3);
+    player.play("clear", 1); player.play("clear", 1);
+    expect(sources[0].stop).not.toHaveBeenCalled();
+    player.play("clear", 1);
+    expect(sources[0].stop).toHaveBeenCalledOnce();
+    expect(sources.filter(s => !s.stop.mock.calls.length)).toHaveLength(2);
+    player.dispose();
+    expect(sources.every(s => s.stop.mock.calls.length)).toBe(true);
   });
 });

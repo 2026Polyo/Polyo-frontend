@@ -1,5 +1,6 @@
 import { createNeonSound, type NeonSoundPreset } from "./neonSound";
 import type { MinecraftSoundFamily, MinecraftSoundPreset } from "./minecraftSound";
+import { createJellyClearSound, JELLY_CLEAR_SOUND_END_MS } from "./jellyClearSound";
 
 export type ThemeSynthPreset = NeonSoundPreset | MinecraftSoundPreset
   | "jelly-placement" | "jelly-clear" | "cat-placement" | "cat-clear";
@@ -20,7 +21,7 @@ export function getThemeSoundDuration(preset: ThemeSynthPreset, variant = 0): nu
   if (preset === "cat-placement") return CAT_LENGTHS[variantIndex(variant)];
   if (preset === "cat-clear") return 0.34;
   if (preset === "jelly-placement") return 0.23;
-  if (preset === "jelly-clear") return 0.34;
+  if (preset === "jelly-clear") return JELLY_CLEAR_SOUND_END_MS / 1000;
   if (preset === "mc-pickup") return 0.13;
   if (preset.endsWith("-hit")) return 0.08;
   if (preset.startsWith("mc-amethyst_block")) return 0.32;
@@ -32,6 +33,7 @@ export function createThemeSound(preset: ThemeSynthPreset, sampleRate: number, v
   if (preset === "neon-placement" || preset === "neon-clear") return createNeonSound(preset, sampleRate);
   if (!Number.isFinite(sampleRate) || sampleRate < 8000 || sampleRate > 192000) throw new RangeError("Unsupported audio sample rate");
   const v = variantIndex(variant);
+  if (preset === "jelly-clear") return createJellyClearSound(sampleRate, v);
   const duration = getThemeSoundDuration(preset, v);
   const samples = new Float32Array(Math.ceil(sampleRate * duration));
   let seed = 0x6a656c6c ^ (v * 2654435761);
@@ -77,18 +79,15 @@ export function createThemeSound(preset: ThemeSynthPreset, sampleRate: number, v
       phase += 2 * Math.PI * (310 + v * 16 - p * 110) / sampleRate;
       low += (noise - low) * 0.025;
       value = (Math.sin(phase) * 0.36 + Math.sin(phase * 1.5) * 0.08 + low * 0.12) * Math.sin(Math.PI * p) ** 1.4;
-    } else if (preset === "jelly-placement" || preset === "jelly-clear") {
-      const clear = preset === "jelly-clear";
+    } else if (preset === "jelly-placement") {
       // Put the elastic body in the audible mids, with a small damped wobble.
       const wobble = 24 * Math.sin(2 * Math.PI * 20 * t) * Math.exp(-t * 15);
-      phase += 2 * Math.PI * ((clear ? 330 : 310) + v * 11
-        + (clear ? 180 : 210) * Math.exp(-t * 22) + wobble) / sampleRate;
+      phase += 2 * Math.PI * (310 + v * 11 + 210 * Math.exp(-t * 22) + wobble) / sampleRate;
       low += (noise - low) * noiseAlpha;
       const bounce = Math.sin(phase) * 0.38;
       const skin = Math.sin(phase * 2.08) * 0.19 * Math.exp(-t * 5);
       const pop = Math.sin(2 * Math.PI * (1100 * t - 250 * t * t)) * 0.13 * Math.exp(-t * 22);
-      const swipe = clear ? low * 0.035 * Math.exp(-t * 40) : 0;
-      value = (bounce + skin + pop + swipe) * Math.exp(-t * (clear ? 10 : 14));
+      value = (bounce + skin + pop) * Math.exp(-t * 14);
     } else if (preset === "mc-pickup") {
       phase += 2 * Math.PI * (470 + 1550 * Math.exp(-t * 36)) / sampleRate;
       value = (Math.sin(phase) * 0.55 + Math.sin(phase * 1.98) * 0.08) * Math.exp(-t * 34);

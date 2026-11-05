@@ -81,7 +81,9 @@ export function createThemeAudioPlayer(
     const notes = notesFor(event, cleared, details).filter(note => buffers.has(note.key));
     if (!notes.length) return;
     const active = groups[event];
-    const limit = event === "placement" ? 2 : cue.kind === "minecraft" ? 2 : 1;
+    const followsAnimation = cue.kind === "minecraft"
+      || (cue.kind === "synth" && cue.preset === "jelly-clear");
+    const limit = event === "placement" || followsAnimation ? 2 : 1;
     if (active.size >= limit) {
       const oldest = active.values().next().value!; stopGroup(oldest); active.delete(oldest);
     }
