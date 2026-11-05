@@ -1,4 +1,4 @@
-import { AUTH_TOKEN_KEY } from "./auth";
+import { AUTH_TOKEN_KEY, notifyAuthExpired } from "./auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
@@ -34,6 +34,7 @@ async function requestWithToken<T>(path: string, init: RequestInit): Promise<T> 
   } catch {
     throw new Error("서버에 연결할 수 없습니다.");
   }
+  if (response.status === 401) notifyAuthExpired();
   const result = (await response.json().catch(() => null)) as ApiResponse<T> | null;
   if (!response.ok || !result?.success || !result.data) {
     throw new Error(result?.error?.message ?? "점수를 처리할 수 없습니다.");

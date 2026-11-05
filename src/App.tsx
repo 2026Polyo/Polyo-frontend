@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./styles/App.css";
 import "./styles/AuthScreen.css";
 import "./styles/StartScreen.css";
@@ -9,7 +9,7 @@ import StartScreen from "./components/StartScreen";
 import RankingScreen from "./components/RankingScreen";
 import { useGameSession } from "./hooks/useGameSession";
 import PlayScreen from "./screens/PlayScreen";
-import { AUTH_TOKEN_KEY, AUTH_USER_KEY, type AuthUser } from "./api/auth";
+import { AUTH_EXPIRED_EVENT, AUTH_TOKEN_KEY, AUTH_USER_KEY, clearAuth, type AuthUser } from "./api/auth";
 import ShopScreen from "./screens/ShopScreen";
 import { useThemePreview } from "./hooks/useThemePreview";
 import { ThemeScope } from "./components/ThemeScope";
@@ -26,6 +26,17 @@ function App() {
   const { themeId, selectTheme } = useThemePreview();
   const { gamePhase, playScreenProps, startScreenProps } =
     useGameSession(Boolean(user), themeId);
+
+  useEffect(() => {
+    function handleAuthExpired() {
+      setUser(null);
+      setShopOpen(false);
+      setRankingOpen(false);
+    }
+
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+    return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+  }, []);
 
   if (!user) return <AuthScreen onAuthenticated={setUser} />;
 
@@ -58,9 +69,7 @@ function App() {
           themeId={themeId}
           onThemeChange={selectTheme}
           onLogout={() => {
-            localStorage.removeItem(AUTH_TOKEN_KEY);
-            localStorage.removeItem(AUTH_USER_KEY);
-            setUser(null);
+            clearAuth();
           }}
         />
       </ThemeScope>

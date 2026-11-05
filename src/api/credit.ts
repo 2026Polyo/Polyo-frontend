@@ -1,3 +1,5 @@
+import { notifyAuthExpired } from "./auth";
+
 export interface GameReward {
   rewardId: string;
   gameId: string;
@@ -56,6 +58,7 @@ export function isGameReward(
 }
 
 function responseError(body: unknown, response: Response): CreditApiError {
+  if (response.status === 401) notifyAuthExpired();
   const fallbackCode =
     response.status === 401
       ? "AUTH_UNAUTHORIZED"

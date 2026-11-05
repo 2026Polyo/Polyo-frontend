@@ -1,3 +1,5 @@
+import { notifyAuthExpired } from "./auth";
+
 export type RankingType = "normal" | "hard" | "trophy";
 
 export interface RankingEntry {
@@ -31,6 +33,7 @@ export async function fetchRanking(type: RankingType): Promise<RankingResponse> 
   } catch {
     throw new Error("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
   }
+  if (response.status === 401) notifyAuthExpired();
 
   const result = (await response.json().catch(() => null)) as ApiResponse<RankingResponse> | null;
   if (!response.ok || !result?.success || !result.data) {

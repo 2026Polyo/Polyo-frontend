@@ -40,3 +40,18 @@ export function signup(loginId: string, password: string, nickname: string) {
 
 export const AUTH_TOKEN_KEY = "polyo.accessToken";
 export const AUTH_USER_KEY = "polyo.user";
+export const AUTH_EXPIRED_EVENT = "polyo.auth-expired";
+
+export function clearAuth() {
+  if (typeof localStorage !== "undefined") {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
+  }
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
+  }
+}
+
+export function notifyAuthExpired() {
+  clearAuth();
+}
