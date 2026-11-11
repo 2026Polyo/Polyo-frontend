@@ -33,6 +33,7 @@ import type {
 } from "../types";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
+import type { HardGameRequest } from "../hooks/useHardGameRequest";
 import type { GameRewardSession } from "../features/gameReward";
 import GameRewardStatus from "../components/GameRewardStatus";
 import { ThemeScope } from "../components/ThemeScope";
@@ -47,6 +48,7 @@ interface PlayScreenProps {
   hardTimeLimitMs: number;
   themeId?: GameThemeId;
   rewardSession?: GameRewardSession;
+  hardRequest?: HardGameRequest;
   augmentState: AugmentState;
   autoUndoFlash: boolean;
   best: number;
@@ -119,6 +121,7 @@ function PlayScreenContent({
   gameMode,
   themeId = "theme_classic",
   rewardSession,
+  hardRequest,
   augmentState,
   hardTimeRemainingMs,
   hardTimeLimitMs,
@@ -141,6 +144,12 @@ function PlayScreenContent({
 }: PlayScreenProps) {
   const selectedPiece = board.selectedPiece;
   const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
+  const requestStatus = hardRequest?.pending ? <p role="status">서버 응답을 기다리는 중입니다.</p> : hardRequest?.error && (
+    <div>
+      <p role="alert">{hardRequest.error}</p>
+      {hardRequest.retry && <button type="button" className="secondary-action" onClick={hardRequest.retry}>다시 시도</button>}
+    </div>
+  );
 
   return (
     <main data-game-theme={themeId} className={`app-shell play-shell ${bonusActive ? "bonus-playing" : ""} ${board.cursorPoint ? "has-cursor-piece" : ""}`}>
@@ -150,6 +159,7 @@ function PlayScreenContent({
         onGoHome={settings.onGoHome}
         onQuit={settings.onQuit}
         onToggle={settings.onToggle}
+        status={settings.open ? requestStatus : undefined}
       />
       <section className="game-area">
         <ScoreBoard best={best} score={score} previewGain={previewGain} />
@@ -159,6 +169,7 @@ function PlayScreenContent({
             <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
           ) : <span>보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}</span>)}
         </div>
+        {!settings.open && !gameOver && requestStatus}
         <div className="board-layout">
           {gameMode === "normal" && <AugmentPanel augmentState={augmentState} />}
           <div className="board-stack">
@@ -205,7 +216,7 @@ function PlayScreenContent({
               )}
             </div>
             <PieceTray
-              disabled={modals.augmentChoiceOpen || Boolean(modals.specialChoices) || Boolean(modals.rewardPiece) || settings.open || modals.deckModalOpen || modals.rerollModalSlot !== null || gameOver || isClearing || gravityAnimating}
+              disabled={modals.augmentChoiceOpen || Boolean(modals.specialChoices) || Boolean(modals.rewardPiece) || settings.open || modals.deckModalOpen || modals.rerollModalSlot !== null || gameOver || isClearing || gravityAnimating || Boolean(hardRequest?.pending || hardRequest?.retry)}
               onEmptySlotClick={tray.clearSelection}
               onPieceSelect={tray.handlePieceSelect}
               onPieceActivate={tray.handlePieceActivate}
@@ -275,12 +286,10 @@ function PlayScreenContent({
       {gameOver && (
         <GameOver
           rewardContent={
-            rewardSession && (
-              <GameRewardStatus
-                session={rewardSession}
-                className="game-over-reward"
-              />
-            )
+            <>
+              {rewardSession && <GameRewardStatus session={rewardSession} className="game-over-reward" showStatus />}
+              {requestStatus}
+            </>
           }
           best={best}
           onGoHome={modals.onGameOverGoHome}

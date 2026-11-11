@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import type { GameThemeId } from "../features/themes/gameThemes";
 import {
-  loadPreviewTheme,
+  clearPreviewTheme,
+  loadPreviewSelection,
   savePreviewTheme,
   THEME_PREVIEW_STORAGE_KEY,
 } from "../features/themes/themePreview";
 
 export function useThemePreview() {
-  const [themeId, setThemeId] = useState(loadPreviewTheme);
+  const [previewThemeId, setThemeId] = useState(loadPreviewSelection);
 
   useEffect(() => {
     const syncTheme = (event: StorageEvent) => {
       if (event.key === THEME_PREVIEW_STORAGE_KEY || event.key === null)
-        setThemeId(loadPreviewTheme());
+        setThemeId(loadPreviewSelection());
     };
     window.addEventListener("storage", syncTheme);
     return () => window.removeEventListener("storage", syncTheme);
@@ -23,5 +24,10 @@ export function useThemePreview() {
     savePreviewTheme(themeId);
   }
 
-  return { themeId, selectTheme };
+  function clearPreview() {
+    setThemeId(null);
+    clearPreviewTheme();
+  }
+
+  return { previewThemeId, selectTheme, clearPreview };
 }
