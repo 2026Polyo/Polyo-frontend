@@ -237,22 +237,6 @@
   }
 }
 
-.theme-preview-select {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.85rem;
-  color: var(--text-strong);
-}
-.theme-preview-select select {
-  padding: 8px 12px;
-  border: 1px solid var(--surface-card-border);
-  border-radius: var(--radius-sm);
-  background: var(--surface-card);
-  color: var(--text-strong);
-  font: inherit;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .board[data-game-theme="theme_neon"]::before,
   .shop-preview-neon .shop-preview-board::before {

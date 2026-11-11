@@ -22,7 +22,7 @@
 | `specialAppearance.ts` | 특수 종류 판별·고양이 털 무늬·표시용 조각 소유 정보 관리 |
 | `../../components/*BoardEffects.tsx`, `BoardEffects.tsx` | 애니메이션 표시·동시 효과 상한·타이머 정리 |
 | `../../styles/*Theme.css` | 테마 ID 아래로 범위를 제한한 스타일 |
-| `themePreview.ts`, `../../hooks/useThemePreview.ts` | 게임 저장과 독립된 로컬 미리보기 선택 |
+| `../../App.tsx` | 상점의 미리보기 선택을 싱글 플레이에 전달하고 홈 복귀 시 해제 |
 
 ## 수정할 때 유지할 규칙
 
