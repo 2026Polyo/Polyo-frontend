@@ -1,8 +1,6 @@
 import { Layers, LogOut, Play, Trophy, ShoppingBag, Users } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
 import type { GameMode, PieceTemplate } from "../types";
-import type { GameThemeId } from "../features/themes/gameThemes";
-import { getGameTheme } from "../features/themes/gameThemes";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
 
 const START_PREVIEW_CELLS: string[] = [
@@ -30,12 +28,6 @@ interface StartScreenProps {
   onModeSelect: (mode: GameMode) => void;
   onCloseStartFlow: () => void;
   onStartFresh: () => void;
-  equippedThemeId: GameThemeId;
-  ownedThemeIds: readonly string[];
-  themeUpdatePending: boolean;
-  previewThemeId: GameThemeId | null;
-  onClearPreview: () => void;
-  onEquipTheme: (themeId: string) => void;
   onOpenShop: () => void;
   availableBaseIds: string[];
   baseLoadout: string[];
@@ -66,12 +58,6 @@ function StartScreen({
   onModeSelect,
   onCloseStartFlow,
   onStartFresh,
-  equippedThemeId,
-  ownedThemeIds,
-  themeUpdatePending,
-  previewThemeId,
-  onClearPreview,
-  onEquipTheme,
   onOpenShop,
   availableBaseIds,
   baseLoadout,
@@ -107,23 +93,6 @@ function StartScreen({
           ))}
         </div>
         <h1 id="start-title">Polyomino</h1>
-        <label className="theme-preview-select">
-          장착 테마
-          <select
-            value={equippedThemeId}
-            disabled={themeUpdatePending}
-            onChange={(event) => onEquipTheme(event.target.value)}
-          >
-            <option value="theme_classic">기본</option>
-            {ownedThemeIds.filter((id) => id !== "theme_classic" && getGameTheme(id).id === id)
-              .map((id) => <option key={id} value={id}>{getGameTheme(id).name}</option>)}
-          </select>
-        </label>
-        {previewThemeId && (
-          <button type="button" className="start-deck-action" onClick={onClearPreview}>
-            {getGameTheme(previewThemeId).name} 미리보기 종료
-          </button>
-        )}
         <div className="start-actions">
           <button aria-label="새 게임" className="primary-action" onClick={onNewGame} type="button">
             <Play size={20} aria-hidden="true" />

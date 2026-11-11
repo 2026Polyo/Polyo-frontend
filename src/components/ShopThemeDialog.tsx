@@ -107,7 +107,6 @@ export default function ShopThemeDialog({
                 <button type="button" className="secondary-action" onClick={() => void wallet.refresh()}>보유 정보 다시 조회</button>
               </div>
             )}
-            <small>미리보기는 시작 화면에서 종료할 수 있어요.</small>
           </div>
         </>
       )}

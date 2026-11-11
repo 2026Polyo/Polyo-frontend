@@ -17,14 +17,14 @@ import MatchGameScreen from "./screens/MatchGameScreen";
 import MultiplayerScreen from "./screens/MultiplayerScreen";
 import { AUTH_EXPIRED_EVENT, AUTH_TOKEN_KEY, AUTH_USER_KEY, type AuthUser } from "./api/auth";
 import ShopScreen from "./screens/ShopScreen";
-import { useThemePreview } from "./hooks/useThemePreview";
 import { ThemeScope } from "./components/ThemeScope";
-import { getGameTheme } from "./features/themes/gameThemes";
+import { getGameTheme, type GameThemeId } from "./features/themes/gameThemes";
 import { useShopAccount } from "./hooks/useShopAccount";
 
 function App() {
   const [shopOpen, setShopOpen] = useState(false);
   const [rankingOpen, setRankingOpen] = useState(false);
+  const [previewThemeId, setPreviewThemeId] = useState<GameThemeId | null>(null);
   const [user, setUser] = useState<AuthUser | null>(() => {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
     const storedUser = localStorage.getItem(AUTH_USER_KEY);
@@ -32,15 +32,17 @@ function App() {
     try { return JSON.parse(storedUser) as AuthUser; } catch { return null; }
   });
   const shopAccount = useShopAccount(user?.id);
-  const { previewThemeId, selectTheme, clearPreview } = useThemePreview();
   const equippedThemeId = getGameTheme(shopAccount.account?.equippedThemeId).id;
-  const themeId = previewThemeId ?? equippedThemeId;
   const { gamePhase, playScreenProps, startScreenProps } =
-    useGameSession(Boolean(user), themeId);
+    useGameSession(Boolean(user), previewThemeId ?? equippedThemeId);
   const [multiplayerView, setMultiplayerView] = useState<"home" | "lobby" | "create">("home");
   // Restored after a refresh, so a running match picks up where it was instead of being abandoned.
   const [activeRoom, setActiveRoom] = useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
   const restoreRoomFocus = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (gamePhase === "start") setPreviewThemeId(null);
+  }, [gamePhase]);
 
   useEffect(() => {
     if (restoreRoomFocus.current) {
@@ -54,6 +56,7 @@ function App() {
       setUser(null);
       setShopOpen(false);
       setRankingOpen(false);
+      setPreviewThemeId(null);
     }
 
     window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
@@ -82,10 +85,10 @@ function App() {
         wallet={shopAccount}
         onGoHome={() => setShopOpen(false)}
         onEquipTheme={async (id) => {
-          if (await shopAccount.equip(id)) clearPreview();
+          if (await shopAccount.equip(id)) setPreviewThemeId(null);
         }}
         onSelectPreviewTheme={(id) => {
-          selectTheme(id);
+          setPreviewThemeId(id);
           setShopOpen(false);
         }}
       />
@@ -112,14 +115,14 @@ function App() {
     }
     if (rankingOpen) {
       return (
-        <ThemeScope themeId={themeId}>
+        <ThemeScope themeId={equippedThemeId}>
           <RankingScreen currentUserId={user.id} onBack={() => setRankingOpen(false)} />
         </ThemeScope>
       );
     }
 
     return (
-      <ThemeScope themeId={themeId}>
+      <ThemeScope themeId={equippedThemeId}>
         <StartScreen
           {...startScreenProps}
           onMultiplayer={() => setMultiplayerView("lobby")}
@@ -128,18 +131,11 @@ function App() {
             void shopAccount.refresh();
             setShopOpen(true);
           }}
-          previewThemeId={previewThemeId}
-          onClearPreview={clearPreview}
-          equippedThemeId={equippedThemeId}
-          ownedThemeIds={shopAccount.account?.ownedThemeIds ?? []}
-          themeUpdatePending={shopAccount.pending}
-          onEquipTheme={async (id) => {
-            if (await shopAccount.equip(id)) clearPreview();
-          }}
           onLogout={() => {
             localStorage.removeItem(AUTH_TOKEN_KEY);
             localStorage.removeItem(AUTH_USER_KEY);
             clearActiveRoom();
+            setPreviewThemeId(null);
             setUser(null);
           }}
         />
