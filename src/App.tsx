@@ -19,6 +19,8 @@ import { AUTH_EXPIRED_EVENT, AUTH_TOKEN_KEY, AUTH_USER_KEY, type AuthUser } from
 import ShopScreen from "./screens/ShopScreen";
 import { useThemePreview } from "./hooks/useThemePreview";
 import { ThemeScope } from "./components/ThemeScope";
+import { getGameTheme } from "./features/themes/gameThemes";
+import { useShopAccount } from "./hooks/useShopAccount";
 
 function App() {
   const [shopOpen, setShopOpen] = useState(false);
@@ -29,7 +31,10 @@ function App() {
     if (!token || !storedUser) return null;
     try { return JSON.parse(storedUser) as AuthUser; } catch { return null; }
   });
-  const { themeId, selectTheme } = useThemePreview();
+  const shopAccount = useShopAccount(user?.id);
+  const { previewThemeId, selectTheme, clearPreview } = useThemePreview();
+  const equippedThemeId = getGameTheme(shopAccount.account?.equippedThemeId).id;
+  const themeId = previewThemeId ?? equippedThemeId;
   const { gamePhase, playScreenProps, startScreenProps } =
     useGameSession(Boolean(user), themeId);
   const [multiplayerView, setMultiplayerView] = useState<"home" | "lobby" | "create">("home");
@@ -74,7 +79,11 @@ function App() {
   if (shopOpen)
     return (
       <ShopScreen
+        wallet={shopAccount}
         onGoHome={() => setShopOpen(false)}
+        onEquipTheme={async (id) => {
+          if (await shopAccount.equip(id)) clearPreview();
+        }}
         onSelectPreviewTheme={(id) => {
           selectTheme(id);
           setShopOpen(false);
@@ -115,9 +124,18 @@ function App() {
           {...startScreenProps}
           onMultiplayer={() => setMultiplayerView("lobby")}
           onOpenRanking={() => setRankingOpen(true)}
-          onOpenShop={() => setShopOpen(true)}
-          themeId={themeId}
-          onThemeChange={selectTheme}
+          onOpenShop={() => {
+            void shopAccount.refresh();
+            setShopOpen(true);
+          }}
+          previewThemeId={previewThemeId}
+          onClearPreview={clearPreview}
+          equippedThemeId={equippedThemeId}
+          ownedThemeIds={shopAccount.account?.ownedThemeIds ?? []}
+          themeUpdatePending={shopAccount.pending}
+          onEquipTheme={async (id) => {
+            if (await shopAccount.equip(id)) clearPreview();
+          }}
           onLogout={() => {
             localStorage.removeItem(AUTH_TOKEN_KEY);
             localStorage.removeItem(AUTH_USER_KEY);

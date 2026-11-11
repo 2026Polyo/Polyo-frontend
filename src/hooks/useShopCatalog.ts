@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getPreviewThemes, type ThemePage } from "../features/shop";
+import { creditApi } from "../api/credit";
+import type { ThemePage } from "../features/shop";
 
 export type ShopCatalogState =
   | { status: "loading" }
@@ -18,8 +19,8 @@ export function useShopCatalog() {
     let active = true;
     setCatalog({ status: "loading" });
 
-    getPreviewThemes(page, sort)
-      .then(({ data }) => {
+    creditApi.getShopThemes(page, sort)
+      .then((data) => {
         if (active) setCatalog({ status: "ready", data });
       })
       .catch(() => {

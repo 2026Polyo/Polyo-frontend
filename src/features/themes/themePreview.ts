@@ -4,12 +4,25 @@ import { getGameTheme, type GameThemeId } from "./gameThemes";
 export const THEME_PREVIEW_STORAGE_KEY = "polyomino-preview-theme";
 
 export function loadPreviewTheme(): GameThemeId {
+  return loadPreviewSelection() ?? "theme_classic";
+}
+
+export function loadPreviewSelection(): GameThemeId | null {
   try {
-    return getGameTheme(
-      localStorage.getItem(THEME_PREVIEW_STORAGE_KEY) ?? undefined,
-    ).id;
+    const id = localStorage.getItem(THEME_PREVIEW_STORAGE_KEY);
+    if (id === null) return null;
+    const theme = getGameTheme(id);
+    return theme.id === id ? theme.id : null;
   } catch {
-    return "theme_classic";
+    return null;
+  }
+}
+
+export function clearPreviewTheme(): void {
+  try {
+    localStorage.removeItem(THEME_PREVIEW_STORAGE_KEY);
+  } catch {
+    // The in-memory preview can still be cleared.
   }
 }
 

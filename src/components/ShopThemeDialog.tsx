@@ -1,23 +1,33 @@
 import { useEffect, useRef } from "react";
 import { Coins, X } from "lucide-react";
-import type { MouseEvent } from "react";
+import type { KeyboardEvent, MouseEvent } from "react";
 import type { ShopTheme } from "../features/shop";
 import { getThemePresentation } from "../features/themePresentation";
 import ThemePreview from "./ThemePreview";
 import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
+import type { ShopAccountState } from "../hooks/useShopAccount";
 
 interface ShopThemeDialogProps {
   theme: ShopTheme | null;
+  wallet: ShopAccountState;
   onClose: () => void;
   onSelectPreviewTheme: (themeId: GameThemeId) => void;
+  onEquipTheme: (themeId: string) => void;
 }
 
 export default function ShopThemeDialog({
   theme,
+  wallet,
   onClose,
   onSelectPreviewTheme,
+  onEquipTheme,
 }: ShopThemeDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const previewTheme = theme ? getGameTheme(theme.themeId) : null;
+  const canPreview = previewTheme !== null && previewTheme.id === theme?.themeId;
+  const owned = !!theme && wallet.account?.ownedThemeIds.includes(theme.themeId);
+  const equipped = !!theme && wallet.account?.equippedThemeId === theme.themeId;
+  const insufficient = !!theme && !!wallet.account && wallet.account.coin < theme.price;
 
   useEffect(() => {
     if (theme && !dialogRef.current?.open) dialogRef.current?.showModal();
@@ -31,6 +41,19 @@ export default function ShopThemeDialog({
     if (event.target === event.currentTarget) closeDialog();
   }
 
+  function selectPreview() {
+    if (canPreview) onSelectPreviewTheme(previewTheme.id);
+  }
+
+  function onPreviewKey(event: KeyboardEvent<HTMLDialogElement>) {
+    if (event.code !== "KeyP" || event.repeat || event.nativeEvent.isComposing
+      || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+    if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable]")) return;
+    if (!canPreview) return;
+    event.preventDefault();
+    selectPreview();
+  }
+
   return (
     <dialog
       ref={dialogRef}
@@ -38,6 +61,7 @@ export default function ShopThemeDialog({
       aria-labelledby="shop-detail-title"
       onClose={onClose}
       onClick={closeOnBackdrop}
+      onKeyDown={onPreviewKey}
     >
       {theme && (
         <>
@@ -60,22 +84,30 @@ export default function ShopThemeDialog({
             <button
               className="secondary-action shop-preview-play"
               type="button"
-              disabled={getGameTheme(theme.themeId).id !== theme.themeId}
-              onClick={() =>
-                onSelectPreviewTheme(getGameTheme(theme.themeId).id)
-              }
+              disabled={!canPreview}
+              aria-keyshortcuts="P"
+              onClick={selectPreview}
             >
-              {getGameTheme(theme.themeId).id === theme.themeId
-                ? "게임 미리보기로 선택"
-                : "게임 미리보기 준비 중"}
+              게임 미리보기 <kbd>P</kbd>
             </button>
-            <button className="shop-purchase" type="button" disabled>
-              서버 연동 후 구매 가능
-            </button>
-            <small>
-              선택한 테마로 시작 화면의 새 게임·이어하기를 체험할 수 있어요.
-              실제 구매와 보유 테마 장착은 아직 제공되지 않습니다.
-            </small>
+            {owned ? (
+              <button className="shop-purchase" type="button" disabled={equipped || wallet.pending}
+                onClick={() => onEquipTheme(theme.themeId)}>
+                {equipped ? "장착 중" : "보유 테마 장착"}
+              </button>
+            ) : (
+              <button className="shop-purchase" type="button" disabled={wallet.pending || !wallet.account || insufficient}
+                onClick={() => void wallet.purchase(theme.themeId)}>
+                {wallet.pending ? "확인 중…" : insufficient ? "코인 부족" : "구매하기"}
+              </button>
+            )}
+            {wallet.error && (
+              <div role="alert">
+                <small>{wallet.error}</small>
+                <button type="button" className="secondary-action" onClick={() => void wallet.refresh()}>보유 정보 다시 조회</button>
+              </div>
+            )}
+            <small>미리보기는 시작 화면에서 종료할 수 있어요.</small>
           </div>
         </>
       )}
