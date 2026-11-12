@@ -237,6 +237,23 @@
   }
 }
 
+.theme-preview-select {
+  align-items: center;
+  color: var(--text-strong);
+  display: flex;
+  font-size: 0.85rem;
+  gap: 12px;
+}
+
+.theme-preview-select select {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-strong);
+  font: inherit;
+  padding: 8px 12px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .board[data-game-theme="theme_neon"]::before,
   .shop-preview-neon .shop-preview-board::before {
