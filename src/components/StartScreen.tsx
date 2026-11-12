@@ -3,6 +3,8 @@ import StartDeckModal from "./StartDeckModal";
 import StartMenuButton from "./StartMenuButton";
 import type { GameMode, PieceTemplate } from "../types";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
+import type { GameThemeId } from "../features/themes/gameThemes";
+import { getGameTheme } from "../features/themes/gameThemes";
 
 const START_PREVIEW_CELLS: string[] = [
   "piece-cyan",
@@ -29,6 +31,8 @@ interface StartScreenProps {
   onModeSelect: (mode: GameMode) => void;
   onCloseStartFlow: () => void;
   onStartFresh: () => void;
+  themeId: GameThemeId;
+  onThemeChange: (themeId: GameThemeId) => void;
   onOpenShop: () => void;
   availableBaseIds: string[];
   baseLoadout: string[];
@@ -59,6 +63,8 @@ function StartScreen({
   onModeSelect,
   onCloseStartFlow,
   onStartFresh,
+  themeId,
+  onThemeChange,
   onOpenShop,
   availableBaseIds,
   baseLoadout,
