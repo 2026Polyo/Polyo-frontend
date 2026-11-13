@@ -31,9 +31,11 @@ function App() {
   const equippedThemeId = getGameTheme(shopAccount.account?.equippedThemeId).id;
   const { gamePhase, playScreenProps, startScreenProps } =
     useGameSession(Boolean(user), previewThemeId ?? equippedThemeId);
-  const [multiplayerView, setMultiplayerView] = useState<"home" | "lobby" | "create">("home");
+  const [multiplayerView, setMultiplayerView] =
+    useState<"home" | "lobby" | "create">("home");
   // Restored after a refresh, so a running match picks up where it was instead of being abandoned.
-  const [activeRoom, setActiveRoom] = useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
+  const [activeRoom, setActiveRoom] =
+    useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
   const restoreRoomFocus = useRef<string | null>(null);
 
   useEffect(() => {
@@ -70,7 +72,8 @@ function App() {
     }
 
     function handleStorage(event: StorageEvent) {
-      if ((event.key === AUTH_TOKEN_KEY || event.key === AUTH_USER_KEY) && !localStorage.getItem(AUTH_TOKEN_KEY)) {
+      if ((event.key === AUTH_TOKEN_KEY || event.key === AUTH_USER_KEY) &&
+          !localStorage.getItem(AUTH_TOKEN_KEY)) {
         handleAuthExpired();
       }
     }
@@ -93,11 +96,17 @@ function App() {
   }
 
   if (activeRoom) {
-    return <MatchGameScreen onExit={() => {
-      clearActiveRoom();
-      setActiveRoom(null);
-      setMultiplayerView("lobby");
-    }} room={activeRoom} user={user} />;
+    return (
+      <MatchGameScreen
+        onExit={() => {
+          clearActiveRoom();
+          setActiveRoom(null);
+          setMultiplayerView("lobby");
+        }}
+        room={activeRoom}
+        user={user}
+      />
+    );
   }
 
   if (shopOpen)
@@ -129,15 +138,25 @@ function App() {
       );
     }
     if (multiplayerView === "lobby") {
-      return <MultiplayerScreen api={matchRoomApi} onBack={() => {
-        restoreRoomFocus.current = "start-multiplayer";
-        setMultiplayerView("home");
-      }} onCreateRoom={() => setMultiplayerView("create")} onEnterRoom={enterRoom} />;
+      return (
+        <MultiplayerScreen
+          api={matchRoomApi}
+          onBack={() => {
+            restoreRoomFocus.current = "start-multiplayer";
+            setMultiplayerView("home");
+          }}
+          onCreateRoom={() => setMultiplayerView("create")}
+          onEnterRoom={enterRoom}
+        />
+      );
     }
     if (rankingOpen) {
       return (
         <ThemeScope themeId={equippedThemeId}>
-          <RankingScreen currentUserId={user.id} onBack={() => setRankingOpen(false)} />
+          <RankingScreen
+            currentUserId={user.id}
+            onBack={() => setRankingOpen(false)}
+          />
         </ThemeScope>
       );
     }
