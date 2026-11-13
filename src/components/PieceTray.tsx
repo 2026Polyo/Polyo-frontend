@@ -1,4 +1,5 @@
 import PiecePreview from "./PiecePreview";
+import { useGameTheme } from "./ThemeScope";
 import "../styles/PieceTray.css";
 import type { PieceInstance, CellCoord } from "../types";
 
@@ -20,8 +21,9 @@ function PieceTray({
   selectedId,
   tray
 }: PieceTrayProps) {
+  const theme = useGameTheme();
   return (
-    <div className="tray" aria-label="사용 가능한 블록">
+    <div className="tray" aria-label="사용 가능한 블록" data-game-theme={theme.id}>
       {tray.map((piece, index) =>
         piece ? (
           <PiecePreview

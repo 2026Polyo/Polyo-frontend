@@ -68,12 +68,22 @@ const MinecraftCellEffect = memo(function MinecraftCellEffect({
   );
 });
 
+const MinecraftClearEffect = memo(function MinecraftClearEffect({ batch }: { batch: MinecraftEffectBatch }) {
+  return (
+    <div className="mc-effect-batch" data-effect-id={batch.id}>
+      {batch.cleared.map((cell) => (
+        <MinecraftCellEffect key={`${cell.row}-${cell.col}`} cell={cell} />
+      ))}
+    </div>
+  );
+});
+
 interface ActiveBatch {
   batch: MinecraftEffectBatch;
   timer: ReturnType<typeof setTimeout>;
 }
 
-export default function MinecraftBoardEffects({
+export default memo(function MinecraftBoardEffects({
   feedback,
 }: {
   feedback: BoardFeedback | null;
@@ -136,16 +146,8 @@ export default function MinecraftBoardEffects({
       }
     >
       {batches.map((batch) => (
-        <div
-          className="mc-effect-batch"
-          data-effect-id={batch.id}
-          key={batch.id}
-        >
-          {batch.cleared.map((cell) => (
-            <MinecraftCellEffect key={`${cell.row}-${cell.col}`} cell={cell} />
-          ))}
-        </div>
+        <MinecraftClearEffect key={batch.id} batch={batch} />
       ))}
     </div>
   );
-}
+});

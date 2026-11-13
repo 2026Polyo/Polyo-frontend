@@ -72,11 +72,15 @@ function App() {
   }
 
   if (activeRoom) {
-    return <MatchGameScreen onExit={() => {
-      clearActiveRoom();
-      setActiveRoom(null);
-      setMultiplayerView("lobby");
-    }} room={activeRoom} user={user} />;
+    return (
+      <ThemeScope themeId={equippedThemeId}>
+        <MatchGameScreen onExit={() => {
+          clearActiveRoom();
+          setActiveRoom(null);
+          setMultiplayerView("lobby");
+        }} room={activeRoom} user={user} />
+      </ThemeScope>
+    );
   }
 
   if (shopOpen)
