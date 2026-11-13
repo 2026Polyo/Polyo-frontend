@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getMatchSocketUrl, parseServerMessage } from "../matchGame";
+import { EMPTY_CURSOR, getCursorPreview, getMatchSocketUrl, parseServerMessage, sameCursor } from "../matchGame";
 
 const location = { protocol: "http:", host: "127.0.0.1:5173" };
 
@@ -58,5 +58,49 @@ describe("parseServerMessage", () => {
     expect(parseServerMessage('{"type":"UNKNOWN"}')).toBeNull();
     expect(parseServerMessage(JSON.stringify({ ...state, players: [player] }))).toBeNull();
     expect(parseServerMessage(JSON.stringify({ ...state, tray: [{ uid: 1 }] }))).toBeNull();
+  });
+});
+
+describe("CURSOR messages", () => {
+  it("accepts a relayed cursor, with or without a position", () => {
+    expect(parseServerMessage('{"type":"CURSOR","userId":"2","pieceUid":"x","row":3,"col":-1}'))
+      .toEqual({ type: "CURSOR", userId: "2", pieceUid: "x", row: 3, col: -1 });
+    expect(parseServerMessage('{"type":"CURSOR","userId":"2","pieceUid":null,"row":null,"col":null}')?.type).toBe("CURSOR");
+  });
+
+  it("rejects malformed cursors", () => {
+    expect(parseServerMessage('{"type":"CURSOR","userId":"2","pieceUid":"x","row":3,"col":null}')).toBeNull();
+    expect(parseServerMessage('{"type":"CURSOR","userId":"2","pieceUid":"x","row":8,"col":0}')).toBeNull();
+    expect(parseServerMessage('{"type":"CURSOR","userId":"2","pieceUid":"x","row":1.5,"col":0}')).toBeNull();
+    expect(parseServerMessage('{"type":"CURSOR","userId":"2","pieceUid":7,"row":0,"col":0}')).toBeNull();
+    expect(parseServerMessage('{"type":"CURSOR","pieceUid":"x","row":0,"col":0}')).toBeNull();
+  });
+
+  it("compares cursors by value", () => {
+    expect(sameCursor({ pieceUid: "x", row: 1, col: 2 }, { pieceUid: "x", row: 1, col: 2 })).toBe(true);
+    expect(sameCursor({ pieceUid: "x", row: 1, col: 2 }, EMPTY_CURSOR)).toBe(false);
+  });
+});
+
+describe("getCursorPreview", () => {
+  const piece = { uid: "L", id: "l", cells: [[0, 0], [1, 0], [1, 1]] as [number, number][], color: "cyan" };
+  const tray = [null, piece];
+
+  it("covers the held piece's cells at the aimed spot", () => {
+    expect(getCursorPreview({ pieceUid: "L", row: 2, col: 3 }, tray)).toEqual({ piece, cells: new Set(["2-3", "3-3", "3-4"]) });
+  });
+
+  it("keeps the piece but no cells while it is off the board", () => {
+    expect(getCursorPreview({ pieceUid: "L", row: null, col: null }, tray)?.cells.size).toBe(0);
+  });
+
+  it("drops cells outside the board", () => {
+    expect(getCursorPreview({ pieceUid: "L", row: 7, col: 7 }, tray)?.cells).toEqual(new Set(["7-7"]));
+  });
+
+  it("shows nothing for an empty hand or a block no longer in the tray", () => {
+    expect(getCursorPreview(EMPTY_CURSOR, tray)).toBeNull();
+    expect(getCursorPreview({ pieceUid: "gone", row: 0, col: 0 }, tray)).toBeNull();
+    expect(getCursorPreview(null, tray)).toBeNull();
   });
 });

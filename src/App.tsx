@@ -215,10 +215,10 @@ function App() {
             setShopOpen(true);
           }}
           onLogout={() => {
-            localStorage.removeItem(AUTH_TOKEN_KEY);
-            localStorage.removeItem(AUTH_USER_KEY);
             clearActiveRoom();
-            setUser(null);
+            // Clears the stored login and fires AUTH_EXPIRED_EVENT, whose handler signs the user out;
+            // the dev theme preview is then reset by the effect that watches `user`.
+            clearAuth();
           }}
         />
       </ThemeScope>

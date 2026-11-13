@@ -1,29 +1,36 @@
-/* Match-only additions. The board, tray, score, effects and layout come from the solo play styles. */
+/* Match-only additions. The board, tray, piece and effect visuals come from the solo play styles;
+   the layout is the match's own: two boards of one size side by side, the shared tray below
+   (or beside them on a landscape phone). */
 
-/* Six shared pieces instead of three: one row on wide screens, two rows on phones. */
-.match-shell .tray {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+/* ---------- Screen shell: the whole match fits one screen without scrolling ---------- */
+.match-shell {
+  align-items: flex-start;
+  height: 100vh;
+  height: 100svh;
+  min-height: 0;
+  overflow: hidden;
+  padding: 12px 16px;
+  position: relative;
 }
 
-.match-shell .piece-preview {
-  height: 104px;
+/* --match-board is the side of each board. It is the smallest of: 560px, half the width left
+   after padding and the gap between boards, and the height left after everything that is not
+   a board (--match-chrome: top bar, board headings, tray, hint and padding). */
+.match-shell .game-area {
+  --match-gap: 16px;
+  --match-chrome: 326px;
+  --match-board: max(140px, min(560px, calc((100vw - 32px - var(--match-gap)) / 2), calc(100svh - var(--match-chrome))));
   min-width: 0;
-  padding: 6px;
+  position: relative;
+  width: 100%;
 }
 
-.match-shell .piece-preview .mini-grid {
-  --mini-cell-size: 14px !important;
-  --mini-cell-gap: 2px !important;
-  gap: 2px;
-}
-
-.match-shell .piece-preview .mini-cell {
-  height: var(--mini-cell-size);
-  width: var(--mini-cell-size);
-}
-
-.match-shell .tray:has(.piece-preview:disabled) .piece-preview:not(.empty) {
-  opacity: 0.6;
+/* ---------- Top bar: whose turn (time left is on each board's own timer) ---------- */
+.match-topbar {
+  margin-inline: auto;
+  /* Leaves room for the emote and forfeit buttons in the top-right corner. */
+  max-width: min(560px, calc(100% - 340px));
+  min-width: 240px;
 }
 
 .match-turn-status {
@@ -43,69 +50,236 @@
   color: hsl(0 70% 46%);
 }
 
-.match-turn-timer {
-  margin-bottom: 10px;
-  width: 100%;
+/* ---------- Per-board turn timers, fighting-game style ----------
+   Each board has its own clock over it. The first seat's bar is anchored to the left edge and the
+   second seat's is mirrored to the right edge, so both drain towards the outside of the screen.
+   Mine is red/gold, the rival's is blue so it never reads as "hurry up" for me. A clock that is
+   not running sits full and dimmed. */
+.match-player-timer {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  opacity: 0.45;
+  transition: opacity 200ms ease;
 }
 
-/* The rival's clock is shown in blue so it never reads as "hurry up" for me. */
-.match-turn-timer.is-rival .hard-timer-fill {
+.match-player-timer.is-running {
+  opacity: 1;
+}
+
+.match-player-timer-bar {
+  flex: 1;
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+.match-player-timer.is-rival .hard-timer-fill {
   background: linear-gradient(90deg, var(--blue-700), var(--blue-300));
 }
 
-.match-rival {
-  background: var(--surface-card);
-  border: 1px solid var(--surface-card-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  grid-column: 3;
-  grid-row: 1;
-  justify-self: start;
-  max-width: 300px;
-  padding: 12px;
-  width: 100%;
+.match-player-timer-seconds {
+  color: var(--text-strong);
+  flex: none;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  min-width: 2.6em;
+  text-align: right;
 }
 
-.match-rival .board {
-  gap: 2px;
-  padding: 6px;
+.match-player.is-second .match-player-timer {
+  flex-direction: row-reverse;
+}
+
+.match-player.is-second .match-player-timer-seconds {
+  text-align: left;
+}
+
+.match-player.is-second .hard-timer-fill {
+  margin-left: auto;
+}
+
+.match-player.is-second.is-me .hard-timer-fill {
+  background: linear-gradient(270deg, hsl(8 75% 52%), hsl(42 95% 55%));
+}
+
+.match-player.is-second.is-rival .hard-timer-fill {
+  background: linear-gradient(270deg, var(--blue-700), var(--blue-300));
+}
+
+/* ---------- Arena: first player | second player (server order, same on both screens), tray underneath ---------- */
+.match-arena {
+  align-items: start;
+  column-gap: var(--match-gap);
+  display: grid;
+  grid-template-areas:
+    "first second"
+    "tray tray";
+  grid-template-columns: repeat(2, var(--match-board));
+  justify-content: center;
+}
+
+.match-player {
+  min-width: 0;
+  position: relative;
+}
+
+.match-player.is-first { grid-area: first; }
+.match-player.is-second { grid-area: second; }
+
+/* The rival's board only shows their moves. */
+.match-player.is-rival .board {
   pointer-events: none;
 }
 
-.match-rival-heading {
+.match-player-heading {
   align-items: baseline;
   border-bottom: 3px solid transparent;
   color: var(--text-strong);
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-}
-
-.match-rival-heading.is-active {
-  border-bottom-color: var(--score-gold);
-}
-
-.match-rival-heading strong {
-  font-size: 1rem;
-  font-weight: 900;
-  max-width: 100%;
+  gap: 8px;
+  margin-bottom: 6px;
+  min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
+  padding-bottom: 4px;
+  transition: border-color 200ms ease, opacity 200ms ease;
   white-space: nowrap;
 }
 
-.match-rival-heading span {
+.match-player.is-turn .match-player-heading {
+  border-bottom-color: var(--score-gold);
+}
+
+.match-player-heading strong {
+  font-size: 1rem;
+  font-weight: 900;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.match-player-heading span {
   align-items: center;
   color: var(--text-body);
   display: inline-flex;
+  flex: none;
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   gap: 4px;
 }
 
+.match-player-heading .match-player-tag {
+  background: var(--score-gold);
+  border-radius: 999px;
+  color: var(--text-strong);
+  font-size: 0.7rem;
+  padding: 1px 7px;
+}
+
+.match-player-score {
+  margin-left: auto;
+}
+
+/* "MY TURN" uses the combo burst animation, fixed to the middle of the screen. */
+.match-shell .match-turn-burst {
+  font-size: clamp(2.6rem, 9vw, 6rem);
+  position: fixed;
+  z-index: 30;
+}
+
+/* The on-turn player's board (mine or the rival's) glows for the whole turn; it fades in when the turn starts. */
+.match-player.is-turn .board {
+  animation: match-turn-glow 400ms ease-out;
+  box-shadow:
+    inset 0 2px 6px hsl(205 60% 18% / 0.35),
+    0 0 0 3px var(--score-gold),
+    0 0 24px 6px hsl(45 100% 60% / 0.75);
+}
+
+@keyframes match-turn-glow {
+  from {
+    box-shadow:
+      inset 0 2px 6px hsl(205 60% 18% / 0.35),
+      0 0 0 0 transparent,
+      0 0 0 0 transparent;
+  }
+}
+
+.match-player-heading .match-rival-holding {
+  animation: match-holding-pulse 1.2s ease-in-out infinite;
+  color: var(--blue-700);
+}
+
+@keyframes match-holding-pulse {
+  50% { opacity: 0.45; }
+}
+
+/* ---------- Shared tray: six pieces ---------- */
+.match-arena > .tray {
+  grid-area: tray;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.match-shell .piece-preview {
+  height: 130px;
+  min-width: 0;
+  padding: 6px;
+}
+
+.match-shell .piece-preview .mini-grid {
+  /* Pieces are at most 5 cells long either way (line-5), so slots are sized for 5 cells + 4 gaps. */
+  --mini-cell-size: 21px !important;
+  --mini-cell-gap: 2px !important;
+  gap: 2px;
+}
+
+.match-shell .piece-preview .mini-cell {
+  height: var(--mini-cell-size);
+  width: var(--mini-cell-size);
+}
+
+.match-shell .tray:has(.piece-preview:disabled) .piece-preview:not(.empty) {
+  opacity: 0.6;
+}
+
+/* On the rival's turn the tray is disabled; the highlighted slot is the block they are holding.
+   The block itself has been lifted out (see .match-rival-held), so only its outline stays behind. */
+.match-shell .tray .piece-preview.selected:disabled {
+  box-shadow: inset 0 0 0 2px var(--blue-300);
+  opacity: 1;
+}
+
+.match-shell .tray .piece-preview.selected:disabled .mini-grid {
+  opacity: 0.3;
+}
+
+/* ---------- The rival's carried block ----------
+   Placed by RivalHeldPiece with a transform relative to the arena; the transition is what makes it
+   glide from the tray to their board between relayed positions (sent about every 100ms). */
+.match-arena {
+  position: relative;
+}
+
+.match-rival-held {
+  filter: drop-shadow(0 10px 16px hsl(206 60% 20% / 0.4));
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform-origin: 0 0;
+  transition: transform 180ms ease-out, opacity 180ms ease-out;
+  z-index: 5;
+}
+
+/* Over a valid spot it floats, fully opaque, a cell above the board's landing preview (the colored
+   cells and the lines that will clear). Over a spot it cannot go it simply waits at the last one. */
+.match-rival-held.is-aiming,
+.match-rival-held.is-off {
+  filter: drop-shadow(0 18px 18px hsl(206 60% 15% / 0.45));
+}
 .match-error {
   color: hsl(0 100% 92%);
   font-size: 0.85rem;
@@ -114,13 +288,64 @@
   text-align: center;
 }
 
-/* Top-right corner of the screen, out of the board column. */
-.match-shell .match-forfeit {
+/* ---------- Emotes and forfeit in the top-right corner ---------- */
+.match-corner-actions {
+  align-items: center;
   display: flex;
+  gap: 8px;
   position: absolute;
   right: 16px;
   top: 12px;
-  z-index: 2;
+  z-index: 6;
+}
+
+.match-shell .match-forfeit {
+  display: flex;
+}
+
+/* At the top of the screen the emote grid opens downwards instead of upwards. */
+.match-corner-actions .emote-popup {
+  bottom: auto;
+  left: auto;
+  right: 0;
+  top: calc(100% + 8px);
+}
+
+/* Emote bubble over the top-right corner of the sender's board. */
+.match-emote-bubble {
+  animation: vs-bubble-pop 2500ms ease forwards;
+  background: var(--surface-card);
+  border-radius: 18px;
+  box-shadow: var(--modal-shadow-md);
+  line-height: 0;
+  padding: 6px;
+  pointer-events: none;
+  position: absolute;
+  right: -6px;
+  top: -12px;
+  transform-origin: right bottom;
+  z-index: 4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-emote-bubble,
+  .match-player-heading .match-rival-holding {
+    animation: none;
+  }
+
+  .match-player-heading,
+  .match-player-timer {
+    transition: none;
+  }
+
+  .match-player-timer .hard-timer-fill,
+  .match-rival-held {
+    transition: none;
+  }
+
+  .match-player.is-turn .board {
+    animation: none;
+  }
 }
 
 .game-over .match-result-reason {
@@ -144,148 +369,9 @@
   width: 100%;
 }
 
-/* Solo play stacks into one column below 1520px; the match keeps the rival beside the board
-   down to laptop widths so my board and tray stay on screen. */
-@media (min-width: 1101px) and (max-width: 1520px) {
-  .match-shell .game-area {
-    width: min(100%, 1180px);
-  }
-
-  .match-shell .board-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 560px) minmax(0, 1fr);
-  }
-
-  .match-shell .board-stack {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .match-shell .match-rival {
-    grid-column: 3;
-    grid-row: 1;
-    justify-self: start;
-    max-width: 260px;
-  }
-}
-
-@media (max-width: 1100px) {
-  .match-rival {
-    grid-column: auto;
-    grid-row: 1;
-    justify-self: center;
-    max-width: 240px;
-  }
-
-  .match-shell .board-stack {
-    grid-row: 2;
-  }
-}
-
-@media (max-width: 720px) {
-  /* Name and score beside a small board, so my board and both tray rows fit on one screen. */
-  .match-rival {
-    align-items: center;
-    display: grid;
-    gap: 10px;
-    grid-column: 1 / -1;
-    grid-template-columns: minmax(0, 1fr) 84px;
-    max-width: none;
-    padding: 8px 10px;
-  }
-
-  .match-rival-heading {
-    margin-bottom: 0;
-  }
-
-  .match-rival .board {
-    gap: 1px;
-    padding: 3px;
-  }
-
-  .match-turn-status {
-    margin-bottom: 6px;
-  }
-
-  .match-shell .board-stack {
-    grid-row: 2;
-    width: min(100%, max(240px, calc(100svh - 420px)));
-  }
-
-  .match-shell .tray {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .match-shell .piece-preview {
-    height: 72px;
-  }
-
-  .match-shell .piece-preview .mini-grid {
-    --mini-cell-size: clamp(10px, 3.3vw, 13px) !important;
-  }
-}
-
-/* Fit the whole match on one screen: the board is sized from the height left after
-   the score, turn bar, timer, tray, hint and forfeit button (--match-chrome). */
-.match-shell {
-  align-items: flex-start;
-  height: 100vh;
-  height: 100svh;
-  min-height: 0;
-  overflow: hidden;
-  padding: 12px 16px;
-  position: relative;
-}
-
-.match-shell .game-area {
-  --match-chrome: 348px;
-  --match-board: min(100%, 600px, max(220px, calc(100svh - var(--match-chrome))));
-}
-
-.match-shell .board-stack {
-  width: var(--match-board);
-}
-
-.match-shell .match-turn-status {
-  margin-inline: auto;
-  max-width: 600px;
-}
-
-@media (min-width: 721px) {
-  .match-shell .game-area {
-    --match-board: min(600px, max(220px, calc(100svh - var(--match-chrome))));
-    width: min(100%, 1180px);
-  }
-
-  /* Rival board stays beside mine instead of stacking above it, which would cost a board's height. */
-  .match-shell .board-layout {
-    gap: 16px;
-    grid-template-columns: minmax(0, 1fr) var(--match-board) minmax(0, 1fr);
-  }
-
-  .match-shell .board-stack {
-    grid-column: 2;
-    grid-row: 1;
-    width: 100%;
-  }
-
-  .match-shell .match-rival {
-    grid-column: 3;
-    grid-row: 1;
-    justify-self: start;
-    max-width: min(100%, 260px);
-  }
-}
-
-@media (min-width: 721px) and (max-width: 1100px) {
-  .match-shell .match-rival {
-    max-width: min(100%, 200px);
-    padding: 8px;
-  }
-}
-
 @media (max-height: 820px) {
   .match-shell .game-area {
-    --match-chrome: 320px;
+    --match-chrome: 300px;
   }
 
   .match-shell .placement-hint {
@@ -293,14 +379,101 @@
   }
 }
 
+/* ---------- Narrow screens (portrait phones): boards still side by side, tray in two rows ---------- */
 @media (max-width: 720px) {
+  .match-shell {
+    padding: 8px 12px;
+  }
+
+  .match-shell .game-area {
+    --match-gap: 8px;
+    --match-chrome: 316px;
+    --match-board: max(140px, min(560px, calc((100vw - 24px - var(--match-gap)) / 2), calc(100svh - var(--match-chrome))));
+    width: 100%;
+  }
+
+  .match-topbar {
+    /* The corner buttons sit above the status bar on phones. */
+    margin-top: 44px;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .match-turn-status {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+  }
+
+  .match-turn-status {
+    margin-bottom: 8px;
+  }
+
+  .match-player-timer {
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .match-player-timer-bar {
+    height: 8px;
+  }
+
+  .match-player-timer-seconds {
+    font-size: 0.75rem;
+  }
+
+  .match-player-heading strong { font-size: 0.85rem; }
+  .match-player-heading span { font-size: 0.75rem; }
+
+  .match-arena > .tray {
+    gap: 4px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 8px;
+    padding: 4px;
+  }
+
+  .match-shell .piece-preview {
+    /* Tall enough for the vertical 5-cell line: 5 cells + 4 gaps of 2px + 8px padding. */
+    height: calc(5 * clamp(13px, 4.2vw, 18px) + 16px);
+    padding: 4px;
+  }
+
+  .match-shell .piece-preview .mini-grid {
+    --mini-cell-size: clamp(13px, 4.2vw, 18px) !important;
+  }
+
+  .match-shell .placement-hint {
+    display: none;
+  }
+
+  /* Emotes on the left and forfeit on the right. */
+  .match-corner-actions {
+    justify-content: space-between;
+    left: 12px;
+    pointer-events: none;
+    right: 12px;
+    top: 8px;
+  }
+
+  .match-corner-actions > * {
+    pointer-events: auto;
+  }
+
+  .match-corner-actions .emote-popup {
+    left: 0;
+    right: auto;
+  }
+
+  .match-corner-actions .emote-toggle {
+    height: 36px;
+    width: 36px;
+  }
+
   .match-shell .match-forfeit {
     font-size: 0.8rem;
     gap: 4px;
     min-height: 32px;
     min-width: 0;
     padding: 4px 10px;
-    right: 12px;
   }
 
   .match-shell .match-forfeit svg {
@@ -308,18 +481,139 @@
     width: 14px;
   }
 
-  /* Phones stack the rival strip above the board and the tray in two rows, so less height is left for the board. */
-  .match-shell .game-area {
-    --match-chrome: 410px;
-    --match-board: min(100%, max(190px, calc(100svh - var(--match-chrome))));
+  .match-emote-bubble {
+    right: -4px;
+    top: -10px;
   }
 
-  .match-shell .match-rival {
-    grid-template-columns: minmax(0, 1fr) 64px;
-    padding: 6px 10px;
+  .match-emote-bubble svg {
+    height: 32px;
+    width: 32px;
+  }
+}
+
+/* ---------- Landscape phones (the mobile target): height is at most 540px, so the tray moves
+   to a column right of the boards and every row above the boards is trimmed.
+   --match-chrome here is padding + top bar + board heading (about 90px). ---------- */
+@media (orientation: landscape) and (max-height: 540px) {
+  .match-shell {
+    padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  .match-shell .game-area {
+    --match-gap: 8px;
+    --match-chrome: 90px;
+    --match-tray: clamp(170px, 25vw, 280px);
+    --match-board: max(140px, min(560px, calc((100vw - 20px - var(--match-tray) - 2 * var(--match-gap)) / 2), calc(100svh - var(--match-chrome))));
+    width: 100%;
+  }
+
+  .match-topbar {
+    margin-top: 0;
+    /* Room for the emote and forfeit buttons on the right. */
+    max-width: min(520px, calc(100% - 320px));
+    min-width: 200px;
+  }
+
+  .match-turn-status {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+    padding: 2px 10px;
+  }
+
+  .match-player-timer {
+    gap: 4px;
+    margin-bottom: 2px;
+  }
+
+  .match-player-timer-bar {
+    height: 6px;
+  }
+
+  .match-player-timer-seconds {
+    font-size: 0.7rem;
+  }
+
+  .match-arena {
+    grid-template-areas: "first second tray";
+    grid-template-columns: repeat(2, var(--match-board)) var(--match-tray);
+  }
+
+  .match-player-heading {
+    border-bottom-width: 2px;
+    margin-bottom: 4px;
+    padding-bottom: 2px;
+  }
+
+  .match-player-heading strong { font-size: 0.85rem; }
+  .match-player-heading span { font-size: 0.75rem; }
+
+  /* Tray column: 2 × 3 slots, as tall as a board and level with it. */
+  .match-arena > .tray {
+    align-self: end;
+    gap: 4px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    height: var(--match-board);
+    margin-top: 0;
+    padding: 4px;
+  }
+
+  .match-shell .piece-preview {
+    height: auto;
+    padding: 2px;
+  }
+
+  .match-shell .piece-preview .mini-grid {
+    /* The biggest cell that still fits a 5-cell line in a slot a third of the board high:
+       ((board - tray padding/gaps 16px) / 3 - slot padding 4px - 4 gaps 8px) / 5, at most 16px. */
+    --mini-cell-size: max(9px, min(16px, calc(((var(--match-board) - 16px) / 3 - 12px) / 5))) !important;
   }
 
   .match-shell .placement-hint {
     display: none;
+  }
+
+  /* No row is left for the error, so it floats over the bottom of the screen. */
+  .match-error {
+    background: hsl(0 60% 30% / 0.92);
+    border-radius: var(--radius-md);
+    bottom: 8px;
+    left: 50%;
+    margin: 0;
+    padding: 4px 12px;
+    position: fixed;
+    transform: translateX(-50%);
+    z-index: 7;
+  }
+
+  .match-corner-actions {
+    justify-content: flex-end;
+    left: auto;
+    right: max(10px, env(safe-area-inset-right));
+    top: max(6px, env(safe-area-inset-top));
+  }
+
+  .match-corner-actions .emote-popup {
+    left: auto;
+    right: 0;
+  }
+
+  .match-corner-actions .emote-toggle {
+    height: 32px;
+    width: 32px;
+  }
+
+  .match-shell .match-forfeit {
+    font-size: 0.8rem;
+    gap: 4px;
+    min-height: 30px;
+    min-width: 0;
+    padding: 2px 10px;
+  }
+
+  .match-emote-bubble svg {
+    height: 28px;
+    width: 28px;
   }
 }
