@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import "./styles/App.css";
 import "./styles/AuthScreen.css";
 import "./styles/StartScreen.css";
@@ -29,6 +29,7 @@ function App() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [devPreviewThemeId, setDevPreviewThemeId] = useState<GameThemeId | null>(null);
   const shopAccount = useShopAccount(user?.id);
+  const grantLocalCoins = useEffectEvent(() => { void shopAccount.grantLocalCoins(); });
   const equippedThemeId = getGameTheme(shopAccount.account?.equippedThemeId).id;
   const { gamePhase, playScreenProps, startScreenProps } =
     useGameSession(Boolean(user), devPreviewThemeId ?? equippedThemeId);
@@ -38,6 +39,33 @@ function App() {
   const [activeRoom, setActiveRoom] =
     useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
   const restoreRoomFocus = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV || !user) return;
+    let backquoteHeld = false;
+    function reset() { backquoteHeld = false; }
+    function release(event: KeyboardEvent) {
+      if (event.code === "Backquote" || !event.ctrlKey) reset();
+    }
+    function press(event: KeyboardEvent) {
+      if (!event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || event.repeat || event.isComposing) return;
+      if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable]")) return;
+      if (event.code === "Backquote") {
+        backquoteHeld = true;
+      } else if (event.code === "BracketRight" && backquoteHeld) {
+        event.preventDefault();
+        grantLocalCoins();
+      }
+    }
+    window.addEventListener("keydown", press);
+    window.addEventListener("keyup", release);
+    window.addEventListener("blur", reset);
+    return () => {
+      window.removeEventListener("keydown", press);
+      window.removeEventListener("keyup", release);
+      window.removeEventListener("blur", reset);
+    };
+  }, [user]);
 
   useEffect(() => {
     if (gamePhase === "start" || !user) setDevPreviewThemeId(null);
