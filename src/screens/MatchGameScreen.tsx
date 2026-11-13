@@ -7,6 +7,7 @@ import EmotePicker from "../components/EmotePicker";
 import MatchLobby from "../components/MatchLobby";
 import PieceShape from "../components/PieceShape";
 import PieceTray from "../components/PieceTray";
+import RivalHeldPiece from "../components/RivalHeldPiece";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
 import { clearActiveRoom } from "../features/activeRoomStorage";
@@ -23,7 +24,7 @@ import { useGameAudio } from "../hooks/useGameAudio";
 import { useMatchGame } from "../hooks/useMatchGame";
 import { usePieceSelection } from "../hooks/usePieceSelection";
 import { usePulseLabel } from "../hooks/usePulseLabel";
-import { getClosestPlacement, getPlacementDistanceSquared } from "../utils/placement";
+import { canPlace, getClosestPlacement, getPlacementDistanceSquared, getPlacementPreview } from "../utils/placement";
 import "../styles/GameOver.css";
 // Emote picker and bubble animation styles live with the lobby.
 import "../styles/MatchLobby.css";
@@ -46,6 +47,36 @@ function BoardEmoteBubble({ bubble, nickname }: { bubble?: EmoteBubble; nickname
   return (
     <div aria-label={`${nickname}: ${EMOTE_LABELS[bubble.emote]}`} className="match-emote-bubble" key={bubble.key} role="img">
       <EmoteIcon emote={bubble.emote} size={44} />
+    </div>
+  );
+}
+
+interface PlayerTimerProps {
+  isMe: boolean;
+  isTurn: boolean;
+  nickname: string;
+  remainingMs: number;
+  turnLimitMs: number;
+}
+
+/** Fighting-game style turn clock over a player's board: it drains only while that player is on turn
+    and otherwise sits full, waiting. */
+function PlayerTimer({ isMe, isTurn, nickname, remainingMs, turnLimitMs }: PlayerTimerProps) {
+  const leftMs = isTurn ? remainingMs : turnLimitMs;
+  const ratio = turnLimitMs > 0 ? Math.min(1, leftMs / turnLimitMs) : 0;
+  return (
+    <div className={`match-player-timer${isMe ? " is-mine" : " is-rival"}${isTurn ? " is-running" : ""}`}>
+      <div
+        aria-label={`${nickname} 차례 남은 시간`}
+        aria-valuemax={turnLimitMs}
+        aria-valuemin={0}
+        aria-valuenow={Math.round(leftMs)}
+        className="hard-timer match-player-timer-bar"
+        role="progressbar"
+      >
+        <span className="hard-timer-fill" style={{ width: `${ratio * 100}%` }} />
+      </div>
+      <span className="match-player-timer-seconds">{(leftMs / 1000).toFixed(1)}</span>
     </div>
   );
 }
@@ -75,6 +106,7 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   const [clearingCells, setClearingCells] = useState<Set<string>>(NO_CELLS);
   const [clearingUserId, setClearingUserId] = useState<string | null>(null);
   const rivalBoardRef = useRef<HTMLDivElement>(null);
+  const arenaRef = useRef<HTMLDivElement>(null);
   const [leaving, setLeaving] = useState(false);
   const [leaveError, setLeaveError] = useState("");
   const leaveControllerRef = useRef<AbortController | null>(null);
@@ -87,7 +119,7 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   const playing = game?.status === "PLAYING";
   const myTurn = Boolean(playing && game?.turnUserId === user.id);
   // Each time the turn passes to me (the first turn included), "MY TURN" bursts in the middle of
-  // the screen and my board's border glows for TURN_START_MS.
+  // the screen for TURN_START_MS; the border glow of the on-turn board stays on for the whole turn.
   const { label: turnLabel, pulseId: turnLabelId, pulse: pulseTurnLabel } = usePulseLabel(TURN_START_MS);
   const wasMyTurnRef = useRef(false);
   useEffect(() => {
@@ -154,6 +186,16 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
     () => (rivalTurn && game ? getCursorPreview(rivalCursor, game.tray) : null),
     [game, rivalCursor, rivalTurn]
   );
+  // The same landing preview as my own drag: covered cells (plus what a fill block fills in) and
+  // the lines it will clear, worked out on the rival's board.
+  const rivalBoard = rival?.board;
+  const rivalAimRow = rivalCursor?.row ?? null;
+  const rivalAimCol = rivalCursor?.col ?? null;
+  const rivalPlacement = useMemo(() => {
+    if (!rivalPreview || !rivalBoard || rivalAimRow === null || rivalAimCol === null) return null;
+    if (!canPlace(rivalBoard, rivalPreview.piece, rivalAimRow, rivalAimCol)) return null;
+    return getPlacementPreview(rivalBoard, rivalPreview.piece, rivalAimRow, rivalAimCol);
+  }, [rivalPreview, rivalBoard, rivalAimRow, rivalAimCol]);
 
   // The server sends time left rather than a clock, so the countdown ignores clock differences.
   useEffect(() => {
@@ -284,12 +326,10 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
     );
   }
 
-  const turnLimitMs = (myTurn ? me : rival).turnLimitMs;
   const won = game.winnerUserId === user.id;
   const selectedPiece = selection.selectedPiece;
-  const turnText = !playing ? "게임 종료"
-    : myTurn ? `내 차례 · ${(remainingMs / 1000).toFixed(1)}초`
-      : `${rival.nickname}님의 차례 · ${(remainingMs / 1000).toFixed(1)}초`;
+  // Seconds left are shown on each board's own timer, so the top bar only says whose turn it is.
+  const turnText = !playing ? "게임 종료" : myTurn ? "내 차례" : `${rival.nickname}님의 차례`;
 
   return (
     <main className={`app-shell play-shell match-shell${selection.cursorPoint ? " has-cursor-piece" : ""}`}>
@@ -309,66 +349,76 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
             <strong aria-live="polite" role="status">{turnText}</strong>
             {!match.connected && playing && <span className="match-reconnecting"><WifiOff aria-hidden="true" size={14} />재연결 중…</span>}
           </div>
-          <div
-            aria-label="이번 차례 남은 시간"
-            aria-valuemax={turnLimitMs}
-            aria-valuemin={0}
-            aria-valuenow={Math.round(remainingMs)}
-            className={`hard-timer match-turn-timer${myTurn ? "" : " is-rival"}`}
-            role="progressbar"
-          >
-            <span className="hard-timer-fill" style={{ width: `${playing && turnLimitMs > 0 ? (remainingMs / turnLimitMs) * 100 : 0}%` }} />
-          </div>
         </header>
-        {/* Both boards share one size and sit side by side; the board of whoever is not on turn is grayed. */}
-        <div className="match-arena">
-          <section aria-label="내 보드" className={`match-player is-me${myTurn ? " is-turn" : ""}${playing && !myTurn ? " is-waiting" : ""}${turnLabel ? " is-turn-start" : ""}`}>
-            <div className="match-player-heading">
-              <strong>{me.nickname}</strong>
-              <span className="match-player-tag">나</span>
-              <span className="match-player-score">{me.score.toLocaleString()}점</span>
-            </div>
-            <div className="board-combo-stage">
-              <Board
-                board={me.board}
-                boardRef={selection.boardRef}
-                clearingCells={clearingUserId === me.userId ? clearingCells : NO_CELLS}
-                hoverCell={selection.hoverCell}
-                onCellClick={handleCellClick}
-                onCellEnter={selection.setHoverCell}
-                onCellLeave={() => selection.setHoverCell(null)}
-                previewCells={selection.previewCells}
-                previewClearingCells={selection.previewClearingCells}
-                selectedPiece={selectedPiece}
+        {/* Both boards share one size and sit side by side in the server's player order, so both
+            players see the same layout. Whoever is on turn has their board glow for the whole turn. */}
+        <div className="match-arena" ref={arenaRef}>
+          {game.players.map((player, index) => {
+            const isMe = player.userId === user.id;
+            const seat = index === 0 ? "is-first" : "is-second";
+            const isTurn = playing && game.turnUserId === player.userId;
+            const timer = (
+              <PlayerTimer
+                isMe={isMe}
+                isTurn={isTurn}
+                nickname={player.nickname}
+                remainingMs={remainingMs}
+                turnLimitMs={player.turnLimitMs}
               />
-              {comboEffectValue !== null && <div className="combo-burst" aria-live="polite">combo {comboEffectValue}</div>}
-              {clearLabel && <div className="clear-burst" key={clearLabelId} aria-live="polite">{clearLabel}</div>}
-              <BoardEmoteBubble bubble={emoteBubbles.bubbles[user.id]} nickname={me.nickname} />
-            </div>
-          </section>
-          <section aria-label="상대 보드" className={`match-player is-rival${rivalTurn ? " is-turn" : ""}`}>
-            <div className="match-player-heading">
-              <strong>{rival.nickname}</strong>
-              <span className="match-player-score">{rival.score.toLocaleString()}점</span>
-              {!rival.connected && <span className="match-disconnected"><WifiOff aria-hidden="true" size={14} />연결 끊김</span>}
-              {rivalPreview && <span className="match-rival-holding">블록 고르는 중…</span>}
-            </div>
-            <div className="board-combo-stage">
-              <Board
-                board={rival.board}
-                boardRef={rivalBoardRef}
-                clearingCells={clearingUserId === rival.userId ? clearingCells : NO_CELLS}
-                hoverCell={null}
-                onCellClick={() => undefined}
-                onCellEnter={() => undefined}
-                onCellLeave={() => undefined}
-                previewCells={rivalPreview?.cells ?? NO_CELLS}
-                previewClearingCells={NO_CELLS}
-                selectedPiece={rivalPreview?.piece ?? null}
-              />
-              <BoardEmoteBubble bubble={emoteBubbles.bubbles[rival.userId]} nickname={rival.nickname} />
-            </div>
-          </section>
+            );
+            return isMe ? (
+              <section aria-label="내 보드" className={`match-player is-me ${seat}${isTurn ? " is-turn" : ""}`} key={player.userId}>
+                {timer}
+                <div className="match-player-heading">
+                  <strong>{me.nickname}</strong>
+                  <span className="match-player-tag">나</span>
+                  <span className="match-player-score">{me.score.toLocaleString()}점</span>
+                </div>
+                <div className="board-combo-stage">
+                  <Board
+                    board={me.board}
+                    boardRef={selection.boardRef}
+                    clearingCells={clearingUserId === me.userId ? clearingCells : NO_CELLS}
+                    hoverCell={selection.hoverCell}
+                    onCellClick={handleCellClick}
+                    onCellEnter={selection.setHoverCell}
+                    onCellLeave={() => selection.setHoverCell(null)}
+                    previewCells={selection.previewCells}
+                    previewClearingCells={selection.previewClearingCells}
+                    selectedPiece={selectedPiece}
+                  />
+                  {comboEffectValue !== null && <div className="combo-burst" aria-live="polite">combo {comboEffectValue}</div>}
+                  {clearLabel && <div className="clear-burst" key={clearLabelId} aria-live="polite">{clearLabel}</div>}
+                  <BoardEmoteBubble bubble={emoteBubbles.bubbles[user.id]} nickname={me.nickname} />
+                </div>
+              </section>
+            ) : (
+              <section aria-label="상대 보드" className={`match-player is-rival ${seat}${isTurn ? " is-turn" : ""}`} key={player.userId}>
+                {timer}
+                <div className="match-player-heading">
+                  <strong>{rival.nickname}</strong>
+                  <span className="match-player-score">{rival.score.toLocaleString()}점</span>
+                  {!rival.connected && <span className="match-disconnected"><WifiOff aria-hidden="true" size={14} />연결 끊김</span>}
+                  {rivalPreview && <span className="match-rival-holding">블록 고르는 중…</span>}
+                </div>
+                <div className="board-combo-stage">
+                  <Board
+                    board={rival.board}
+                    boardRef={rivalBoardRef}
+                    clearingCells={clearingUserId === rival.userId ? clearingCells : NO_CELLS}
+                    hoverCell={null}
+                    onCellClick={() => undefined}
+                    onCellEnter={() => undefined}
+                    onCellLeave={() => undefined}
+                    previewCells={rivalPlacement?.cells ?? NO_CELLS}
+                    previewClearingCells={rivalPlacement?.clearingCells ?? NO_CELLS}
+                    selectedPiece={rivalPreview?.piece ?? null}
+                  />
+                  <BoardEmoteBubble bubble={emoteBubbles.bubbles[rival.userId]} nickname={rival.nickname} />
+                </div>
+              </section>
+            );
+          })}
           <PieceTray
             disabled={!canMove}
             onEmptySlotClick={selection.clearSelection}
@@ -378,6 +428,17 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
             selectedId={myTurn ? selectedPiece?.uid ?? null : rivalPreview?.piece.uid ?? null}
             tray={game.tray}
           />
+          {rivalPreview && rivalCursor && (
+            <RivalHeldPiece
+              arenaRef={arenaRef}
+              boardRef={rivalBoardRef}
+              // A new piece starts over from its own slot.
+              key={rivalPreview.piece.uid}
+              piece={rivalPreview.piece}
+              slotIndex={game.tray.findIndex((slot) => slot?.uid === rivalPreview.piece.uid)}
+              target={rivalCursor.row !== null && rivalCursor.col !== null ? { row: rivalCursor.row, col: rivalCursor.col } : null}
+            />
+          )}
         </div>
         {match.message && <p className="match-error" role="alert">{match.message}</p>}
         <p className="placement-hint" aria-live="polite">

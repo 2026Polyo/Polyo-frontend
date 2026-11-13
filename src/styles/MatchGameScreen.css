@@ -25,7 +25,7 @@
   width: 100%;
 }
 
-/* ---------- Top bar: whose turn, time left ---------- */
+/* ---------- Top bar: whose turn (time left is on each board's own timer) ---------- */
 .match-topbar {
   margin-inline: auto;
   /* Leaves room for the emote and forfeit buttons in the top-right corner. */
@@ -35,7 +35,7 @@
 
 .match-turn-status {
   justify-content: center;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   padding: 6px 12px;
 }
 
@@ -50,23 +50,71 @@
   color: hsl(0 70% 46%);
 }
 
-.match-turn-timer {
-  margin-bottom: 10px;
-  width: 100%;
+/* ---------- Per-board turn timers, fighting-game style ----------
+   Each board has its own clock over it. The first seat's bar is anchored to the left edge and the
+   second seat's is mirrored to the right edge, so both drain towards the outside of the screen.
+   Mine is red/gold, the rival's is blue so it never reads as "hurry up" for me. A clock that is
+   not running sits full and dimmed. */
+.match-player-timer {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  opacity: 0.45;
+  transition: opacity 200ms ease;
 }
 
-/* The rival's clock is shown in blue so it never reads as "hurry up" for me. */
-.match-turn-timer.is-rival .hard-timer-fill {
+.match-player-timer.is-running {
+  opacity: 1;
+}
+
+.match-player-timer-bar {
+  flex: 1;
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+.match-player-timer.is-rival .hard-timer-fill {
   background: linear-gradient(90deg, var(--blue-700), var(--blue-300));
 }
 
-/* ---------- Arena: me | rival, tray underneath ---------- */
+.match-player-timer-seconds {
+  color: var(--text-strong);
+  flex: none;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+  min-width: 2.6em;
+  text-align: right;
+}
+
+.match-player.is-second .match-player-timer {
+  flex-direction: row-reverse;
+}
+
+.match-player.is-second .match-player-timer-seconds {
+  text-align: left;
+}
+
+.match-player.is-second .hard-timer-fill {
+  margin-left: auto;
+}
+
+.match-player.is-second.is-me .hard-timer-fill {
+  background: linear-gradient(270deg, hsl(8 75% 52%), hsl(42 95% 55%));
+}
+
+.match-player.is-second.is-rival .hard-timer-fill {
+  background: linear-gradient(270deg, var(--blue-700), var(--blue-300));
+}
+
+/* ---------- Arena: first player | second player (server order, same on both screens), tray underneath ---------- */
 .match-arena {
   align-items: start;
   column-gap: var(--match-gap);
   display: grid;
   grid-template-areas:
-    "me rival"
+    "first second"
     "tray tray";
   grid-template-columns: repeat(2, var(--match-board));
   justify-content: center;
@@ -77,8 +125,8 @@
   position: relative;
 }
 
-.match-player.is-me { grid-area: me; }
-.match-player.is-rival { grid-area: rival; }
+.match-player.is-first { grid-area: first; }
+.match-player.is-second { grid-area: second; }
 
 /* The rival's board only shows their moves. */
 .match-player.is-rival .board {
@@ -141,35 +189,22 @@
   z-index: 30;
 }
 
-/* My board's border glows for the first second of my turn (TURN_START_MS). */
-.match-player.is-turn-start .board {
-  animation: match-turn-glow 1000ms ease-out;
+/* The on-turn player's board (mine or the rival's) glows for the whole turn; it fades in when the turn starts. */
+.match-player.is-turn .board {
+  animation: match-turn-glow 400ms ease-out;
+  box-shadow:
+    inset 0 2px 6px hsl(205 60% 18% / 0.35),
+    0 0 0 3px var(--score-gold),
+    0 0 24px 6px hsl(45 100% 60% / 0.75);
 }
 
 @keyframes match-turn-glow {
-  0%, 100% {
-    box-shadow: inset 0 2px 6px hsl(205 60% 18% / 0.35), var(--shadow-lg);
-  }
-
-  25%, 65% {
+  from {
     box-shadow:
       inset 0 2px 6px hsl(205 60% 18% / 0.35),
-      0 0 0 3px var(--score-gold),
-      0 0 24px 6px hsl(45 100% 60% / 0.75);
+      0 0 0 0 transparent,
+      0 0 0 0 transparent;
   }
-}
-
-/* Not my turn: my board is grayed out. The rival's board always keeps its colors. */
-.match-player .board-surface {
-  transition: filter 200ms ease;
-}
-
-.match-player.is-waiting .board-surface {
-  filter: grayscale(1) brightness(0.75);
-}
-
-.match-player.is-waiting .match-player-heading {
-  opacity: 0.6;
 }
 
 .match-player-heading .match-rival-holding {
@@ -210,10 +245,40 @@
   opacity: 0.6;
 }
 
-/* On the rival's turn the tray is disabled; the highlighted slot is the block they are holding. */
+/* On the rival's turn the tray is disabled; the highlighted slot is the block they are holding.
+   The block itself has been lifted out (see .match-rival-held), so only its outline stays behind. */
 .match-shell .tray .piece-preview.selected:disabled {
   box-shadow: inset 0 0 0 2px var(--blue-300);
   opacity: 1;
+}
+
+.match-shell .tray .piece-preview.selected:disabled .mini-grid {
+  opacity: 0.3;
+}
+
+/* ---------- The rival's carried block ----------
+   Placed by RivalHeldPiece with a transform relative to the arena; the transition is what makes it
+   glide from the tray to their board between relayed positions (sent about every 100ms). */
+.match-arena {
+  position: relative;
+}
+
+.match-rival-held {
+  filter: drop-shadow(0 10px 16px hsl(206 60% 20% / 0.4));
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform-origin: 0 0;
+  transition: transform 180ms ease-out, opacity 180ms ease-out;
+  z-index: 5;
+}
+
+/* Over a valid spot it floats, fully opaque, a cell above the board's landing preview (the colored
+   cells and the lines that will clear). Over a spot it cannot go it simply waits at the last one. */
+.match-rival-held.is-aiming,
+.match-rival-held.is-off {
+  filter: drop-shadow(0 18px 18px hsl(206 60% 15% / 0.45));
 }
 .match-error {
   color: hsl(0 100% 92%);
@@ -268,14 +333,18 @@
     animation: none;
   }
 
-  .match-player .board-surface,
-  .match-player-heading {
+  .match-player-heading,
+  .match-player-timer {
     transition: none;
   }
 
-  .match-player.is-turn-start .board {
+  .match-player-timer .hard-timer-fill,
+  .match-rival-held {
+    transition: none;
+  }
+
+  .match-player.is-turn .board {
     animation: none;
-    box-shadow: 0 0 0 3px var(--score-gold);
   }
 }
 
@@ -335,9 +404,21 @@
     padding: 4px 10px;
   }
 
-  .match-turn-timer {
-    height: 8px;
+  .match-turn-status {
     margin-bottom: 8px;
+  }
+
+  .match-player-timer {
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .match-player-timer-bar {
+    height: 8px;
+  }
+
+  .match-player-timer-seconds {
+    font-size: 0.75rem;
   }
 
   .match-player-heading strong { font-size: 0.85rem; }
@@ -436,17 +517,25 @@
 
   .match-turn-status {
     font-size: 0.8rem;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     padding: 2px 10px;
   }
 
-  .match-turn-timer {
+  .match-player-timer {
+    gap: 4px;
+    margin-bottom: 2px;
+  }
+
+  .match-player-timer-bar {
     height: 6px;
-    margin-bottom: 6px;
+  }
+
+  .match-player-timer-seconds {
+    font-size: 0.7rem;
   }
 
   .match-arena {
-    grid-template-areas: "me rival tray";
+    grid-template-areas: "first second tray";
     grid-template-columns: repeat(2, var(--match-board)) var(--match-tray);
   }
 
