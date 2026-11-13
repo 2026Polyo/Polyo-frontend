@@ -143,9 +143,11 @@ function App() {
     }
 
     return (
-      <ThemeScope themeId={equippedThemeId}>
+      <ThemeScope themeId={previewThemeId ?? equippedThemeId}>
         <StartScreen
           {...startScreenProps}
+          themeId={previewThemeId ?? equippedThemeId}
+          onThemeChange={setPreviewThemeId}
           onMultiplayer={() => setMultiplayerView("lobby")}
           onOpenRanking={() => setRankingOpen(true)}
           onOpenShop={() => {
