@@ -15,7 +15,7 @@ import { matchRoomApi } from "./features/matchroomApi";
 import type { MatchRoomDetails } from "./features/matchroom";
 import MatchGameScreen from "./screens/MatchGameScreen";
 import MultiplayerScreen from "./screens/MultiplayerScreen";
-import { AUTH_EXPIRED_EVENT, AUTH_TOKEN_KEY, AUTH_USER_KEY, clearAuth, getCurrentUser, type AuthUser } from "./api/auth";
+import { AUTH_EXPIRED_EVENT, AUTH_TOKEN_KEY, AUTH_USER_KEY, AuthRequestError, clearAuth, getCurrentUser, type AuthUser } from "./api/auth";
 import ShopScreen from "./screens/ShopScreen";
 import { ThemeScope } from "./components/ThemeScope";
 import { getGameTheme, type GameThemeId } from "./features/themes/gameThemes";
@@ -25,6 +25,7 @@ function App() {
   const [shopOpen, setShopOpen] = useState(false);
   const [rankingOpen, setRankingOpen] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
+  const [authCheckError, setAuthCheckError] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [previewThemeId, setPreviewThemeId] = useState<GameThemeId | null>(null);
   const shopAccount = useShopAccount(user?.id);
@@ -61,7 +62,13 @@ function App() {
         localStorage.setItem(AUTH_USER_KEY, JSON.stringify(currentUser));
         setUser(currentUser);
       })
-      .catch(() => clearAuth())
+      .catch((error: unknown) => {
+        if (error instanceof AuthRequestError && error.status === 401) {
+          clearAuth();
+          return;
+        }
+        setAuthCheckError("로그인 상태를 확인할 수 없습니다. 서버 연결을 확인한 뒤 다시 시도해주세요.");
+      })
       .finally(() => setAuthChecking(false));
 
     function handleAuthExpired() {
@@ -87,6 +94,19 @@ function App() {
   }, []);
 
   if (authChecking) return null;
+  if (authCheckError) {
+    return (
+      <main className="app-shell auth-shell">
+        <section className="auth-card" role="alert">
+          <h1>로그인 상태 확인 실패</h1>
+          <p>{authCheckError}</p>
+          <button className="auth-submit" type="button" onClick={() => window.location.reload()}>
+            다시 시도
+          </button>
+        </section>
+      </main>
+    );
+  }
   if (!user) return <AuthScreen onAuthenticated={setUser} />;
 
   const currentUser = user;

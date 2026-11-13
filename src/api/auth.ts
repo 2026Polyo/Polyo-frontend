@@ -10,6 +10,13 @@ interface ApiResponse<T> {
   error: { code: string; message: string } | null;
 }
 
+export class AuthRequestError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "AuthRequestError";
+  }
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 async function request<T>(path: string, body: object): Promise<T> {
@@ -46,7 +53,7 @@ async function requestCurrentUser(): Promise<AuthUser> {
 
   const result = (await response.json().catch(() => null)) as ApiResponse<AuthUser> | null;
   if (!response.ok || !result?.success || !result.data) {
-    throw new Error(result?.error?.message ?? "로그인이 필요합니다.");
+    throw new AuthRequestError(result?.error?.message ?? "로그인이 필요합니다.", response.status);
   }
   return result.data;
 }
