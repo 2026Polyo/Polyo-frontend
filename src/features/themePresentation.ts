@@ -1,6 +1,6 @@
 /** 테마 외형은 현재 프론트에서 관리한다. ERD의 THEME 필드와 구분한다. */
 export interface ThemePresentation {
-  description: string;
+  description?: string;
   colors: string[];
   glow?: boolean;
   jelly?: boolean;
@@ -40,8 +40,6 @@ const THEME_PRESENTATIONS: Record<string, ThemePresentation> = {
 };
 
 const FALLBACK_PRESENTATION: ThemePresentation = {
-  description:
-    "이 테마의 전용 미리보기는 준비 중입니다. 기본 블록으로 표시합니다.",
   colors: THEME_PRESENTATIONS.theme_classic.colors,
 };
 

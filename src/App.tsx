@@ -24,7 +24,7 @@ import { useShopAccount } from "./hooks/useShopAccount";
 function App() {
   const [shopOpen, setShopOpen] = useState(false);
   const [rankingOpen, setRankingOpen] = useState(false);
-  const [previewThemeId, setPreviewThemeId] = useState<GameThemeId | null>(null);
+  const [devPreviewThemeId, setDevPreviewThemeId] = useState<GameThemeId | null>(null);
   const [user, setUser] = useState<AuthUser | null>(() => {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
     const storedUser = localStorage.getItem(AUTH_USER_KEY);
@@ -34,15 +34,15 @@ function App() {
   const shopAccount = useShopAccount(user?.id);
   const equippedThemeId = getGameTheme(shopAccount.account?.equippedThemeId).id;
   const { gamePhase, playScreenProps, startScreenProps } =
-    useGameSession(Boolean(user), previewThemeId ?? equippedThemeId);
+    useGameSession(Boolean(user), devPreviewThemeId ?? equippedThemeId);
   const [multiplayerView, setMultiplayerView] = useState<"home" | "lobby" | "create">("home");
   // Restored after a refresh, so a running match picks up where it was instead of being abandoned.
   const [activeRoom, setActiveRoom] = useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
   const restoreRoomFocus = useRef<string | null>(null);
 
   useEffect(() => {
-    if (gamePhase === "start") setPreviewThemeId(null);
-  }, [gamePhase]);
+    if (gamePhase === "start" || !user) setDevPreviewThemeId(null);
+  }, [gamePhase, user]);
 
   useEffect(() => {
     if (restoreRoomFocus.current) {
@@ -56,7 +56,6 @@ function App() {
       setUser(null);
       setShopOpen(false);
       setRankingOpen(false);
-      setPreviewThemeId(null);
     }
 
     window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
@@ -88,13 +87,10 @@ function App() {
       <ShopScreen
         wallet={shopAccount}
         onGoHome={() => setShopOpen(false)}
-        onEquipTheme={async (id) => {
-          if (await shopAccount.equip(id)) setPreviewThemeId(null);
-        }}
-        onSelectPreviewTheme={(id) => {
-          setPreviewThemeId(id);
+        onDevPreview={import.meta.env.DEV ? (themeId) => {
+          setDevPreviewThemeId(themeId);
           setShopOpen(false);
-        }}
+        } : undefined}
       />
     );
 
@@ -139,7 +135,6 @@ function App() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
             localStorage.removeItem(AUTH_USER_KEY);
             clearActiveRoom();
-            setPreviewThemeId(null);
             setUser(null);
           }}
         />
