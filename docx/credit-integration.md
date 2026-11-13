@@ -1,10 +1,9 @@
-# 하드모드 코인 정산 연결 안내
+# 하드모드 코인과 테마 상점 연동
 
 ## 현재 상태
 
-프론트의 정산 요청·상태 관리·결과 표시와 백엔드의 HTTP API·정산 로직을 구현했다.
-실제 인증, 하드모드 게임 기록, MySQL 저장소는 아직 연결하지 않았다.
-현재 게임은 일반 모드이므로 실제 플레이에서 코인을 지급하지 않는다.
+기존 JWT와 PostgreSQL `users.coin`에 정산과 상점을 연결한다. Flyway `V3__add_credit_and_theme_shop.sql`은 하드모드 게임, 정산 이력, 테마 상품·구매 이력과 장착 정보를 추가한다.
+상점은 네 테마를 각 1,200코인에 판매한다. 상품 상세에서 `P` 또는 **게임 미리보기**를 누르면 다음 싱글 플레이에 해당 테마를 적용한다. 게임에서 홈으로 돌아가면 미리보기가 자동으로 종료되고, 다음 게임에는 계정에 장착한 테마가 적용된다.
 
 ## 보상 정책
 
@@ -19,11 +18,19 @@
 | --- | --- | --- |
 | 현재 잔액 | `GET /api/credit/v11/balances/me` | `{ coin }` |
 | 게임 보상 정산 | `POST /api/credit/v11/game-rewards` | `{ rewardId, gameId, earnedCoin, coinAfterReward }` |
+| 하드모드 시작 | `POST /api/credit/v11/hard-games` | 게임 ID, 트레이, 점수, 순번, 남은 시간, 종료 여부 |
+| 하드모드 배치 | `POST /api/credit/v11/hard-games/{gameId}/moves` | `{ moveNumber, slot, row, col }` 요청 후 갱신된 게임 상태 |
+| 하드모드 일시 정지 | `PUT /api/credit/v11/hard-games/{gameId}/timer` | `{ paused }` 요청 후 갱신된 게임 상태 |
+| 하드모드 종료 확인 | `PUT /api/credit/v11/hard-games/{gameId}/completion` | 종료된 게임 상태 |
+| 판매 목록 | `GET /api/shop/v11/themes?page=1&size=6&sort=name,asc` | `{ items, page, size, totalElements, totalPages }` |
+| 내 상점 정보 | `GET /api/shop/v11/accounts/me` | `{ coin, ownedThemeIds, equippedThemeId }` |
+| 구매 | `POST /api/shop/v11/purchases` | `{ themeId }` 요청 후 내 상점 정보 |
+| 장착 | `PUT /api/shop/v11/equipment/me` | `{ themeId }` 요청 후 내 상점 정보 |
 
 정산 요청 본문은 `{ "gameId": "서버 게임 ID" }`만 받는다. 사용자·점수·모드·지급량은 서버가 확인한다.
 최초 정산은 201, 기존 정산 반환은 200이다. `coinAfterReward`는 정산 당시 잔액이며 현재 잔액과 다를 수 있다.
 응답은 camelCase와 팀 공통 성공·실패 형식을 따른다. 오류의 `timestamp`는 UTC ISO-8601이다.
-일반 날짜 필드는 현재 없다. 팀 날짜 규약의 두 형식은 날짜 필드 추가 전에 확정해야 한다.
+판매 목록을 제외한 요청은 기존 `Authorization: Bearer …` 인증을 사용한다. 구매·장착은 로그인 계정에 귀속되며 서버는 DB 가격과 보유 여부를 확인한다. 동일 게임 재정산과 동일 테마 재구매는 중복 지급·차감 없이 처리한다.
 
 ## 프론트 파일별 역할
 
@@ -33,18 +40,16 @@
 | `src/features/gameReward.ts` | 게임별 정산 상태, 동시 요청 공유, 성공 결과 재사용, 수동 재시도 |
 | `src/hooks/useGameReward.ts` | 정산 상태 구독·최초 요청·수동 재시도 제공 |
 | `src/components/CoinReward.tsx` | 확인된 지급량의 아이콘·숫자만 표시 |
-| `src/components/GameRewardStatus.tsx` | 정산 성공 시 `CoinReward` 표시, 나머지 상태는 비표시 |
+| `src/components/GameRewardStatus.tsx` | `CoinReward` 표시. `showStatus`를 지정하면 대기·오류와 재시도도 표시 |
 | `PlayScreen.tsx` | 선택적인 `rewardSession`을 코인 표시로 연결 |
 | `GameOver.tsx` | `rewardContent` 슬롯 표시, 정산 코드와 독립 |
 
-## 나중에 연결할 순서
+## 실행과 확인 순서
 
-1. Identity 담당자의 인증된 전송 함수와 사용자 컨텍스트를 연결한다.
-2. 서버 게임 시작 응답에서 사용자에 귀속된 `gameId`를 받는다.
-3. 하드모드 종료 결과의 서버 저장·검증 완료를 확인한다.
-4. `createCreditApi`에 서버 주소와 인증된 `fetcher`를 전달한다.
-5. 게임별로 `createGameRewardSession({ gameId, mode: "hard" }, api.claimGameReward)`을 생성하고 `PlayScreen.rewardSession`에 전달한다.
-6. 계정 변경·새 게임 시작 시 새 세션을 만든다. 로컬 생성 ID나 이전 게임 세션은 재사용하지 않는다.
+1. 기존 PostgreSQL 설정으로 백엔드를 실행해 Flyway V3를 적용하고, 프론트에서 로그인한다.
+2. 하드모드에서 블록을 배치하고 제한 시간이 지나면 게임 오버 화면과 상점 잔액에서 보상을 확인한다. 일반모드 결과는 보상을 요청하지 않는다.
+3. 테스트 계정에서 코인이 부족하면 구매가 거절되는지, 충분하면 한 번만 차감되고 테마를 장착할 수 있는지 확인한다.
+4. 상품 상세에서 `P`로 미리보기하고 게임에서 홈으로 돌아온다. 다음 게임에 장착 테마가 적용되고 상점 잔액이 유지되는지 확인한다.
 
 ## 원하는 화면에 코인만 표시하기
 
@@ -86,18 +91,24 @@
 `CREDIT_NETWORK_ERROR`, `CREDIT_REQUEST_TIMEOUT`, `CREDIT_INVALID_RESPONSE`는 프론트 내부 식별자다.
 서버 API에는 보내지 않는다. 코인은 음수·소수·JavaScript 안전 정수 범위 초과를 허용하지 않는다.
 
-## MySQL 연결 시 백엔드 담당자와 확인할 사항
+## 검증 범위
 
-- `CreditSettlementStore` 구현을 추가한다. 현재 Entity·Repository·DDL·MySQL 설정은 없다.
-- 사용자·게임의 유일성 제약과 정산 기록·잔액 갱신의 트랜잭션을 보장한다.
-- 같은 사용자의 다른 게임이 동시에 정산돼도 잔액 갱신이 유실되지 않아야 한다.
-- 장애·재시작·여러 기기의 재요청에도 기존 정산을 반환한다.
-- 게임 기록·잔액이 다른 서비스 소유라면 해당 API와 복구 전략을 사용한다.
-- `src/test`의 메모리 저장소는 테스트용이다. MySQL 트랜잭션 검증을 대체하지 않는다.
+- `npm test`와 `npm run build`로 기존 프론트 동작과 타입을 확인한다.
+- `gradlew.bat test`는 별도 PostgreSQL 컨테이너에서 Flyway, JWT 인증, 서버 점수, 중복 정산, 동시 구매, 잔액 부족과 미보유 장착 거절을 검증한다.
 
-백엔드 Controller는 등록돼 있지만 실제 서비스·인증 공급자 Bean은 미등록이다.
-MVC까지 도달한 미연결 요청은 503이며 기존 Security 필터는 계속 미인증 접근을 차단한다.
-Security 필터의 공통 401/403 JSON 응답은 인증 담당자와 연결해야 한다.
+## 시작 화면 테마 정리
+
+- 메인 화면의 장착 테마 선택과 미리보기 종료 버튼을 제거했다. 상점에서 선택한 미리보기는 현재 화면의 상태로 관리하며 게임에서 홈으로 돌아오거나 새로고침하면 해제된다.
+- 프론트 테스트 349개와 빌드가 통과했다. 모의 API를 사용한 브라우저에서 `P` 미리보기, 게임 종료 후 홈 복귀, 새로고침 후 장착 테마 적용을 확인했다.
+
+## 연동 작업 기록 — 2026-11-05
+
+- 기존 보상 정책과 코인 표시 컴포넌트를 재사용했다. 39개 블록의 좌표가 프론트와 서버에서 일치함을 확인했다.
+- 백엔드의 기존 JWT 필터에서 누락된 import를 보완해 빌드를 복구했다. 재화·상점의 인증 오류는 팀 공통 응답으로 반환한다.
+- 브라우저 검증에서 API 요청 가로채기 조건이 프론트 모듈 경로까지 잡는 문제를 발견했다. `/api/`로 시작하는 경로만 처리하도록 좁힌 뒤 모바일 화면, `P` 미리보기, 미리보기 종료, 구매·장착, 하드모드 배치와 보상 표시를 확인했다. 브라우저 검증은 모의 API를 사용했다.
+- 프론트 352개와 백엔드 125개 테스트, TypeScript 검사와 Vite 빌드가 통과했다. PostgreSQL 통합 테스트에는 별도 컨테이너를 사용했다.
+
+아래 작업 기록은 실제 서버 연동 이전의 상태를 포함한다.
 
 ## 작업 기록 — 2026-10-23
 
