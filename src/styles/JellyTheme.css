@@ -395,6 +395,8 @@
 }
 .jelly-shard > i {
   aspect-ratio: auto;
+  /* Hint only the short-lived shards, while retaining the shape keyframes. */
+  will-change: transform;
   border-radius: var(--jelly-shape);
   background:
     radial-gradient(ellipse at 28% 18%, #ffffffb8, #ffffff00 58%),

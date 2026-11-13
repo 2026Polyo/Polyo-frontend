@@ -168,7 +168,7 @@ interface ActiveBatch {
   timer: ReturnType<typeof setTimeout>;
 }
 
-export default function JellyBoardEffects({
+export default memo(function JellyBoardEffects({
   feedback,
 }: {
   feedback: BoardFeedback | null;
@@ -230,4 +230,4 @@ export default function JellyBoardEffects({
       ))}
     </div>
   );
-}
+});

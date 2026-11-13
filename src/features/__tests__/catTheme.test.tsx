@@ -20,7 +20,7 @@ const piece: PieceInstance = {
     [1, 1],
   ],
 };
-function renderBoard(board: Board, clearing = new Set<string>()) {
+function renderBoard(board: Board, clearing = new Set<string>(), previewClearing = new Set<string>()) {
   return renderToStaticMarkup(
     <ThemeScope themeId="theme_cat">
       <BoardView
@@ -32,7 +32,7 @@ function renderBoard(board: Board, clearing = new Set<string>()) {
         onCellEnter={() => {}}
         onCellLeave={() => {}}
         previewCells={new Set()}
-        previewClearingCells={new Set()}
+        previewClearingCells={previewClearing}
         selectedPiece={null}
       />
     </ThemeScope>,
@@ -45,6 +45,17 @@ function joinedAt(markup: string, key: string) {
     .match(/data-joined="([^"]*)"/)?.[1];
 }
 describe("cat connected surfaces", () => {
+  it("marks each preview cell once and skips cells already clearing", () => {
+    const cells = new Set<string>();
+    for (let index = 0; index < 8; index++) {
+      cells.add(`2-${index}`);
+      cells.add(`${index}-3`);
+    }
+    const markup = renderBoard(makeBoard(), new Set(["2-0"]), cells);
+    expect(markup.match(/class="cat-clear-preview-paw"/g)).toHaveLength(14);
+    expect(markup).not.toContain('style="grid-row:3;grid-column:1"');
+    expect(renderBoard(makeBoard())).not.toContain("cat-clear-preview");
+  });
   it("connects all four occupied sides across different colours but never diagonals", () => {
     const board = makeBoard();
     board[3][3] = "cyan";

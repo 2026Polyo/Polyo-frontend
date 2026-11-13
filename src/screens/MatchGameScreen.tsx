@@ -6,6 +6,7 @@ import MatchLobby from "../components/MatchLobby";
 import PieceShape from "../components/PieceShape";
 import PieceTray from "../components/PieceTray";
 import ScoreBoard from "../components/ScoreBoard";
+import { ThemeScope } from "../components/ThemeScope";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
 import { clearActiveRoom } from "../features/activeRoomStorage";
@@ -253,18 +254,20 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
               <span>{rival.score.toLocaleString()}점</span>
               {!rival.connected && <span className="match-disconnected"><WifiOff aria-hidden="true" size={14} />연결 끊김</span>}
             </div>
-            <Board
-              board={rival.board}
-              boardRef={rivalBoardRef}
-              clearingCells={clearingUserId === rival.userId ? clearingCells : NO_CELLS}
-              hoverCell={null}
-              onCellClick={() => undefined}
-              onCellEnter={() => undefined}
-              onCellLeave={() => undefined}
-              previewCells={NO_CELLS}
-              previewClearingCells={NO_CELLS}
-              selectedPiece={null}
-            />
+            <ThemeScope themeId="theme_classic">
+              <Board
+                board={rival.board}
+                boardRef={rivalBoardRef}
+                clearingCells={clearingUserId === rival.userId ? clearingCells : NO_CELLS}
+                hoverCell={null}
+                onCellClick={() => undefined}
+                onCellEnter={() => undefined}
+                onCellLeave={() => undefined}
+                previewCells={NO_CELLS}
+                previewClearingCells={NO_CELLS}
+                selectedPiece={null}
+              />
+            </ThemeScope>
           </aside>
           <div className="board-stack">
             <div

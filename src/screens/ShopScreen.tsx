@@ -11,18 +11,18 @@ import ShopThemeCard from "../components/ShopThemeCard";
 import ShopThemeDialog from "../components/ShopThemeDialog";
 import ThemePreview from "../components/ThemePreview";
 import type { ShopTheme } from "../features/shop";
+import type { GameThemeId } from "../features/themes/gameThemes";
 import { useShopCatalog, type ShopCatalogState } from "../hooks/useShopCatalog";
 import type { ShopAccountState } from "../hooks/useShopAccount";
 import "../styles/ShopScreen.css";
-import type { GameThemeId } from "../features/themes/gameThemes";
 
 interface ShopCatalogProps {
   state: ShopCatalogState;
   onRetry: () => void;
-  onPreview: (theme: ShopTheme, trigger: HTMLButtonElement) => void;
+  onOpenDetails: (theme: ShopTheme, trigger: HTMLButtonElement) => void;
 }
 
-function ShopCatalog({ state, onRetry, onPreview }: ShopCatalogProps) {
+function ShopCatalog({ state, onRetry, onOpenDetails }: ShopCatalogProps) {
   if (state.status === "loading") {
     return (
       <p className="shop-status" role="status">
@@ -49,7 +49,7 @@ function ShopCatalog({ state, onRetry, onPreview }: ShopCatalogProps) {
         <ShopThemeCard
           key={theme.themeId}
           theme={theme}
-          onPreview={onPreview}
+          onOpenDetails={onOpenDetails}
         />
       ))}
     </div>
@@ -59,27 +59,25 @@ function ShopCatalog({ state, onRetry, onPreview }: ShopCatalogProps) {
 export default function ShopScreen({
   wallet,
   onGoHome,
-  onSelectPreviewTheme,
-  onEquipTheme,
+  onDevPreview,
 }: {
   wallet: ShopAccountState;
   onGoHome: () => void;
-  onSelectPreviewTheme: (themeId: GameThemeId) => void;
-  onEquipTheme: (themeId: string) => void;
+  onDevPreview?: (themeId: GameThemeId) => void;
 }) {
   const { catalog, page, sort, setPage, changeSort, retry } = useShopCatalog();
   const [selectedTheme, setSelectedTheme] = useState<ShopTheme | null>(null);
-  const previewTrigger = useRef<HTMLButtonElement | null>(null);
+  const detailsTrigger = useRef<HTMLButtonElement | null>(null);
   const totalPages = catalog.status === "ready" ? catalog.data.totalPages : 0;
 
-  function openPreview(theme: ShopTheme, trigger: HTMLButtonElement) {
-    previewTrigger.current = trigger;
+  function openDetails(theme: ShopTheme, trigger: HTMLButtonElement) {
+    detailsTrigger.current = trigger;
     setSelectedTheme(theme);
   }
 
-  function closePreview() {
+  function closeDetails() {
     setSelectedTheme(null);
-    previewTrigger.current?.focus();
+    detailsTrigger.current?.focus();
   }
 
   return (
@@ -140,7 +138,7 @@ export default function ShopScreen({
           <ShopCatalog
             state={catalog}
             onRetry={retry}
-            onPreview={openPreview}
+            onOpenDetails={openDetails}
           />
         </div>
         {totalPages > 0 && (
@@ -173,9 +171,8 @@ export default function ShopScreen({
       <ShopThemeDialog
         theme={selectedTheme}
         wallet={wallet}
-        onClose={closePreview}
-        onEquipTheme={onEquipTheme}
-        onSelectPreviewTheme={onSelectPreviewTheme}
+        onClose={closeDetails}
+        onDevPreview={onDevPreview}
       />
     </main>
   );

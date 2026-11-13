@@ -3,28 +3,26 @@ import { Coins, X } from "lucide-react";
 import type { KeyboardEvent, MouseEvent } from "react";
 import type { ShopTheme } from "../features/shop";
 import { getThemePresentation } from "../features/themePresentation";
-import ThemePreview from "./ThemePreview";
 import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
+import ThemePreview from "./ThemePreview";
 import type { ShopAccountState } from "../hooks/useShopAccount";
 
 interface ShopThemeDialogProps {
   theme: ShopTheme | null;
   wallet: ShopAccountState;
   onClose: () => void;
-  onSelectPreviewTheme: (themeId: GameThemeId) => void;
-  onEquipTheme: (themeId: string) => void;
+  onDevPreview?: (themeId: GameThemeId) => void;
 }
 
 export default function ShopThemeDialog({
   theme,
   wallet,
   onClose,
-  onSelectPreviewTheme,
-  onEquipTheme,
+  onDevPreview,
 }: ShopThemeDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const previewTheme = theme ? getGameTheme(theme.themeId) : null;
-  const canPreview = previewTheme !== null && previewTheme.id === theme?.themeId;
+  const backquoteHeld = useRef(false);
+  const description = theme && getThemePresentation(theme.themeId).description;
   const owned = !!theme && wallet.account?.ownedThemeIds.includes(theme.themeId);
   const equipped = !!theme && wallet.account?.equippedThemeId === theme.themeId;
   const insufficient = !!theme && !!wallet.account && wallet.account.coin < theme.price;
@@ -32,6 +30,43 @@ export default function ShopThemeDialog({
   useEffect(() => {
     if (theme && !dialogRef.current?.open) dialogRef.current?.showModal();
   }, [theme]);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV || !theme) return;
+
+    function resetShortcut() {
+      backquoteHeld.current = false;
+    }
+
+    function releaseKey(event: globalThis.KeyboardEvent) {
+      if (event.code === "Backquote" || !event.ctrlKey) resetShortcut();
+    }
+
+    window.addEventListener("keyup", releaseKey);
+    window.addEventListener("blur", resetShortcut);
+    return () => {
+      window.removeEventListener("keyup", releaseKey);
+      window.removeEventListener("blur", resetShortcut);
+      resetShortcut();
+    };
+  }, [theme]);
+
+  function handleDevPreviewKey(event: KeyboardEvent<HTMLDialogElement>) {
+    if (!import.meta.env.DEV || !theme || !onDevPreview || !event.ctrlKey || event.altKey || event.metaKey
+      || event.shiftKey || event.repeat || event.nativeEvent.isComposing) return;
+    if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable]")) return;
+
+    if (event.code === "Backquote") {
+      backquoteHeld.current = true;
+      event.preventDefault();
+      return;
+    }
+    if (event.code !== "KeyP" || !backquoteHeld.current) return;
+
+    event.preventDefault();
+    const previewTheme = getGameTheme(theme.themeId);
+    if (previewTheme.id === theme.themeId) onDevPreview(previewTheme.id);
+  }
 
   function closeDialog() {
     dialogRef.current?.close();
@@ -41,19 +76,6 @@ export default function ShopThemeDialog({
     if (event.target === event.currentTarget) closeDialog();
   }
 
-  function selectPreview() {
-    if (canPreview) onSelectPreviewTheme(previewTheme.id);
-  }
-
-  function onPreviewKey(event: KeyboardEvent<HTMLDialogElement>) {
-    if (event.code !== "KeyP" || event.repeat || event.nativeEvent.isComposing
-      || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
-    if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable]")) return;
-    if (!canPreview) return;
-    event.preventDefault();
-    selectPreview();
-  }
-
   return (
     <dialog
       ref={dialogRef}
@@ -61,7 +83,7 @@ export default function ShopThemeDialog({
       aria-labelledby="shop-detail-title"
       onClose={onClose}
       onClick={closeOnBackdrop}
-      onKeyDown={onPreviewKey}
+      onKeyDown={import.meta.env.DEV && onDevPreview ? handleDevPreviewKey : undefined}
     >
       {theme && (
         <>
@@ -77,22 +99,13 @@ export default function ShopThemeDialog({
           <div className="shop-detail-body">
             <span className="shop-category">BLOCK THEME</span>
             <h2 id="shop-detail-title">{theme.name}</h2>
-            <p>{getThemePresentation(theme.themeId).description}</p>
+            {description && <p>{description}</p>}
             <strong className="shop-detail-price">
               <Coins size={21} /> {theme.price.toLocaleString("ko-KR")} 코인
             </strong>
-            <button
-              className="secondary-action shop-preview-play"
-              type="button"
-              disabled={!canPreview}
-              aria-keyshortcuts="P"
-              onClick={selectPreview}
-            >
-              게임 미리보기 <kbd>P</kbd>
-            </button>
             {owned ? (
               <button className="shop-purchase" type="button" disabled={equipped || wallet.pending}
-                onClick={() => onEquipTheme(theme.themeId)}>
+                onClick={() => void wallet.equip(theme.themeId)}>
                 {equipped ? "장착 중" : "보유 테마 장착"}
               </button>
             ) : (
