@@ -3,7 +3,8 @@ import "../styles/ScoreBoard.css";
 import { Trophy } from "lucide-react";
 
 interface ScoreBoardProps {
-  best: number;
+  /** Omitted in a match, where there is no personal best to show. */
+  best?: number;
   score: number;
   /** Points the selected piece would add at the previewed spot (null when not previewing). */
   previewGain?: number | null;
@@ -23,7 +24,7 @@ function ScoreBoard({ best, score, previewGain }: ScoreBoardProps) {
   }, [displayedScore]);
 
   useEffect(() => {
-    let timerId: ReturnType<typeof window.setInterval> | undefined;
+    let timerId: number | undefined;
     let currentScore = displayedScoreRef.current;
 
     if (score <= currentScore) {
@@ -53,10 +54,12 @@ function ScoreBoard({ best, score, previewGain }: ScoreBoardProps) {
 
   return (
     <>
-      <div className="best-score-badge" aria-label={`Best score ${best}`}>
-        <Trophy size={20} aria-hidden="true" />
-        <strong>{best}</strong>
-      </div>
+      {best !== undefined && (
+        <div className="best-score-badge" aria-label={`Best score ${best}`}>
+          <Trophy size={20} aria-hidden="true" />
+          <strong>{best}</strong>
+        </div>
+      )}
       <div className="score-row" aria-label="Current score">
         <div className="score-box">
           <strong className={isCounting ? "is-counting" : ""}>{displayedScore}</strong>

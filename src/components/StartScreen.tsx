@@ -1,8 +1,7 @@
-import { Layers, LogOut, Play, Trophy, ShoppingBag } from "lucide-react";
+import { Layers, LogOut, Play, Trophy, ShoppingBag, Users } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
 import type { GameMode, PieceTemplate } from "../types";
-import type { GameThemeId } from "../features/themes/gameThemes";
-import { getGameTheme } from "../features/themes/gameThemes";
+import type { HardGameRequest } from "../hooks/useHardGameRequest";
 
 const START_PREVIEW_CELLS: string[] = [
   "piece-cyan",
@@ -25,11 +24,10 @@ const START_PREVIEW_CELLS: string[] = [
 
 interface StartScreenProps {
   startFlow: "mode" | "continue" | null;
+  hardRequest?: HardGameRequest;
   onModeSelect: (mode: GameMode) => void;
   onCloseStartFlow: () => void;
   onStartFresh: () => void;
-  themeId: GameThemeId;
-  onThemeChange: (themeId: GameThemeId) => void;
   onOpenShop: () => void;
   availableBaseIds: string[];
   baseLoadout: string[];
@@ -44,6 +42,7 @@ interface StartScreenProps {
   onAddSpecial: (id: string) => void;
   onCloseDeck: () => void;
   onContinue: () => void;
+  onMultiplayer: () => void;
   onNewGame: () => void;
   onOpenDeck: () => void;
   onOpenRanking: () => void;
@@ -55,11 +54,10 @@ interface StartScreenProps {
 
 function StartScreen({
   startFlow,
+  hardRequest,
   onModeSelect,
   onCloseStartFlow,
   onStartFresh,
-  themeId,
-  onThemeChange,
   onOpenShop,
   availableBaseIds,
   baseLoadout,
@@ -73,6 +71,7 @@ function StartScreen({
   onAddSpecial,
   onCloseDeck,
   onContinue,
+  onMultiplayer,
   onNewGame,
   onOpenDeck,
   onOpenRanking,
@@ -94,25 +93,14 @@ function StartScreen({
           ))}
         </div>
         <h1 id="start-title">Polyomino</h1>
-        <label className="theme-preview-select">
-          테마 미리보기
-          <select
-            value={themeId}
-            onChange={(event) =>
-              onThemeChange(getGameTheme(event.target.value).id)
-            }
-          >
-            <option value="theme_classic">기본</option>
-            <option value="theme_neon">네온 나이트</option>
-            <option value="theme_jelly">젤리 팝</option>
-            <option value="theme_minecraft">마인크래프트</option>
-            <option value="theme_cat">고양이 드림</option>
-          </select>
-        </label>
         <div className="start-actions">
           <button aria-label="새 게임" className="primary-action" onClick={onNewGame} type="button">
             <Play size={20} aria-hidden="true" />
             새 게임
+          </button>
+          <button className="secondary-action" id="start-multiplayer" onClick={onMultiplayer} type="button">
+            <Users size={20} aria-hidden="true" />
+            멀티
           </button>
           <button className="start-deck-action" onClick={onOpenDeck} type="button">
             <Layers size={20} aria-hidden="true" />
@@ -143,8 +131,8 @@ function StartScreen({
             <div className="start-dialog-actions">
               {startFlow === "mode" ? (
                 <>
-                  <button className="primary-action" type="button" autoFocus onClick={() => onModeSelect("normal")}>일반모드</button>
-                  <button className="secondary-action" type="button" onClick={() => onModeSelect("hard")}>하드모드</button>
+                  <button className="primary-action" type="button" autoFocus disabled={hardRequest?.pending} onClick={() => onModeSelect("normal")}>일반모드</button>
+                  <button className="secondary-action" type="button" disabled={hardRequest?.pending} onClick={() => onModeSelect("hard")}>하드모드</button>
                 </>
               ) : (
                 <>
@@ -152,8 +140,10 @@ function StartScreen({
                   <button className="secondary-action" type="button" onClick={onStartFresh}>아니요</button>
                 </>
               )}
-              <button className="start-dialog-cancel" type="button" onClick={onCloseStartFlow}>취소</button>
+              <button className="start-dialog-cancel" type="button" disabled={hardRequest?.pending} onClick={onCloseStartFlow}>취소</button>
             </div>
+            {hardRequest?.pending && <p role="status">하드모드를 시작하는 중입니다.</p>}
+            {hardRequest?.error && <p role="alert">{hardRequest.error}</p>}
           </section>
         </div>
       )}

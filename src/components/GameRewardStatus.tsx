@@ -4,16 +4,24 @@ import CoinReward, { type CoinRewardProps } from "./CoinReward";
 
 interface GameRewardStatusProps extends Omit<CoinRewardProps, "amount"> {
   session: GameRewardSession;
+  showStatus?: boolean;
 }
 
-/** 성공한 정산의 코인만 표시한다. 로딩·오류 UI가 필요하면 useGameReward를 사용한다. */
 export default function GameRewardStatus({
   session,
+  showStatus = false,
   ...displayProps
 }: GameRewardStatusProps) {
-  const { state } = useGameReward(session);
+  const { state, retry } = useGameReward(session);
 
-  if (state.status !== "success") return null;
-
-  return <CoinReward amount={state.reward.earnedCoin} {...displayProps} />;
+  if (state.status === "success") return <CoinReward amount={state.reward.earnedCoin} {...displayProps} />;
+  if (!showStatus) return null;
+  if (state.status === "idle" || state.status === "pending") return <p role="status">코인 보상을 확인하는 중입니다.</p>;
+  if (state.status !== "error") return null;
+  return (
+    <div>
+      <p role="alert">{state.message}</p>
+      {state.retryable && <button type="button" className="secondary-action" onClick={() => void retry()}>보상 다시 확인</button>}
+    </div>
+  );
 }
