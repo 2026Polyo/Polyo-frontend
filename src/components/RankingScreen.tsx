@@ -1,6 +1,9 @@
-import { ArrowLeft, Medal, RefreshCw, Trophy } from "lucide-react";
+import { ArrowLeft, RefreshCw, Trophy } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { fetchRanking, type RankingEntry, type RankingType } from "../api/ranking";
+import medalBronze from "../asset/medal-bronze.svg";
+import medalGold from "../asset/medal-gold.svg";
+import medalSilver from "../asset/medal-silver.svg";
 
 interface RankingScreenProps {
   onBack: () => void;
@@ -12,6 +15,12 @@ const CATEGORIES: { type: RankingType; label: string }[] = [
   { type: "hard", label: "하드모드" },
   { type: "trophy", label: "트로피" }
 ];
+
+const MEDAL_ASSETS = {
+  1: { alt: "금메달", src: medalGold },
+  2: { alt: "은메달", src: medalSilver },
+  3: { alt: "동메달", src: medalBronze },
+} as const;
 
 function RankingScreen({ onBack, currentUserId }: RankingScreenProps) {
   const [activeType, setActiveType] = useState<RankingType>("normal");
@@ -124,10 +133,13 @@ function RankingRow({ currentUserId, entry }: { currentUserId: string; entry: Ra
     entry.rank <= 3 ? `rank-${entry.rank}` : "",
     isCurrentUser ? "is-current-user" : ""
   ].filter(Boolean).join(" ");
+  const medal = MEDAL_ASSETS[entry.rank as keyof typeof MEDAL_ASSETS];
 
   return (
     <li aria-current={isCurrentUser ? "true" : undefined} className={className}>
-      <span className="ranking-position">{entry.rank <= 3 ? <Medal size={22} aria-hidden="true" /> : entry.rank}</span>
+      <span aria-label={`${entry.rank}위`} className="ranking-position">
+        {medal ? <img alt={medal.alt} className="ranking-medal" src={medal.src} /> : entry.rank}
+      </span>
       <span className="ranking-nickname">{entry.nickname}{isCurrentUser && <span className="ranking-you">나</span>}</span>
       <strong className="ranking-score">{entry.score.toLocaleString()}</strong>
     </li>
