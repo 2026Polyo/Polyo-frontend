@@ -1,0 +1,379 @@
+{
+  "version": "1.21.1",
+  "repository": "https://github.com/InventivetalentDev/minecraft-assets",
+  "revision": "aef047f783f44424a591eeecf6b230d5bb0c8095",
+  "copyright": "Original Minecraft audio © Mojang AB. Source availability grants no new license.",
+  "license": "LicenseRef-Mojang-Proprietary",
+  "soundDefinitions": {
+    "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds.json",
+    "sha256": "62a01b1ff5bbae324a2438d2f0dbb799815158cb125f7b9b3701508f7f672e88"
+  },
+  "selection": "First two original samples per used sound event; shared samples deduplicated. Audio bytes are not re-encoded.",
+  "bank": {
+    "file": "originals.bin",
+    "bytes": 680042,
+    "sha256": "820ad5b04a86b4245c04e117aa70e0a0b2b9f5e68a871f45b1f3940a9e180246"
+  },
+  "files": [
+    {
+      "id": "block/amethyst/break1",
+      "offset": 12,
+      "bytes": 33986,
+      "gitBlobSha1": "ad2a4678f2ebb4f980534feb7d9abf4091450e7b",
+      "sha256": "c86214405f189b97dcc4fa2931405a76c7d2683cc073ddb2b5677c9229525aa3",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/amethyst/break1.ogg"
+    },
+    {
+      "id": "block/amethyst/break2",
+      "offset": 33998,
+      "bytes": 32654,
+      "gitBlobSha1": "f89f1c12900c263eeb23292e6f2a3ddb6897bbf8",
+      "sha256": "d2ae7351b635f4f9a79d4c82c3183615e6b96237722c382da5db0f54d6eee67c",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/amethyst/break2.ogg"
+    },
+    {
+      "id": "block/amethyst/place1",
+      "offset": 66652,
+      "bytes": 18349,
+      "gitBlobSha1": "22dff24a98df94db85d16d191bc4e378fb29e953",
+      "sha256": "3cbca4f7736b096aeedefa34857206c59e4814441895d799ec8dffe508fc17fc",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/amethyst/place1.ogg"
+    },
+    {
+      "id": "block/amethyst/place2",
+      "offset": 85001,
+      "bytes": 17765,
+      "gitBlobSha1": "8c4d00c2ed13e82aaef7cf75696626aa042c2b1a",
+      "sha256": "f3d48829db5489266424b928b8274b1135de254f666cb3391f94cd2c342a09e7",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/amethyst/place2.ogg"
+    },
+    {
+      "id": "block/amethyst/step1",
+      "offset": 102766,
+      "bytes": 41955,
+      "gitBlobSha1": "56f90d5e13f67ad97a01934b121e12e0789abd47",
+      "sha256": "68ef949f821881cd71b2b1d2558296e18f23f4f394432d860404b998d2843797",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/amethyst/step1.ogg"
+    },
+    {
+      "id": "block/amethyst/step2",
+      "offset": 144721,
+      "bytes": 38514,
+      "gitBlobSha1": "58aeaaf96564a71ca69230e115952aeaafb05294",
+      "sha256": "21806d31b55f055ad27ab97ab9383ad1fdd094fe93872f663b6debe5977b67db",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/amethyst/step2.ogg"
+    },
+    {
+      "id": "block/cherry_wood/break1",
+      "offset": 183235,
+      "bytes": 12242,
+      "gitBlobSha1": "c79ae4604be5d542efa621905a9cb27f788a806d",
+      "sha256": "41b4636f7e52cc4a599b2916345d73b83b38dceafedb4a30a290c714e9d1513c",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/cherry_wood/break1.ogg"
+    },
+    {
+      "id": "block/cherry_wood/break2",
+      "offset": 195477,
+      "bytes": 12044,
+      "gitBlobSha1": "286c3de6dc97e7cc87d1a270956a902e479119b0",
+      "sha256": "836bac916a052f2728ecff47629c7178f7a05ad73b734061862147e7442f542b",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/cherry_wood/break2.ogg"
+    },
+    {
+      "id": "block/cherry_wood/step1",
+      "offset": 207521,
+      "bytes": 16281,
+      "gitBlobSha1": "b35f8dc99effde79c4f5adec08b55ec03cf12fff",
+      "sha256": "a4915ee6bf18159f93a1e81abedcafbfc9001aa332740e4f05d3328e182bf11b",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/cherry_wood/step1.ogg"
+    },
+    {
+      "id": "block/cherry_wood/step2",
+      "offset": 223802,
+      "bytes": 17163,
+      "gitBlobSha1": "b4ab9174d51c8ae739320b0d43b084505f9444f9",
+      "sha256": "8d61a525ca10f3cd30298a30352110de3777e07c4c20148dd41eeb32a87b788a",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/cherry_wood/step2.ogg"
+    },
+    {
+      "id": "block/moss/break1",
+      "offset": 240965,
+      "bytes": 15627,
+      "gitBlobSha1": "65d824c7ac28a631e63121224d80819085ce7356",
+      "sha256": "3d4a97fde96bf783293afd72be86929233516af0367035d40dbcf9129bb38376",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/moss/break1.ogg"
+    },
+    {
+      "id": "block/moss/break2",
+      "offset": 256592,
+      "bytes": 18162,
+      "gitBlobSha1": "9c0d45c016f62b69fbd49a7177fc45cf64f492bd",
+      "sha256": "be76ca5fc6507ef738ff1b0eabb7ecb56b7005fc2c0089f5c9d1097d2d384c9e",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/moss/break2.ogg"
+    },
+    {
+      "id": "block/moss/step1",
+      "offset": 274754,
+      "bytes": 18080,
+      "gitBlobSha1": "4f409cd9a3fd101757f266bc59b09b88b4d50c8d",
+      "sha256": "e87a683f7583d6dd04dea50cee5cb4b4bc0780720719581bad7ee9c7d2242d8a",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/moss/step1.ogg"
+    },
+    {
+      "id": "block/moss/step2",
+      "offset": 292834,
+      "bytes": 17741,
+      "gitBlobSha1": "ed5a5e659a36d7146204ffcabbb37e8c2296fb9d",
+      "sha256": "d1160a8e5c5e2e54994e7d325f8def173e310da26d4d3688b5210212d0b16b76",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/moss/step2.ogg"
+    },
+    {
+      "id": "block/netherwart/break1",
+      "offset": 310575,
+      "bytes": 22489,
+      "gitBlobSha1": "0d8b1d0ea360879a3936961a769e137171657b5e",
+      "sha256": "a4d83be979211a4301582e8e99767df4a3524b2266ba618af4889b9990b0bced",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/netherwart/break1.ogg"
+    },
+    {
+      "id": "block/netherwart/break2",
+      "offset": 333064,
+      "bytes": 22970,
+      "gitBlobSha1": "49cf832dd8031ce8202def8258baf498100ba17b",
+      "sha256": "f41475a6e025ba66e75fb947a5867cbf8eca84011658861649f940d6e9f68d71",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/netherwart/break2.ogg"
+    },
+    {
+      "id": "block/netherwart/step1",
+      "offset": 356034,
+      "bytes": 22727,
+      "gitBlobSha1": "ba4027c1c035f4ab13505d06224d4350a3ecef12",
+      "sha256": "06694f41da31c5d3b2646159917d0939db1234e2cd0ec61d837dd50f13ba3c99",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/netherwart/step1.ogg"
+    },
+    {
+      "id": "block/netherwart/step2",
+      "offset": 378761,
+      "bytes": 24962,
+      "gitBlobSha1": "0a42cbff3efe7970ac33020999ecc83d396bbd4b",
+      "sha256": "eade74df6a8d8043466195238f7713ae94f700ed78086ab4629e674d1841d1e3",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/netherwart/step2.ogg"
+    },
+    {
+      "id": "block/nylium/break1",
+      "offset": 403723,
+      "bytes": 20566,
+      "gitBlobSha1": "2d274e195f7e215f8b891a8297f92d351157ea75",
+      "sha256": "e78a52f08b6c416b07b419cfa5a7475818dbb5926d54365dd3477c8e2903f44e",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/nylium/break1.ogg"
+    },
+    {
+      "id": "block/nylium/break2",
+      "offset": 424289,
+      "bytes": 20607,
+      "gitBlobSha1": "972bedca51fe471198b3f001604905e33015de8c",
+      "sha256": "5a6c41cdd48c9ea1779d633de33cb53119b9cb3ca1cefeb9f6e7c87a74fcce4c",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/nylium/break2.ogg"
+    },
+    {
+      "id": "block/nylium/step1",
+      "offset": 444896,
+      "bytes": 23778,
+      "gitBlobSha1": "5f099258ab3b5f3b0cfbc75b1a50ad02bd77cc84",
+      "sha256": "0fcbea98bc2eec9fe758ba921e0bb2c54cb1dcfed6643060340d31b4df53e633",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/nylium/step1.ogg"
+    },
+    {
+      "id": "block/nylium/step2",
+      "offset": 468674,
+      "bytes": 20096,
+      "gitBlobSha1": "2f9f31e4bc51c3b49c98003fe4efd8adaa283cbf",
+      "sha256": "2f48893ce072459993c5cfd1ece963db9754c0cbc3cfb65acb9b8fe7119aa25e",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/block/nylium/step2.ogg"
+    },
+    {
+      "id": "dig/cloth1",
+      "offset": 488770,
+      "bytes": 4832,
+      "gitBlobSha1": "0ea73f89d2657c48ae5585b155c88393c1f43f6d",
+      "sha256": "8a716f2a3cbfb5d330d3aa9999ff56f0636cf388991caa06d866576989c9f36e",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/dig/cloth1.ogg"
+    },
+    {
+      "id": "dig/cloth2",
+      "offset": 493602,
+      "bytes": 4862,
+      "gitBlobSha1": "a607a9e9e45462f5ce9551fa38812626cc43830f",
+      "sha256": "139fc234e51f7825fcdedf10c93d8d60c59df9b4955334f409a624e4b3e6bfbb",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/dig/cloth2.ogg"
+    },
+    {
+      "id": "dig/coral1",
+      "offset": 498464,
+      "bytes": 15927,
+      "gitBlobSha1": "922b1960fc5163ecbdf2a8ed2147f1d4450dbadf",
+      "sha256": "55fe754323c1eeaeb1adbc492f2e0260e82ff8b3f58a29ce5b7db272bb0f2a5a",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/dig/coral1.ogg"
+    },
+    {
+      "id": "dig/coral2",
+      "offset": 514391,
+      "bytes": 15406,
+      "gitBlobSha1": "4024d46542eefe57c979ee17f40a9d1281540638",
+      "sha256": "822eedf0484a41a6d5d0d7bdfdb77aa5e2d37ffb4dbf6bc05bfb8ed5db346724",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/dig/coral2.ogg"
+    },
+    {
+      "id": "dig/grass1",
+      "offset": 529797,
+      "bytes": 7468,
+      "gitBlobSha1": "12f575110abad218ab5688899fdb29db5e5ec08c",
+      "sha256": "3619fdb8f8aad57a48d45e02a3e8be90a9ca5d0ab8c8802961c78fd59c1f84fa",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/dig/grass1.ogg"
+    },
+    {
+      "id": "dig/grass2",
+      "offset": 537265,
+      "bytes": 7691,
+      "gitBlobSha1": "05dff55c8fe2587119663e41c50d8b199ccf1465",
+      "sha256": "b0763cf2c5b4d49602cb143e457b6206b6b101113a525795ef9c622ae31149df",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/dig/grass2.ogg"
+    },
+    {
+      "id": "dig/stone1",
+      "offset": 544956,
+      "bytes": 6695,
+      "gitBlobSha1": "746d282e81c9fbcdfde0966a3123096ecf3c87ba",
+      "sha256": "97f2a8a73b6f577b85c1a162c31810c7aff1ad1f34564dfdacebb64b26d1c7c6",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/dig/stone1.ogg"
+    },
+    {
+      "id": "dig/stone2",
+      "offset": 551651,
+      "bytes": 6728,
+      "gitBlobSha1": "333c9704ece8e9482fd4097af66fe5c8596cba9a",
+      "sha256": "98a5c3197845526e6ca9e8a669ffda843cfae3f5c7ac842ee6aac8896bae03b2",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/dig/stone2.ogg"
+    },
+    {
+      "id": "mob/slime/big1",
+      "offset": 558379,
+      "bytes": 10917,
+      "gitBlobSha1": "c1509d404d8decdafd1ccdebcb328bef0f70cba1",
+      "sha256": "cbb259fba6ec5032bc3707bcf556c248f3878772097ea311202ea10cc896040c",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/mob/slime/big1.ogg"
+    },
+    {
+      "id": "mob/slime/big2",
+      "offset": 569296,
+      "bytes": 7931,
+      "gitBlobSha1": "4bd9b74f9818d03657fd536d2c3cbee7f01ddcff",
+      "sha256": "79196d31b6d4fff4b8cf981ecde1d906aef60e229e7d7157aec7f96bbe246697",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/mob/slime/big2.ogg"
+    },
+    {
+      "id": "mob/slime/small1",
+      "offset": 577227,
+      "bytes": 6269,
+      "gitBlobSha1": "2be6c1cad6ff9e35c7a59ef76fd4bbec9e32bdba",
+      "sha256": "b8e870bb9d5416191ac0e90ca494c8e35bfcc2ad4181518c30184666495aa5e1",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/mob/slime/small1.ogg"
+    },
+    {
+      "id": "mob/slime/small2",
+      "offset": 583496,
+      "bytes": 5518,
+      "gitBlobSha1": "9083a22cb498a11593f184ee9d4f1189333c656e",
+      "sha256": "5e715b90d8ea3b7b76c9f9e225b36da10a14c989b7a7a0b13ce204506c2d9aee",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/mob/slime/small2.ogg"
+    },
+    {
+      "id": "random/glass1",
+      "offset": 589014,
+      "bytes": 7443,
+      "gitBlobSha1": "a8dab85cac5e709f74a61f29e936a34faa001869",
+      "sha256": "ac96668c1b15115e362b2d7d033c46df1575535da06cbcb8bed2fa3b740ab446",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/random/glass1.ogg"
+    },
+    {
+      "id": "random/glass2",
+      "offset": 596457,
+      "bytes": 7532,
+      "gitBlobSha1": "3bd462de3f24385d8fd4a90d47b334f27fa8a332",
+      "sha256": "7288bb874add42719964c87a232c2897f3e965e33ca55652b4744b4fad87fcea",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/random/glass2.ogg"
+    },
+    {
+      "id": "random/pop",
+      "offset": 603989,
+      "bytes": 4193,
+      "gitBlobSha1": "2890baf1ab1ef7127ab0ad65594ad428f47ba097",
+      "sha256": "5e3baf518a0104760dc06a2e0088b377433997b46511c1730db0e3ba6f2b0ca7",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/random/pop.ogg"
+    },
+    {
+      "id": "step/cloth1",
+      "offset": 608182,
+      "bytes": 4832,
+      "gitBlobSha1": "0ea73f89d2657c48ae5585b155c88393c1f43f6d",
+      "sha256": "8a716f2a3cbfb5d330d3aa9999ff56f0636cf388991caa06d866576989c9f36e",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/step/cloth1.ogg"
+    },
+    {
+      "id": "step/cloth2",
+      "offset": 613014,
+      "bytes": 4862,
+      "gitBlobSha1": "a607a9e9e45462f5ce9551fa38812626cc43830f",
+      "sha256": "139fc234e51f7825fcdedf10c93d8d60c59df9b4955334f409a624e4b3e6bfbb",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/step/cloth2.ogg"
+    },
+    {
+      "id": "step/coral1",
+      "offset": 617876,
+      "bytes": 17020,
+      "gitBlobSha1": "f81be0dc4f716e90902817c0de215a7972b098b2",
+      "sha256": "d5b850537605ca3ddc6054431f555e6591fbdb9338177230389d6d5bc45d8bbc",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/step/coral1.ogg"
+    },
+    {
+      "id": "step/coral2",
+      "offset": 634896,
+      "bytes": 14791,
+      "gitBlobSha1": "1c532b1b896d660e771c26ab301f175ce828d233",
+      "sha256": "3e47e984c53663b8f2dfd96dadcd5cb707047669e685997cef92d3adfe3aa811",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/step/coral2.ogg"
+    },
+    {
+      "id": "step/grass1",
+      "offset": 649687,
+      "bytes": 7126,
+      "gitBlobSha1": "7a6f24abd39d7a072135d881d419e853656791f2",
+      "sha256": "2959b1742d6f62692eab8b39e6f715520e639e8a6ee24f22975df93c00b4792c",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/step/grass1.ogg"
+    },
+    {
+      "id": "step/grass2",
+      "offset": 656813,
+      "bytes": 8131,
+      "gitBlobSha1": "285bc505a9257f030a76b830543d7ead38b89563",
+      "sha256": "226e6e9270b4c64481a1ad9838523707bffc34017d6e0d95ffbf335e903dfe2d",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/step/grass2.ogg"
+    },
+    {
+      "id": "step/stone1",
+      "offset": 664944,
+      "bytes": 8012,
+      "gitBlobSha1": "5dfc74d40d1e6d45b0ec005e17ee60eb702e5efc",
+      "sha256": "e94a295a876421dd8a2fa5b211210f66668c31deaff43fc036f7fb6abc98ecae",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/step/stone1.ogg"
+    },
+    {
+      "id": "step/stone2",
+      "offset": 672956,
+      "bytes": 7086,
+      "gitBlobSha1": "7cb15806fc9f0e0bd5ebd15ab7b7665f26a458e0",
+      "sha256": "2cfbf878743612960d8d7eecacc1644b1558a547d8533e22ed7ebd2c9a9625c7",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/aef047f783f44424a591eeecf6b230d5bb0c8095/assets/minecraft/sounds/step/stone2.ogg"
+    }
+  ]
+}

@@ -24,7 +24,7 @@ function ScoreBoard({ best, score, previewGain }: ScoreBoardProps) {
   }, [displayedScore]);
 
   useEffect(() => {
-    let timerId: ReturnType<typeof window.setInterval> | undefined;
+    let timerId: number | undefined;
     let currentScore = displayedScoreRef.current;
 
     if (score <= currentScore) {

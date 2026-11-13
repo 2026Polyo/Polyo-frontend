@@ -15,27 +15,33 @@ import { matchRoomApi } from "./features/matchroomApi";
 import type { MatchRoomDetails } from "./features/matchroom";
 import MatchGameScreen from "./screens/MatchGameScreen";
 import MultiplayerScreen from "./screens/MultiplayerScreen";
-import { AUTH_EXPIRED_EVENT, AUTH_TOKEN_KEY, AUTH_USER_KEY, clearAuth, type AuthUser } from "./api/auth";
+import { AUTH_EXPIRED_EVENT, AUTH_TOKEN_KEY, AUTH_USER_KEY, AuthRequestError, clearAuth, getCurrentUser, type AuthUser } from "./api/auth";
 import ShopScreen from "./screens/ShopScreen";
-import { useThemePreview } from "./hooks/useThemePreview";
 import { ThemeScope } from "./components/ThemeScope";
+import { getGameTheme, type GameThemeId } from "./features/themes/gameThemes";
+import { useShopAccount } from "./hooks/useShopAccount";
 
 function App() {
   const [shopOpen, setShopOpen] = useState(false);
   const [rankingOpen, setRankingOpen] = useState(false);
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    const token = localStorage.getItem(AUTH_TOKEN_KEY);
-    const storedUser = localStorage.getItem(AUTH_USER_KEY);
-    if (!token || !storedUser) return null;
-    try { return JSON.parse(storedUser) as AuthUser; } catch { return null; }
-  });
-  const { themeId, selectTheme } = useThemePreview();
+  const [authChecking, setAuthChecking] = useState(true);
+  const [authCheckError, setAuthCheckError] = useState<string | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [previewThemeId, setPreviewThemeId] = useState<GameThemeId | null>(null);
+  const shopAccount = useShopAccount(user?.id);
+  const equippedThemeId = getGameTheme(shopAccount.account?.equippedThemeId).id;
   const { gamePhase, playScreenProps, startScreenProps } =
-    useGameSession(Boolean(user), themeId);
-  const [multiplayerView, setMultiplayerView] = useState<"home" | "lobby" | "create">("home");
+    useGameSession(Boolean(user), previewThemeId ?? equippedThemeId);
+  const [multiplayerView, setMultiplayerView] =
+    useState<"home" | "lobby" | "create">("home");
   // Restored after a refresh, so a running match picks up where it was instead of being abandoned.
-  const [activeRoom, setActiveRoom] = useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
+  const [activeRoom, setActiveRoom] =
+    useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
   const restoreRoomFocus = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (gamePhase === "start") setPreviewThemeId(null);
+  }, [gamePhase]);
 
   useEffect(() => {
     if (restoreRoomFocus.current) {
@@ -45,16 +51,62 @@ function App() {
   }, [multiplayerView]);
 
   useEffect(() => {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (!token) {
+      setAuthChecking(false);
+      return;
+    }
+
+    void getCurrentUser()
+      .then((currentUser) => {
+        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(currentUser));
+        setUser(currentUser);
+      })
+      .catch((error: unknown) => {
+        if (error instanceof AuthRequestError && error.status === 401) {
+          clearAuth();
+          return;
+        }
+        setAuthCheckError("로그인 상태를 확인할 수 없습니다. 서버 연결을 확인한 뒤 다시 시도해주세요.");
+      })
+      .finally(() => setAuthChecking(false));
+
     function handleAuthExpired() {
       setUser(null);
       setShopOpen(false);
       setRankingOpen(false);
+      setPreviewThemeId(null);
+    }
+
+    function handleStorage(event: StorageEvent) {
+      if ((event.key === AUTH_TOKEN_KEY || event.key === AUTH_USER_KEY) &&
+          !localStorage.getItem(AUTH_TOKEN_KEY)) {
+        handleAuthExpired();
+      }
     }
 
     window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
-    return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+      window.removeEventListener("storage", handleStorage);
+    };
   }, []);
 
+  if (authChecking) return null;
+  if (authCheckError) {
+    return (
+      <main className="app-shell auth-shell">
+        <section className="auth-card" role="alert">
+          <h1>로그인 상태 확인 실패</h1>
+          <p>{authCheckError}</p>
+          <button className="auth-submit" type="button" onClick={() => window.location.reload()}>
+            다시 시도
+          </button>
+        </section>
+      </main>
+    );
+  }
   if (!user) return <AuthScreen onAuthenticated={setUser} />;
 
   const currentUser = user;
@@ -64,19 +116,29 @@ function App() {
   }
 
   if (activeRoom) {
-    return <MatchGameScreen onExit={() => {
-      clearActiveRoom();
-      setActiveRoom(null);
-      setMultiplayerView("lobby");
-    }} room={activeRoom} user={user} />;
+    return (
+      <MatchGameScreen
+        onExit={() => {
+          clearActiveRoom();
+          setActiveRoom(null);
+          setMultiplayerView("lobby");
+        }}
+        room={activeRoom}
+        user={user}
+      />
+    );
   }
 
   if (shopOpen)
     return (
       <ShopScreen
+        wallet={shopAccount}
         onGoHome={() => setShopOpen(false)}
+        onEquipTheme={async (id) => {
+          if (await shopAccount.equip(id)) setPreviewThemeId(null);
+        }}
         onSelectPreviewTheme={(id) => {
-          selectTheme(id);
+          setPreviewThemeId(id);
           setShopOpen(false);
         }}
       />
@@ -96,30 +158,45 @@ function App() {
       );
     }
     if (multiplayerView === "lobby") {
-      return <MultiplayerScreen api={matchRoomApi} onBack={() => {
-        restoreRoomFocus.current = "start-multiplayer";
-        setMultiplayerView("home");
-      }} onCreateRoom={() => setMultiplayerView("create")} onEnterRoom={enterRoom} />;
+      return (
+        <MultiplayerScreen
+          api={matchRoomApi}
+          onBack={() => {
+            restoreRoomFocus.current = "start-multiplayer";
+            setMultiplayerView("home");
+          }}
+          onCreateRoom={() => setMultiplayerView("create")}
+          onEnterRoom={enterRoom}
+        />
+      );
     }
     if (rankingOpen) {
       return (
-        <ThemeScope themeId={themeId}>
-          <RankingScreen currentUserId={user.id} onBack={() => setRankingOpen(false)} />
+        <ThemeScope themeId={equippedThemeId}>
+          <RankingScreen
+            currentUserId={user.id}
+            onBack={() => setRankingOpen(false)}
+          />
         </ThemeScope>
       );
     }
 
     return (
-      <ThemeScope themeId={themeId}>
+      <ThemeScope themeId={previewThemeId ?? equippedThemeId}>
         <StartScreen
           {...startScreenProps}
+          themeId={previewThemeId ?? equippedThemeId}
+          onThemeChange={setPreviewThemeId}
           onMultiplayer={() => setMultiplayerView("lobby")}
           onOpenRanking={() => setRankingOpen(true)}
-          onOpenShop={() => setShopOpen(true)}
-          themeId={themeId}
-          onThemeChange={selectTheme}
+          onOpenShop={() => {
+            void shopAccount.refresh();
+            setShopOpen(true);
+          }}
           onLogout={() => {
             clearActiveRoom();
+            setPreviewThemeId(null);
+            // Clears the stored login and fires AUTH_EXPIRED_EVENT, whose handler signs the user out.
             clearAuth();
           }}
         />

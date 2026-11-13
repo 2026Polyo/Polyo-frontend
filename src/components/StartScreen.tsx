@@ -1,30 +1,13 @@
-import { Layers, LogOut, Play, Trophy, ShoppingBag, Users } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
+import { Copy, LogOut, ShoppingCart, Trophy } from "lucide-react";
 import type { GameMode, PieceTemplate } from "../types";
+import type { HardGameRequest } from "../hooks/useHardGameRequest";
 import type { GameThemeId } from "../features/themes/gameThemes";
 import { getGameTheme } from "../features/themes/gameThemes";
 
-const START_PREVIEW_CELLS: string[] = [
-  "piece-cyan",
-  "piece-lime",
-  "piece-amber",
-  "",
-  "",
-  "piece-rose",
-  "piece-violet",
-  "piece-blue",
-  "piece-teal",
-  "piece-orange",
-  "",
-  "",
-  "piece-pink",
-  "piece-green",
-  "piece-indigo",
-  "",
-];
-
 interface StartScreenProps {
   startFlow: "mode" | "continue" | null;
+  hardRequest?: HardGameRequest;
   onModeSelect: (mode: GameMode) => void;
   onCloseStartFlow: () => void;
   onStartFresh: () => void;
@@ -56,6 +39,7 @@ interface StartScreenProps {
 
 function StartScreen({
   startFlow,
+  hardRequest,
   onModeSelect,
   onCloseStartFlow,
   onStartFresh,
@@ -64,7 +48,6 @@ function StartScreen({
   onOpenShop,
   availableBaseIds,
   baseLoadout,
-  best,
   loadoutIds,
   maxBase,
   maxSpecial,
@@ -81,23 +64,54 @@ function StartScreen({
   onLogout,
   onRemoveBase,
   onRemoveSpecial,
-  onRandomizeDeck
+  onRandomizeDeck,
 }: StartScreenProps) {
   return (
     <main className="app-shell start-shell">
-      <section className="start-screen" aria-labelledby="start-title">
-        <button className="start-logout-action" onClick={onLogout} type="button">
-          <LogOut size={17} aria-hidden="true" />
-          로그아웃
-        </button>
-        <div className="start-preview" aria-hidden="true">
-          {START_PREVIEW_CELLS.map((cellClass, index) => (
-            <span className={`start-cell ${cellClass}`} key={index} />
+      <section
+        className="start-screen"
+        aria-labelledby="start-title"
+        data-game-theme={themeId}
+      >
+        <div className="start-decoration" aria-hidden="true">
+          {["yellow", "purple", "green", "pink", "cyan"].map((color) => (
+            <span className={`start-piece start-piece-${color}`} key={color}>
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+          ))}
+          {[
+            ["left-top", "green"],
+            ["left-middle", "purple"],
+            ["left-bottom", "cyan"],
+            ["right-top", "cyan"],
+            ["right-middle", "yellow"],
+            ["right-bottom", "pink"],
+          ].map(([position, color]) => (
+            <span
+              className={`start-piece start-piece-${color} start-side-piece start-side-${position}`}
+              key={position}
+            >
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
           ))}
         </div>
-        <h1 id="start-title">Polyomino</h1>
-        <label className="theme-preview-select">
-          테마 미리보기
+        <h1 id="start-title">Polyo</h1>
+        <button
+          aria-label="로그아웃"
+          className="start-control start-logout"
+          onClick={onLogout}
+          type="button"
+        >
+          <LogOut aria-hidden="true" />
+        </button>
+        <label className="start-theme">
+          <span>테마 미리보기</span>
           <select
             value={themeId}
             onChange={(event) =>
@@ -111,55 +125,105 @@ function StartScreen({
             <option value="theme_cat">고양이 드림</option>
           </select>
         </label>
-        <div className="start-actions">
-          <button aria-label="새 게임" className="primary-action" onClick={onNewGame} type="button">
-            <Play size={20} aria-hidden="true" />
+        <section className="start-games" aria-labelledby="start-games-title">
+          <h2 id="start-games-title">게임 시작</h2>
+          <button
+            className="start-control start-new"
+            onClick={onNewGame}
+            type="button"
+          >
             새 게임
           </button>
-          <button className="secondary-action" id="start-multiplayer" onClick={onMultiplayer} type="button">
-            <Users size={20} aria-hidden="true" />
-            멀티
+          <button
+            className="start-control start-multi"
+            id="start-multiplayer"
+            onClick={onMultiplayer}
+            type="button"
+          >
+            멀티플레이
           </button>
-          <button className="start-deck-action" onClick={onOpenDeck} type="button">
-            <Layers size={20} aria-hidden="true" />
-            덱 구성
+        </section>
+        <nav className="start-utilities" aria-label="부가 메뉴">
+          <button className="start-control" onClick={onOpenDeck} type="button">
+            <Copy aria-hidden="true" />덱 구성
           </button>
-          <button className="start-ranking-action" onClick={onOpenRanking} type="button">
-            <Trophy size={20} aria-hidden="true" />
+          <button
+            className="start-control"
+            onClick={onOpenRanking}
+            type="button"
+          >
+            <Trophy aria-hidden="true" />
             랭킹
           </button>
-        </div>
-        <button
-          className="start-deck-action"
-          onClick={onOpenShop}
-          type="button"
-        >
-          <ShoppingBag size={20} aria-hidden="true" /> 상점
-        </button>
-        <div className="start-best" aria-label="Best score">
-          <Trophy size={20} aria-hidden="true" />
-          <span>Best</span>
-          <strong>{best}</strong>
-        </div>
+          <button className="start-control" onClick={onOpenShop} type="button">
+            <ShoppingCart aria-hidden="true" />
+            상점
+          </button>
+        </nav>
       </section>
       {startFlow && (
         <div className="start-dialog-backdrop">
-          <section className="start-dialog" role="dialog" aria-modal="true" aria-labelledby="start-dialog-title">
-            <h2 id="start-dialog-title">{startFlow === "mode" ? "모드 선택" : "이전 게임을 이어가시겠습니까?"}</h2>
+          <section
+            className="start-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="start-dialog-title"
+          >
+            <h2 id="start-dialog-title">
+              {startFlow === "mode"
+                ? "모드 선택"
+                : "이전 게임을 이어가시겠습니까?"}
+            </h2>
             <div className="start-dialog-actions">
               {startFlow === "mode" ? (
                 <>
-                  <button className="primary-action" type="button" autoFocus onClick={() => onModeSelect("normal")}>일반모드</button>
-                  <button className="secondary-action" type="button" onClick={() => onModeSelect("hard")}>하드모드</button>
+                  <button
+                    className="primary-action"
+                    type="button"
+                    autoFocus
+                    onClick={() => onModeSelect("normal")}
+                  >
+                    일반모드
+                  </button>
+                  <button
+                    className="secondary-action"
+                    type="button"
+                    onClick={() => onModeSelect("hard")}
+                  >
+                    하드모드
+                  </button>
                 </>
               ) : (
                 <>
-                  <button className="primary-action" type="button" autoFocus onClick={onContinue}>예</button>
-                  <button className="secondary-action" type="button" onClick={onStartFresh}>아니요</button>
+                  <button
+                    className="primary-action"
+                    type="button"
+                    autoFocus
+                    onClick={onContinue}
+                  >
+                    예
+                  </button>
+                  <button
+                    className="secondary-action"
+                    type="button"
+                    onClick={onStartFresh}
+                  >
+                    아니요
+                  </button>
                 </>
               )}
-              <button className="start-dialog-cancel" type="button" onClick={onCloseStartFlow}>취소</button>
+              <button
+                className="start-dialog-cancel"
+                type="button"
+                onClick={onCloseStartFlow}
+              >
+                취소
+              </button>
             </div>
+            {hardRequest?.pending && (
+              <p role="status">하드모드를 시작하는 중입니다.</p>
+            )}
+            {hardRequest?.error && <p role="alert">{hardRequest.error}</p>}
           </section>
         </div>
       )}

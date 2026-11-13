@@ -17,6 +17,10 @@ export const MINECRAFT_EFFECT_LIFETIME_MS =
   MINECRAFT_ITEM_END_MS + MINECRAFT_POOF_MS + 80;
 export const MINECRAFT_POOF_COUNT = 5;
 
+export function getMinecraftStaggerStep(count: number): number {
+  return Math.min(MINECRAFT_STAGGER_STEP_MS, MINECRAFT_STAGGER_MAX_MS / Math.max(1, count - 1));
+}
+
 export interface MinecraftPoof {
   x: number;
   y: number;
@@ -48,10 +52,7 @@ export function createMinecraftEffectBatch(
     (a, b) => a.row - b.row || a.col - b.col,
   );
   // 보드 전체가 제거돼도 파동 길이를 제한하고 마지막 아이템의 회전 시간을 확보한다.
-  const step = Math.min(
-    MINECRAFT_STAGGER_STEP_MS,
-    MINECRAFT_STAGGER_MAX_MS / Math.max(1, cleared.length - 1),
-  );
+  const step = getMinecraftStaggerStep(cleared.length);
   return {
     id: feedback.id,
     cleared: cleared.map((cell, index) => {

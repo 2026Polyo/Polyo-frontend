@@ -238,19 +238,20 @@
 }
 
 .theme-preview-select {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.85rem;
   color: var(--text-strong);
+  display: flex;
+  font-size: 0.85rem;
+  gap: 12px;
 }
+
 .theme-preview-select select {
-  padding: 8px 12px;
+  background: var(--surface-card);
   border: 1px solid var(--surface-card-border);
   border-radius: var(--radius-sm);
-  background: var(--surface-card);
   color: var(--text-strong);
   font: inherit;
+  padding: 8px 12px;
 }
 
 @media (prefers-reduced-motion: reduce) {

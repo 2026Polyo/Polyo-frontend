@@ -10,6 +10,13 @@ interface ApiResponse<T> {
   error: { code: string; message: string } | null;
 }
 
+export class AuthRequestError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "AuthRequestError";
+  }
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 async function request<T>(path: string, body: object): Promise<T> {
@@ -30,12 +37,37 @@ async function request<T>(path: string, body: object): Promise<T> {
   return result.data;
 }
 
+async function requestCurrentUser(): Promise<AuthUser> {
+  const token = localStorage.getItem(AUTH_TOKEN_KEY);
+  if (!token) throw new Error("로그인이 필요합니다.");
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  } catch {
+    throw new Error("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+  }
+
+  const result = (await response.json().catch(() => null)) as ApiResponse<AuthUser> | null;
+  if (!response.ok || !result?.success || !result.data) {
+    throw new AuthRequestError(result?.error?.message ?? "로그인이 필요합니다.", response.status);
+  }
+  return result.data;
+}
+
 export function login(loginId: string, password: string) {
   return request<{ accessToken: string; user: AuthUser }>("/api/v1/auth/login", { loginId, password });
 }
 
 export function signup(loginId: string, password: string, nickname: string) {
   return request<{ userId: string; loginId: string; nickname: string }>("/api/v1/auth/signup", { loginId, password, nickname });
+}
+
+export function getCurrentUser() {
+  return requestCurrentUser();
 }
 
 export const AUTH_TOKEN_KEY = "polyo.accessToken";

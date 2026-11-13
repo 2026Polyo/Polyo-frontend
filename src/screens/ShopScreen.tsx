@@ -4,7 +4,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Coins,
-  LockKeyhole,
   ShoppingBag,
   Sparkles,
 } from "lucide-react";
@@ -13,6 +12,7 @@ import ShopThemeDialog from "../components/ShopThemeDialog";
 import ThemePreview from "../components/ThemePreview";
 import type { ShopTheme } from "../features/shop";
 import { useShopCatalog, type ShopCatalogState } from "../hooks/useShopCatalog";
+import type { ShopAccountState } from "../hooks/useShopAccount";
 import "../styles/ShopScreen.css";
 import type { GameThemeId } from "../features/themes/gameThemes";
 
@@ -57,11 +57,15 @@ function ShopCatalog({ state, onRetry, onPreview }: ShopCatalogProps) {
 }
 
 export default function ShopScreen({
+  wallet,
   onGoHome,
   onSelectPreviewTheme,
+  onEquipTheme,
 }: {
+  wallet: ShopAccountState;
   onGoHome: () => void;
   onSelectPreviewTheme: (themeId: GameThemeId) => void;
+  onEquipTheme: (themeId: string) => void;
 }) {
   const { catalog, page, sort, setPage, changeSort, retry } = useShopCatalog();
   const [selectedTheme, setSelectedTheme] = useState<ShopTheme | null>(null);
@@ -90,7 +94,7 @@ export default function ShopScreen({
         <div className="shop-wallet">
           <Coins size={20} />
           <span>
-            보유 코인 <strong>로그인 필요</strong>
+            보유 코인 <strong>{wallet.account?.coin.toLocaleString("ko-KR") ?? (wallet.pending ? "조회 중" : "—")}</strong>
           </span>
         </div>
       </header>
@@ -108,10 +112,12 @@ export default function ShopScreen({
           <ThemePreview themeId="theme_cat" />
         </div>
       </section>
-      <p className="shop-demo-note">
-        <LockKeyhole size={15} /> 상점 미리보기 · 예시 상품과 가격입니다.
-        로그인과 실제 구매는 서버 연동 후 제공됩니다.
-      </p>
+      {wallet.error && !selectedTheme && (
+        <div className="shop-status" role="alert">
+          <p>{wallet.error}</p>
+          <button type="button" onClick={() => void wallet.refresh()}>다시 조회</button>
+        </div>
+      )}
       <section aria-labelledby="shop-products-title">
         <div className="shop-toolbar">
           <div>
@@ -166,7 +172,9 @@ export default function ShopScreen({
       </footer>
       <ShopThemeDialog
         theme={selectedTheme}
+        wallet={wallet}
         onClose={closePreview}
+        onEquipTheme={onEquipTheme}
         onSelectPreviewTheme={onSelectPreviewTheme}
       />
     </main>

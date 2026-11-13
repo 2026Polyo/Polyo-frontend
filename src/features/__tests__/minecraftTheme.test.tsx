@@ -88,12 +88,12 @@ describe("minecraft materials and player scope", () => {
     expect(scoped.match(/data-game-theme="theme_classic"/g)).toHaveLength(1);
   });
 
-  it("keeps theme sounds pending and the original game sound configuration unchanged", () => {
+  it("provides material-aware sounds and keeps classic audio unchanged", () => {
     const theme = getGameTheme("theme_minecraft");
     expect(theme.id).toBe("theme_minecraft");
-    expect(theme.soundMode).toBe("pending");
-    expect(getThemeSound(theme.id, "placement")).toBeNull();
-    expect(getThemeSound(theme.id, "clear")).toBeNull();
+    expect(theme.soundMode).toBe("custom");
+    expect(getThemeSound(theme.id, "placement")?.kind).toBe("minecraft");
+    expect(getThemeSound(theme.id, "clear")?.kind).toBe("minecraft");
     expect(getGameTheme("theme_classic").soundMode).toBe("legacy");
   });
 });
