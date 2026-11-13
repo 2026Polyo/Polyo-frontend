@@ -8,6 +8,7 @@ import MatchLobby from "../components/MatchLobby";
 import PieceShape from "../components/PieceShape";
 import PieceTray from "../components/PieceTray";
 import RivalHeldPiece from "../components/RivalHeldPiece";
+import { ThemeScope } from "../components/ThemeScope";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
 import { clearActiveRoom } from "../features/activeRoomStorage";
@@ -402,18 +403,21 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
                   {rivalPreview && <span className="match-rival-holding">블록 고르는 중…</span>}
                 </div>
                 <div className="board-combo-stage">
-                  <Board
-                    board={rival.board}
-                    boardRef={rivalBoardRef}
-                    clearingCells={clearingUserId === rival.userId ? clearingCells : NO_CELLS}
-                    hoverCell={null}
-                    onCellClick={() => undefined}
-                    onCellEnter={() => undefined}
-                    onCellLeave={() => undefined}
-                    previewCells={rivalPlacement?.cells ?? NO_CELLS}
-                    previewClearingCells={rivalPlacement?.clearingCells ?? NO_CELLS}
-                    selectedPiece={rivalPreview?.piece ?? null}
-                  />
+                  {/* My equipped theme is mine alone; the rival's board is always drawn in the classic theme. */}
+                  <ThemeScope themeId="theme_classic">
+                    <Board
+                      board={rival.board}
+                      boardRef={rivalBoardRef}
+                      clearingCells={clearingUserId === rival.userId ? clearingCells : NO_CELLS}
+                      hoverCell={null}
+                      onCellClick={() => undefined}
+                      onCellEnter={() => undefined}
+                      onCellLeave={() => undefined}
+                      previewCells={rivalPlacement?.cells ?? NO_CELLS}
+                      previewClearingCells={rivalPlacement?.clearingCells ?? NO_CELLS}
+                      selectedPiece={rivalPreview?.piece ?? null}
+                    />
+                  </ThemeScope>
                   <BoardEmoteBubble bubble={emoteBubbles.bubbles[rival.userId]} nickname={rival.nickname} />
                 </div>
               </section>
@@ -429,15 +433,18 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
             tray={game.tray}
           />
           {rivalPreview && rivalCursor && (
-            <RivalHeldPiece
-              arenaRef={arenaRef}
-              boardRef={rivalBoardRef}
-              // A new piece starts over from its own slot.
-              key={rivalPreview.piece.uid}
-              piece={rivalPreview.piece}
-              slotIndex={game.tray.findIndex((slot) => slot?.uid === rivalPreview.piece.uid)}
-              target={rivalCursor.row !== null && rivalCursor.col !== null ? { row: rivalCursor.row, col: rivalCursor.col } : null}
-            />
+            // Drawn in the rival board's classic theme, since that is where it is about to land.
+            <ThemeScope themeId="theme_classic">
+              <RivalHeldPiece
+                arenaRef={arenaRef}
+                boardRef={rivalBoardRef}
+                // A new piece starts over from its own slot.
+                key={rivalPreview.piece.uid}
+                piece={rivalPreview.piece}
+                slotIndex={game.tray.findIndex((slot) => slot?.uid === rivalPreview.piece.uid)}
+                target={rivalCursor.row !== null && rivalCursor.col !== null ? { row: rivalCursor.row, col: rivalCursor.col } : null}
+              />
+            </ThemeScope>
           )}
         </div>
         {match.message && <p className="match-error" role="alert">{match.message}</p>}

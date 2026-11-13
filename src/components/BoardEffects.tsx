@@ -83,13 +83,26 @@ const PixelCell = memo(function PixelCell({
   );
 });
 
+const PixelEffectBatch = memo(function PixelEffectBatch({ batch }: { batch: EffectBatch }) {
+  return (
+    <div className="pixel-effect-batch" data-effect-id={batch.id}>
+      {batch.placed.map((cell) => (
+        <PixelCell key={`place-${cell.row}-${cell.col}`} cell={cell} kind="place" />
+      ))}
+      {batch.cleared.map((cell) => (
+        <PixelCell key={`clear-${cell.row}-${cell.col}`} cell={cell} kind="clear" />
+      ))}
+    </div>
+  );
+});
+
 interface ActiveBatch {
   feedback: EffectBatch;
   particleCount: number;
   timer: ReturnType<typeof setTimeout>;
 }
 
-export default function BoardEffects({
+export default memo(function BoardEffects({
   feedback,
 }: {
   feedback: BoardFeedback | null;
@@ -168,27 +181,8 @@ export default function BoardEffects({
   return (
     <div className="board-pixel-effects" aria-hidden="true">
       {batches.map((batch) => (
-        <div
-          className="pixel-effect-batch"
-          key={batch.id}
-          data-effect-id={batch.id}
-        >
-          {batch.placed.map((cell) => (
-            <PixelCell
-              key={`place-${cell.row}-${cell.col}`}
-              cell={cell}
-              kind="place"
-            />
-          ))}
-          {batch.cleared.map((cell) => (
-            <PixelCell
-              key={`clear-${cell.row}-${cell.col}`}
-              cell={cell}
-              kind="clear"
-            />
-          ))}
-        </div>
+        <PixelEffectBatch key={batch.id} batch={batch} />
       ))}
     </div>
   );
-}
+});

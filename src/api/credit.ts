@@ -249,6 +249,7 @@ export function createCreditApi({
       return checked(`${SHOP_API_PATH}/themes?${params}`, { method: "GET" }, isThemePage);
     },
     getShopAccount: () => checked(`${SHOP_API_PATH}/accounts/me`, { method: "GET" }, isShopAccount),
+    grantLocalCoins: () => checked(`${SHOP_API_PATH}/local-coin-grants`, { method: "POST" }, isShopAccount),
     purchaseTheme: (themeId: string) =>
       checked(`${SHOP_API_PATH}/purchases`, json("POST", { themeId }), isShopAccount),
     equipTheme: (themeId: string) =>

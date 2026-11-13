@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import "./styles/App.css";
 import "./styles/AuthScreen.css";
 import "./styles/StartScreen.css";
@@ -27,11 +27,12 @@ function App() {
   const [authChecking, setAuthChecking] = useState(true);
   const [authCheckError, setAuthCheckError] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [previewThemeId, setPreviewThemeId] = useState<GameThemeId | null>(null);
+  const [devPreviewThemeId, setDevPreviewThemeId] = useState<GameThemeId | null>(null);
   const shopAccount = useShopAccount(user?.id);
+  const grantLocalCoins = useEffectEvent(() => { void shopAccount.grantLocalCoins(); });
   const equippedThemeId = getGameTheme(shopAccount.account?.equippedThemeId).id;
   const { gamePhase, playScreenProps, startScreenProps } =
-    useGameSession(Boolean(user), previewThemeId ?? equippedThemeId);
+    useGameSession(Boolean(user), devPreviewThemeId ?? equippedThemeId);
   const [multiplayerView, setMultiplayerView] =
     useState<"home" | "lobby" | "create">("home");
   // Restored after a refresh, so a running match picks up where it was instead of being abandoned.
@@ -40,8 +41,35 @@ function App() {
   const restoreRoomFocus = useRef<string | null>(null);
 
   useEffect(() => {
-    if (gamePhase === "start") setPreviewThemeId(null);
-  }, [gamePhase]);
+    if (!import.meta.env.DEV || !user) return;
+    let backquoteHeld = false;
+    function reset() { backquoteHeld = false; }
+    function release(event: KeyboardEvent) {
+      if (event.code === "Backquote" || !event.ctrlKey) reset();
+    }
+    function press(event: KeyboardEvent) {
+      if (!event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || event.repeat || event.isComposing) return;
+      if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable]")) return;
+      if (event.code === "Backquote") {
+        backquoteHeld = true;
+      } else if (event.code === "BracketRight" && backquoteHeld) {
+        event.preventDefault();
+        grantLocalCoins();
+      }
+    }
+    window.addEventListener("keydown", press);
+    window.addEventListener("keyup", release);
+    window.addEventListener("blur", reset);
+    return () => {
+      window.removeEventListener("keydown", press);
+      window.removeEventListener("keyup", release);
+      window.removeEventListener("blur", reset);
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (gamePhase === "start" || !user) setDevPreviewThemeId(null);
+  }, [gamePhase, user]);
 
   useEffect(() => {
     if (restoreRoomFocus.current) {
@@ -75,7 +103,6 @@ function App() {
       setUser(null);
       setShopOpen(false);
       setRankingOpen(false);
-      setPreviewThemeId(null);
     }
 
     function handleStorage(event: StorageEvent) {
@@ -117,15 +144,13 @@ function App() {
 
   if (activeRoom) {
     return (
-      <MatchGameScreen
-        onExit={() => {
+      <ThemeScope themeId={equippedThemeId}>
+        <MatchGameScreen onExit={() => {
           clearActiveRoom();
           setActiveRoom(null);
           setMultiplayerView("lobby");
-        }}
-        room={activeRoom}
-        user={user}
-      />
+        }} room={activeRoom} user={user} />
+      </ThemeScope>
     );
   }
 
@@ -134,13 +159,10 @@ function App() {
       <ShopScreen
         wallet={shopAccount}
         onGoHome={() => setShopOpen(false)}
-        onEquipTheme={async (id) => {
-          if (await shopAccount.equip(id)) setPreviewThemeId(null);
-        }}
-        onSelectPreviewTheme={(id) => {
-          setPreviewThemeId(id);
+        onDevPreview={import.meta.env.DEV ? (themeId) => {
+          setDevPreviewThemeId(themeId);
           setShopOpen(false);
-        }}
+        } : undefined}
       />
     );
 
@@ -182,11 +204,10 @@ function App() {
     }
 
     return (
-      <ThemeScope themeId={previewThemeId ?? equippedThemeId}>
+      <ThemeScope themeId={equippedThemeId}>
         <StartScreen
           {...startScreenProps}
-          themeId={previewThemeId ?? equippedThemeId}
-          onThemeChange={setPreviewThemeId}
+          themeId={equippedThemeId}
           onMultiplayer={() => setMultiplayerView("lobby")}
           onOpenRanking={() => setRankingOpen(true)}
           onOpenShop={() => {
@@ -195,8 +216,8 @@ function App() {
           }}
           onLogout={() => {
             clearActiveRoom();
-            setPreviewThemeId(null);
-            // Clears the stored login and fires AUTH_EXPIRED_EVENT, whose handler signs the user out.
+            // Clears the stored login and fires AUTH_EXPIRED_EVENT, whose handler signs the user out;
+            // the dev theme preview is then reset by the effect that watches `user`.
             clearAuth();
           }}
         />

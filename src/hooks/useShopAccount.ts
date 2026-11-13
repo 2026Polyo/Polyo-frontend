@@ -59,6 +59,7 @@ export function useShopAccount(userId: string | undefined) {
     pending,
     error,
     refresh,
+    grantLocalCoins: () => load(creditApi.grantLocalCoins, "개발용 코인을 지급하지 못했습니다."),
     purchase: (themeId: string) => load(() => creditApi.purchaseTheme(themeId), "구매 결과를 확인하지 못했습니다. 다시 시도해 주세요."),
     equip: (themeId: string) => load(() => creditApi.equipTheme(themeId), "테마를 장착하지 못했습니다. 다시 시도해 주세요."),
   };

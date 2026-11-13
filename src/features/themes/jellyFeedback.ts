@@ -62,12 +62,9 @@ export function createJellyParticles(
   const between = (min: number, max: number) => min + random() * (max - min);
   const count = kind === "drop" ? JELLY_DROPLET_COUNT : JELLY_SHARD_COUNT;
   const rotation = random() * Math.PI * 2;
-  const organicRadius = () =>
-    Array.from({ length: 2 }, () =>
-      Array.from({ length: 4 }, () => `${Math.round(between(30, 76))}%`).join(
-        " ",
-      ),
-    ).join(" / ");
+  const radiusPercent = () => Math.round(between(30, 76));
+  const fourRadii = () => `${radiusPercent()}% ${radiusPercent()}% ${radiusPercent()}% ${radiusPercent()}%`;
+  const organicRadius = () => `${fourRadii()} / ${fourRadii()}`;
   return Array.from({ length: count }, (_, index) => {
     // 회전시킨 부채꼴마다 하나씩 배분하고 각도를 흔들어 사방으로 퍼뜨린다.
     const angle =
@@ -133,25 +130,34 @@ export function getJellyImpact(
 export function createJellySlashes(
   cells: readonly FeedbackCell[],
 ): JellySlash[] {
-  const unique = uniqueFeedbackCells(cells);
-  const keys = new Set(unique.map(({ row, col }) => `${row}-${col}`));
-  const covered = new Set<string>();
+  return slashesForUniqueCells(uniqueFeedbackCells(cells));
+}
+
+function slashesForUniqueCells(cells: readonly FeedbackCell[]): JellySlash[] {
+  const fullLine = (1 << SIZE) - 1;
+  const rows = new Uint8Array(SIZE);
+  const cols = new Uint8Array(SIZE);
+  for (const { row, col } of cells) {
+    rows[row] |= 1 << col;
+    cols[col] |= 1 << row;
+  }
+
   const slashes: JellySlash[] = [];
-  for (const axis of ["row", "col"] as const) {
-    for (let index = 0; index < SIZE; index++) {
-      const line = Array.from({ length: SIZE }, (_, offset) =>
-        axis === "row" ? `${index}-${offset}` : `${offset}-${index}`,
-      );
-      if (!line.every((key) => keys.has(key))) continue;
-      slashes.push({ axis, index, start: 0, length: SIZE });
-      line.forEach((key) => covered.add(key));
-    }
+  let coveredCols = 0;
+  for (let row = 0; row < SIZE; row++) {
+    if (rows[row] === fullLine) slashes.push({ axis: "row", index: row, start: 0, length: SIZE });
+  }
+  for (let col = 0; col < SIZE; col++) {
+    if (cols[col] !== fullLine) continue;
+    slashes.push({ axis: "col", index: col, start: 0, length: SIZE });
+    coveredCols |= 1 << col;
   }
   for (let row = 0; row < SIZE; row++) {
+    if (rows[row] === fullLine) continue;
+    const uncovered = rows[row] & ~coveredCols;
     let start = -1;
     for (let col = 0; col <= SIZE; col++) {
-      const key = `${row}-${col}`;
-      const remaining = col < SIZE && keys.has(key) && !covered.has(key);
+      const remaining = (uncovered & (1 << col)) !== 0;
       if (remaining && start < 0) start = col;
       if (!remaining && start >= 0) {
         slashes.push({ axis: "row", index: row, start, length: col - start });
@@ -167,7 +173,7 @@ export function createJellyEffectBatch(
 ): JellyEffectBatch {
   const placed = uniqueFeedbackCells(feedback.placed);
   const cleared = uniqueFeedbackCells(feedback.cleared);
-  const slashes = createJellySlashes(cleared);
+  const slashes = slashesForUniqueCells(cleared);
   const minRow = Math.min(...placed.map((cell) => cell.row));
   const minCol = Math.min(...placed.map((cell) => cell.col));
   return {

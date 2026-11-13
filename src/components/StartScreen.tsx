@@ -3,7 +3,6 @@ import { Copy, LogOut, ShoppingCart, Trophy } from "lucide-react";
 import type { GameMode, PieceTemplate } from "../types";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
 import type { GameThemeId } from "../features/themes/gameThemes";
-import { getGameTheme } from "../features/themes/gameThemes";
 
 interface StartScreenProps {
   startFlow: "mode" | "continue" | null;
@@ -12,7 +11,6 @@ interface StartScreenProps {
   onCloseStartFlow: () => void;
   onStartFresh: () => void;
   themeId: GameThemeId;
-  onThemeChange: (themeId: GameThemeId) => void;
   onOpenShop: () => void;
   availableBaseIds: string[];
   baseLoadout: string[];
@@ -44,7 +42,6 @@ function StartScreen({
   onCloseStartFlow,
   onStartFresh,
   themeId,
-  onThemeChange,
   onOpenShop,
   availableBaseIds,
   baseLoadout,
@@ -110,21 +107,6 @@ function StartScreen({
         >
           <LogOut aria-hidden="true" />
         </button>
-        <label className="start-theme">
-          <span>테마 미리보기</span>
-          <select
-            value={themeId}
-            onChange={(event) =>
-              onThemeChange(getGameTheme(event.target.value).id)
-            }
-          >
-            <option value="theme_classic">기본</option>
-            <option value="theme_neon">네온 나이트</option>
-            <option value="theme_jelly">젤리 팝</option>
-            <option value="theme_minecraft">마인크래프트</option>
-            <option value="theme_cat">고양이 드림</option>
-          </select>
-        </label>
         <section className="start-games" aria-labelledby="start-games-title">
           <h2 id="start-games-title">게임 시작</h2>
           <button

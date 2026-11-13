@@ -45,7 +45,7 @@ describe("ERD 기반 상점 테마 어댑터", () => {
     await expect(getPreviewThemes(0, "name,asc")).rejects.toThrow();
     await expect(getPreviewThemes(1, "unknown,asc")).rejects.toThrow();
   });
-  it("shows a disclosed fallback for unknown and prototype-like server theme IDs", () => {
+  it("uses fallback colors without a product description for unknown theme IDs", () => {
     for (const id of [
       "unknown-server-theme",
       "__proto__",
@@ -53,7 +53,7 @@ describe("ERD 기반 상점 테마 어댑터", () => {
       "toString",
     ]) {
       const presentation = getThemePresentation(id);
-      expect(presentation.description).toContain("기본 블록");
+      expect(presentation.description).toBeUndefined();
       expect(presentation.colors).toHaveLength(5);
     }
   });
