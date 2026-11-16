@@ -1,5 +1,5 @@
 import StartDeckModal from "./StartDeckModal";
-import { Copy, LogOut, ShoppingCart, Trophy } from "lucide-react";
+import { Copy, LogOut, ShoppingCart, Trophy, UserRound } from "lucide-react";
 import type { GameMode, PieceTemplate } from "../types";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
 import type { GameThemeId } from "../features/themes/gameThemes";
@@ -29,6 +29,7 @@ interface StartScreenProps {
   onNewGame: () => void;
   onOpenDeck: () => void;
   onOpenRanking: () => void;
+  onOpenProfile: () => void;
   onLogout: () => void;
   onRemoveBase: (id: string) => void;
   onRemoveSpecial: (id: string) => void;
@@ -58,6 +59,7 @@ function StartScreen({
   onNewGame,
   onOpenDeck,
   onOpenRanking,
+  onOpenProfile,
   onLogout,
   onRemoveBase,
   onRemoveSpecial,
@@ -102,6 +104,9 @@ function StartScreen({
           type="button"
         >
           <LogOut aria-hidden="true" />
+        </button>
+        <button aria-label="마이페이지" className="start-control start-profile" onClick={onOpenProfile} type="button">
+          <UserRound aria-hidden="true" /><span>마이페이지</span>
         </button>
         <section className="start-games" aria-labelledby="start-games-title">
           <h2 id="start-games-title">게임 시작</h2>

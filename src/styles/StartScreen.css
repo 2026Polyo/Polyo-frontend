@@ -241,6 +241,9 @@
   width: 9.5cqw;
 }
 
+.start-profile { background: #ffffff36; border: 0.3cqw solid #ffffff79; border-radius: 2.4cqw; color: white; gap: 1.2cqw; height: 7.2cqw; left: 2.8%; padding: 0 2.2cqw; position: absolute; top: 3.3%; font-size: 2.8cqw; }
+.start-profile svg { width: 4cqw; height: 4cqw; }
+
 .start-logout svg {
   width: 4cqw;
   height: 4cqw;
