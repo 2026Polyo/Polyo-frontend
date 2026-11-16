@@ -132,6 +132,15 @@ export function parseServerMessage(raw: string): MatchServerMessage | null {
   return null;
 }
 
+/**
+ * The game to keep showing once a WAITING arrives, which means no game is running. One still shown as
+ * PLAYING ended while this socket was away, so it is dropped; a finished result stays up until the
+ * player goes back to the waiting room, because the server keeps the room after a game.
+ */
+export function gameAfterWaiting(game: MatchGameState | null): MatchGameState | null {
+  return game?.status === "PLAYING" ? null : game;
+}
+
 export function getMatchSocketUrl(baseUrl: string, roomId: number, location: { protocol: string; host: string }): string {
   const origin = baseUrl ? baseUrl.replace(/\/$/, "") : `${location.protocol}//${location.host}`;
   return `${origin.replace(/^http/, "ws")}/ws/match/${roomId}`;

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AUTH_TOKEN_KEY } from "../api/auth";
-import { EMPTY_CURSOR, FATAL_ERROR_CODES, getMatchSocketUrl, parseServerMessage, sameCursor } from "../features/matchGame";
+import { EMPTY_CURSOR, FATAL_ERROR_CODES, gameAfterWaiting, getMatchSocketUrl, parseServerMessage, sameCursor } from "../features/matchGame";
 import type { MatchCursor, MatchGameState, MatchServerMessage, RoomClosedReason } from "../features/matchGame";
 import type { EmoteId } from "../features/matchLobby";
 
@@ -68,6 +68,7 @@ export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOpt
         const received = parseServerMessage(String(event.data));
         if (!received) return;
         if (received.type === "WAITING") {
+          setGame(gameAfterWaiting);
           setConnectedUserIds(received.connectedUserIds);
           if (received.readyUserIds) setReadyUserIds(received.readyUserIds);
           if (received.members) setMembers(received.members);
@@ -98,8 +99,8 @@ export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOpt
         } else {
           setMessage("");
           setMessageCode("");
+          // The room outlives a finished game, so the socket keeps reconnecting for the next one.
           setGame(received);
-          if (received.status === "FINISHED") stoppedRef.current = true;
         }
       };
       socket.onclose = () => {
@@ -160,6 +161,8 @@ export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOpt
     readyUserIds,
     place: useCallback((pieceUid: string, row: number, col: number) => send({ type: "PLACE", pieceUid, row, col }), [send]),
     forfeit: useCallback(() => send({ type: "FORFEIT" }), [send]),
+    /** Leaves a finished game's result for the waiting room, where the next game is readied and started. */
+    backToLobby: useCallback(() => setGame((current) => (current?.status === "FINISHED" ? null : current)), []),
     setReady: useCallback((ready: boolean) => send({ type: "READY", ready }), [send]),
     start: useCallback(() => send({ type: "START" }), [send]),
     sendCursor,

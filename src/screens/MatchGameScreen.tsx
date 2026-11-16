@@ -11,7 +11,6 @@ import RivalHeldPiece from "../components/RivalHeldPiece";
 import { ThemeScope } from "../components/ThemeScope";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
-import { clearActiveRoom } from "../features/activeRoomStorage";
 import { EMPTY_CURSOR, FINISH_REASON_LABELS, getCursorPreview, ROOM_CLOSED_MESSAGES } from "../features/matchGame";
 import { MatchRoomApiError, matchRoomApi } from "../features/matchroomApi";
 import type { MatchCursor, MatchGameState } from "../features/matchGame";
@@ -230,11 +229,10 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
     // Keyed on the signature alone: only a new move should replay feedback.
   }, [signature]);
 
+  // The server keeps the room after a game, so the active room stays saved: a refresh returns to it.
   useEffect(() => {
     if (game?.status !== "FINISHED") return;
     audio.playGameOver();
-    // The server deletes a finished room, so a refresh from here should not try to rejoin it.
-    clearActiveRoom();
   }, [game?.status]);
 
   function handleCellClick(row: number, col: number) {
@@ -483,8 +481,13 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
             <span>{rival.nickname}</span>
             <strong>{rival.score}</strong>
           </div>
+          {leaveError && <p className="match-result-error" role="alert">{leaveError}</p>}
           <div className="game-over-actions">
-            <button className="primary-action" onClick={onExit} type="button">방 목록으로</button>
+            {/* The room stays after a game: both go back to the waiting room to ready and start again. */}
+            <button className="primary-action" disabled={leaving} onClick={match.backToLobby} type="button">한 판 더</button>
+            <button className="secondary-action" disabled={leaving} onClick={() => void leaveRoom()} type="button">
+              {leaving ? "나가는 중…" : "방 나가기"}
+            </button>
           </div>
         </div>
       )}
