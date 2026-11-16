@@ -1,3 +1,4 @@
+import { SIZE } from "../constants/gameData";
 import type { Board, PieceInstance } from "../types";
 import { isEmoteId } from "./matchLobby";
 import type { EmoteId } from "./matchLobby";
@@ -38,11 +39,24 @@ export interface MatchGameState {
   lastMove: MatchLastMove | null;
 }
 
+/** What a player is holding and where it would land; relayed to the rival as-is. */
+export interface MatchCursor {
+  /** null when nothing is held. */
+  pieceUid: string | null;
+  /** Placement position like PLACE's row/col; both null while off the board or on an invalid spot. */
+  row: number | null;
+  col: number | null;
+}
+
+export const EMPTY_CURSOR: MatchCursor = { pieceUid: null, row: null, col: null };
+
 export type MatchServerMessage =
   | ({ type: "STATE" } & MatchGameState)
   // readyUserIds and members are optional: servers without the ready step leave them out.
   | { type: "WAITING"; connectedUserIds: string[]; readyUserIds?: string[]; members?: { userId: string; nickname: string }[] }
   | { type: "EMOTE"; userId: string; emote: EmoteId }
+  // The current player's held block, relayed to the rival only.
+  | ({ type: "CURSOR"; userId: string } & MatchCursor)
   // Sent just before the server closes the socket: the host left or deleted the room, or I left it.
   | { type: "ROOM_CLOSED"; reason: RoomClosedReason }
   | { type: "ERROR"; code: string; message: string };
@@ -73,6 +87,10 @@ function isMember(value: unknown): boolean {
   return isRecord(value) && typeof value.userId === "string" && typeof value.nickname === "string";
 }
 
+function isCursorPosition(value: unknown): boolean {
+  return value === null || (Number.isInteger(value) && (value as number) >= -SIZE && (value as number) < SIZE);
+}
+
 function isTraySlot(value: unknown): boolean {
   return value === null || (isRecord(value) && typeof value.uid === "string"
     && typeof value.color === "string" && Array.isArray(value.cells));
@@ -97,6 +115,12 @@ export function parseServerMessage(raw: string): MatchServerMessage | null {
   if (message.type === "EMOTE" && typeof message.userId === "string" && isEmoteId(message.emote)) {
     return message as unknown as MatchServerMessage;
   }
+  if (message.type === "CURSOR" && typeof message.userId === "string"
+    && (message.pieceUid === null || typeof message.pieceUid === "string")
+    && isCursorPosition(message.row) && isCursorPosition(message.col)
+    && (message.row === null) === (message.col === null)) {
+    return message as unknown as MatchServerMessage;
+  }
   if (message.type === "ERROR" && typeof message.code === "string" && typeof message.message === "string") {
     return message as unknown as MatchServerMessage;
   }
@@ -111,4 +135,30 @@ export function parseServerMessage(raw: string): MatchServerMessage | null {
 export function getMatchSocketUrl(baseUrl: string, roomId: number, location: { protocol: string; host: string }): string {
   const origin = baseUrl ? baseUrl.replace(/\/$/, "") : `${location.protocol}//${location.host}`;
   return `${origin.replace(/^http/, "ws")}/ws/match/${roomId}`;
+}
+
+export function sameCursor(a: MatchCursor, b: MatchCursor): boolean {
+  return a.pieceUid === b.pieceUid && a.row === b.row && a.col === b.col;
+}
+
+export interface CursorPreview {
+  piece: PieceInstance;
+  /** Board cells the held piece would cover, as "row-col"; empty while it is off the board. */
+  cells: Set<string>;
+}
+
+/** The rival's held piece from the shared tray, or null when it is not (or no longer) there. */
+export function getCursorPreview(cursor: MatchCursor | null, tray: readonly (PieceInstance | null)[]): CursorPreview | null {
+  if (!cursor?.pieceUid) return null;
+  const piece = tray.find((slot) => slot?.uid === cursor.pieceUid);
+  if (!piece) return null;
+  const cells = new Set<string>();
+  if (cursor.row !== null && cursor.col !== null) {
+    for (const [dr, dc] of piece.cells) {
+      const row = cursor.row + dr;
+      const col = cursor.col + dc;
+      if (row >= 0 && row < SIZE && col >= 0 && col < SIZE) cells.add(`${row}-${col}`);
+    }
+  }
+  return { piece, cells };
 }

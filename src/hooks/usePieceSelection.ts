@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MAX_SNAP_DISTANCE } from "../constants/config";
-import { SIZE } from "../constants/gameData";
-import { cloneBoard, clearLines } from "../utils/boardUtils";
 import { getBoardCellFromPoint, getDragPreviewPoint } from "../utils/pointerPlacement";
 import {
   getClosestPlacement,
   getPlacementDistanceSquared,
-  getSurroundingEmptyCells,
-  placePiece
+  getPlacementPreview
 } from "../utils/placement";
 import type {
   AnchorOffset,
@@ -18,6 +15,8 @@ import type {
   PlacementPosition,
   PointerPoint
 } from "../types";
+
+const NO_CELLS: Set<string> = new Set();
 
 interface UsePieceSelectionParams {
   augmentChoiceOpen: boolean;
@@ -213,49 +212,13 @@ export function usePieceSelection({
       }
     : null;
 
-  const previewCells = useMemo<Set<string>>(() => {
-    if (!selectedPiece || !closestPlacementCell || invalidPreview) return new Set();
-    const cells = new Set(
-      selectedPiece.cells.map(
-        ([dr, dc]) => `${closestPlacementCell.row + dr}-${closestPlacementCell.col + dc}`
-      )
-    );
-    // The fill block also highlights the empty cells it will fill in.
-    if (selectedPiece.special === "fill") {
-      const placed = placePiece(board, selectedPiece, closestPlacementCell.row, closestPlacementCell.col);
-      getSurroundingEmptyCells(placed.placedBoard, selectedPiece, closestPlacementCell.row, closestPlacementCell.col)
-        .forEach(({ row, col }) => cells.add(`${row}-${col}`));
-    }
-    return cells;
+  // Shared with the match's rival preview, so both show the same fill and clear highlights.
+  const placementPreview = useMemo(() => {
+    if (!selectedPiece || !closestPlacementCell || invalidPreview) return null;
+    return getPlacementPreview(board, selectedPiece, closestPlacementCell.row, closestPlacementCell.col);
   }, [board, closestPlacementCell, invalidPreview, selectedPiece]);
-
-  const previewClearingCells = useMemo<Set<string>>(() => {
-    if (!selectedPiece || !closestPlacementCell || invalidPreview) return new Set();
-
-    if (selectedPiece.special === "line") {
-      const cross = new Set<string>();
-      selectedPiece.cells.forEach(([dr, dc]) => {
-        const cellRow = closestPlacementCell.row + dr;
-        const cellCol = closestPlacementCell.col + dc;
-        for (let i = 0; i < SIZE; i += 1) {
-          cross.add(`${cellRow}-${i}`);
-          cross.add(`${i}-${cellCol}`);
-        }
-      });
-      return cross;
-    }
-
-    const result = placePiece(board, selectedPiece, closestPlacementCell.row, closestPlacementCell.col);
-
-    if (selectedPiece.special === "fill") {
-      const filledBoard = cloneBoard(result.placedBoard);
-      getSurroundingEmptyCells(filledBoard, selectedPiece, closestPlacementCell.row, closestPlacementCell.col)
-        .forEach(({ row, col }) => { filledBoard[row][col] = selectedPiece.color; });
-      return new Set(clearLines(filledBoard).clearedCells);
-    }
-
-    return new Set(result.clearedCells);
-  }, [board, closestPlacementCell, invalidPreview, selectedPiece]);
+  const previewCells = placementPreview?.cells ?? NO_CELLS;
+  const previewClearingCells = placementPreview?.clearingCells ?? NO_CELLS;
 
   function handlePieceSelect(
     piece: PieceInstance,

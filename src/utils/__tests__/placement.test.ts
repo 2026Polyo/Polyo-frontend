@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canPlace, getClosestPlacement, getPlacements, hasMove, placePiece } from "../placement";
+import { canPlace, getClosestPlacement, getPlacementPreview, getPlacements, getSurroundingEmptyCells, hasMove, placePiece } from "../placement";
 import type { Board, PieceInstance, PieceTemplate } from "../../types";
 
 function emptyBoard(): Board {
@@ -160,5 +160,37 @@ describe("getClosestPlacement", () => {
     const result = getClosestPlacement(board, single, { row: 0, col: 0 });
     // Nearest available cell to (0,0) is (0,1) or (1,0) — distance 1 each
     expect(result).not.toBeNull();
+  });
+});
+
+describe("getPlacementPreview", () => {
+  it("covers the piece's cells and nothing clears on an empty board", () => {
+    const preview = getPlacementPreview(emptyBoard(), makePiece(duoH), 2, 3);
+    expect(preview.cells).toEqual(new Set(["2-3", "2-4"]));
+    expect(preview.clearingCells.size).toBe(0);
+  });
+
+  it("marks the row that the placement completes", () => {
+    const board = emptyBoard();
+    for (let c = 0; c < 7; c += 1) board[0][c] = "red";
+    const preview = getPlacementPreview(board, makePiece(single), 0, 7);
+    expect(preview.clearingCells).toEqual(new Set(Array.from({ length: 8 }, (_, c) => `0-${c}`)));
+  });
+
+  it("adds the empty cells a fill block fills in", () => {
+    const fill = makePiece({ id: "fill-test", cells: [[0, 0]], special: "fill" });
+    const board = emptyBoard();
+    const neighbors = getSurroundingEmptyCells(placePiece(board, fill, 3, 3).placedBoard, fill, 3, 3);
+    const preview = getPlacementPreview(board, fill, 3, 3);
+    expect(neighbors.length).toBeGreaterThan(0);
+    expect(preview.cells).toEqual(new Set(["3-3", ...neighbors.map(({ row, col }) => `${row}-${col}`)]));
+  });
+
+  it("marks the whole cross for a line block", () => {
+    const line = makePiece({ id: "line-test", cells: [[0, 0]], special: "line" });
+    const preview = getPlacementPreview(emptyBoard(), line, 2, 5);
+    expect(preview.clearingCells.size).toBe(15);
+    expect(preview.clearingCells.has("2-0")).toBe(true);
+    expect(preview.clearingCells.has("7-5")).toBe(true);
   });
 });
