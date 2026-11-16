@@ -353,6 +353,14 @@
   font-weight: 700;
 }
 
+/* A failed leave from the result dialog; the room is still there, so the player can try again. */
+.game-over .match-result-error {
+  color: hsl(347 92% 55%);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 0;
+}
+
 /* Shown only when the socket cannot be used at all. */
 .match-screen {
   justify-content: center;

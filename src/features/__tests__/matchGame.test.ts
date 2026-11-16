@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_CURSOR, getCursorPreview, getMatchSocketUrl, parseServerMessage, sameCursor } from "../matchGame";
+import { EMPTY_CURSOR, gameAfterWaiting, getCursorPreview, getMatchSocketUrl, parseServerMessage, sameCursor } from "../matchGame";
+import type { MatchGameState } from "../matchGame";
 
 const location = { protocol: "http:", host: "127.0.0.1:5173" };
 
@@ -102,5 +103,19 @@ describe("getCursorPreview", () => {
     expect(getCursorPreview(EMPTY_CURSOR, tray)).toBeNull();
     expect(getCursorPreview({ pieceUid: "gone", row: 0, col: 0 }, tray)).toBeNull();
     expect(getCursorPreview(null, tray)).toBeNull();
+  });
+});
+
+describe("gameAfterWaiting", () => {
+  const playing = { ...state, status: "PLAYING" } as unknown as MatchGameState;
+  const finished = { ...state, status: "FINISHED", winnerUserId: "1", finishReason: "FORFEIT" } as unknown as MatchGameState;
+
+  it("drops a game that ended while the socket was away", () => {
+    expect(gameAfterWaiting(playing)).toBeNull();
+  });
+
+  it("keeps a finished result up until the player goes back to the waiting room", () => {
+    expect(gameAfterWaiting(finished)).toBe(finished);
+    expect(gameAfterWaiting(null)).toBeNull();
   });
 });
