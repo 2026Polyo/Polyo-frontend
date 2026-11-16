@@ -64,12 +64,8 @@ function StartScreen({
   onRandomizeDeck,
 }: StartScreenProps) {
   return (
-    <main className="app-shell start-shell">
-      <section
-        className="start-screen"
-        aria-labelledby="start-title"
-        data-game-theme={themeId}
-      >
+    <main className="app-shell start-shell" data-game-theme={themeId}>
+      <section className="start-screen" aria-labelledby="start-title">
         <div className="start-decoration" aria-hidden="true">
           {["yellow", "purple", "green", "pink", "cyan"].map((color) => (
             <span className={`start-piece start-piece-${color}`} key={color}>

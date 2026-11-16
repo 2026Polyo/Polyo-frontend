@@ -16,16 +16,16 @@
   width: min(100%, 75dvh, 680px);
 }
 
-.start-screen[data-game-theme="theme_neon"] {
+.app-shell.start-shell[data-game-theme="theme_neon"] {
   background: radial-gradient(#234277, #101b37);
 }
-.start-screen[data-game-theme="theme_jelly"] {
+.app-shell.start-shell[data-game-theme="theme_jelly"] {
   background: linear-gradient(#f7c9ee, #bceaff);
 }
-.start-screen[data-game-theme="theme_minecraft"] {
+.app-shell.start-shell[data-game-theme="theme_minecraft"] {
   background: linear-gradient(#88c674, #4c8564);
 }
-.start-screen[data-game-theme="theme_cat"] {
+.app-shell.start-shell[data-game-theme="theme_cat"] {
   background: linear-gradient(#f8aacc, #c0b7fa);
 }
 

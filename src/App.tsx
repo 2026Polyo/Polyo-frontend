@@ -10,12 +10,24 @@ import RankingScreen from "./components/RankingScreen";
 import { useGameSession } from "./hooks/useGameSession";
 import PlayScreen from "./screens/PlayScreen";
 import CreateRoomScreen from "./screens/CreateRoomScreen";
-import { clearActiveRoom, loadActiveRoom, saveActiveRoom } from "./features/activeRoomStorage";
+import {
+  clearActiveRoom,
+  loadActiveRoom,
+  saveActiveRoom,
+} from "./features/activeRoomStorage";
 import { matchRoomApi } from "./features/matchroomApi";
 import type { MatchRoomDetails } from "./features/matchroom";
 import MatchGameScreen from "./screens/MatchGameScreen";
 import MultiplayerScreen from "./screens/MultiplayerScreen";
-import { AUTH_EXPIRED_EVENT, AUTH_TOKEN_KEY, AUTH_USER_KEY, AuthRequestError, clearAuth, getCurrentUser, type AuthUser } from "./api/auth";
+import {
+  AUTH_EXPIRED_EVENT,
+  AUTH_TOKEN_KEY,
+  AUTH_USER_KEY,
+  AuthRequestError,
+  clearAuth,
+  getCurrentUser,
+  type AuthUser,
+} from "./api/auth";
 import ShopScreen from "./screens/ShopScreen";
 import { ThemeScope } from "./components/ThemeScope";
 import { getGameTheme, type GameThemeId } from "./features/themes/gameThemes";
@@ -27,29 +39,51 @@ function App() {
   const [authChecking, setAuthChecking] = useState(true);
   const [authCheckError, setAuthCheckError] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [devPreviewThemeId, setDevPreviewThemeId] = useState<GameThemeId | null>(null);
+  const [devPreviewThemeId, setDevPreviewThemeId] =
+    useState<GameThemeId | null>(null);
   const shopAccount = useShopAccount(user?.id);
-  const grantLocalCoins = useEffectEvent(() => { void shopAccount.grantLocalCoins(); });
+  const grantLocalCoins = useEffectEvent(() => {
+    void shopAccount.grantLocalCoins();
+  });
   const equippedThemeId = getGameTheme(shopAccount.account?.equippedThemeId).id;
-  const { gamePhase, playScreenProps, startScreenProps } =
-    useGameSession(Boolean(user), devPreviewThemeId ?? equippedThemeId);
-  const [multiplayerView, setMultiplayerView] =
-    useState<"home" | "lobby" | "create">("home");
+  const activeThemeId = devPreviewThemeId ?? equippedThemeId;
+  const { gamePhase, playScreenProps, startScreenProps } = useGameSession(
+    Boolean(user),
+    activeThemeId,
+  );
+  const [multiplayerView, setMultiplayerView] = useState<
+    "home" | "lobby" | "create"
+  >("home");
   // Restored after a refresh, so a running match picks up where it was instead of being abandoned.
-  const [activeRoom, setActiveRoom] =
-    useState<MatchRoomDetails | null>(() => (user ? loadActiveRoom(user.id) : null));
+  const [activeRoom, setActiveRoom] = useState<MatchRoomDetails | null>(() =>
+    user ? loadActiveRoom(user.id) : null,
+  );
   const restoreRoomFocus = useRef<string | null>(null);
 
   useEffect(() => {
     if (!import.meta.env.DEV || !user) return;
     let backquoteHeld = false;
-    function reset() { backquoteHeld = false; }
+    function reset() {
+      backquoteHeld = false;
+    }
     function release(event: KeyboardEvent) {
       if (event.code === "Backquote" || !event.ctrlKey) reset();
     }
     function press(event: KeyboardEvent) {
-      if (!event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || event.repeat || event.isComposing) return;
-      if (event.target instanceof HTMLElement && event.target.closest("input, textarea, select, [contenteditable]")) return;
+      if (
+        !event.ctrlKey ||
+        event.altKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.repeat ||
+        event.isComposing
+      )
+        return;
+      if (
+        event.target instanceof HTMLElement &&
+        event.target.closest("input, textarea, select, [contenteditable]")
+      )
+        return;
       if (event.code === "Backquote") {
         backquoteHeld = true;
       } else if (event.code === "BracketRight" && backquoteHeld) {
@@ -95,7 +129,9 @@ function App() {
           clearAuth();
           return;
         }
-        setAuthCheckError("로그인 상태를 확인할 수 없습니다. 서버 연결을 확인한 뒤 다시 시도해주세요.");
+        setAuthCheckError(
+          "로그인 상태를 확인할 수 없습니다. 서버 연결을 확인한 뒤 다시 시도해주세요.",
+        );
       })
       .finally(() => setAuthChecking(false));
 
@@ -106,8 +142,10 @@ function App() {
     }
 
     function handleStorage(event: StorageEvent) {
-      if ((event.key === AUTH_TOKEN_KEY || event.key === AUTH_USER_KEY) &&
-          !localStorage.getItem(AUTH_TOKEN_KEY)) {
+      if (
+        (event.key === AUTH_TOKEN_KEY || event.key === AUTH_USER_KEY) &&
+        !localStorage.getItem(AUTH_TOKEN_KEY)
+      ) {
         handleAuthExpired();
       }
     }
@@ -127,7 +165,11 @@ function App() {
         <section className="auth-card" role="alert">
           <h1>로그인 상태 확인 실패</h1>
           <p>{authCheckError}</p>
-          <button className="auth-submit" type="button" onClick={() => window.location.reload()}>
+          <button
+            className="auth-submit"
+            type="button"
+            onClick={() => window.location.reload()}
+          >
             다시 시도
           </button>
         </section>
@@ -145,11 +187,15 @@ function App() {
   if (activeRoom) {
     return (
       <ThemeScope themeId={equippedThemeId}>
-        <MatchGameScreen onExit={() => {
-          clearActiveRoom();
-          setActiveRoom(null);
-          setMultiplayerView("lobby");
-        }} room={activeRoom} user={user} />
+        <MatchGameScreen
+          onExit={() => {
+            clearActiveRoom();
+            setActiveRoom(null);
+            setMultiplayerView("lobby");
+          }}
+          room={activeRoom}
+          user={user}
+        />
       </ThemeScope>
     );
   }
@@ -159,10 +205,14 @@ function App() {
       <ShopScreen
         wallet={shopAccount}
         onGoHome={() => setShopOpen(false)}
-        onDevPreview={import.meta.env.DEV ? (themeId) => {
-          setDevPreviewThemeId(themeId);
-          setShopOpen(false);
-        } : undefined}
+        onDevPreview={
+          import.meta.env.DEV
+            ? (themeId) => {
+                setDevPreviewThemeId(themeId);
+                setShopOpen(false);
+              }
+            : undefined
+        }
       />
     );
 
@@ -204,10 +254,10 @@ function App() {
     }
 
     return (
-      <ThemeScope themeId={equippedThemeId}>
+      <ThemeScope themeId={activeThemeId}>
         <StartScreen
           {...startScreenProps}
-          themeId={equippedThemeId}
+          themeId={activeThemeId}
           onMultiplayer={() => setMultiplayerView("lobby")}
           onOpenRanking={() => setRankingOpen(true)}
           onOpenShop={() => {
