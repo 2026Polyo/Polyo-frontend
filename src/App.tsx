@@ -32,10 +32,12 @@ import ShopScreen from "./screens/ShopScreen";
 import { ThemeScope } from "./components/ThemeScope";
 import { getGameTheme, type GameThemeId } from "./features/themes/gameThemes";
 import { useShopAccount } from "./hooks/useShopAccount";
+import ProfileModal from "./components/ProfileModal";
 
 function App() {
   const [shopOpen, setShopOpen] = useState(false);
   const [rankingOpen, setRankingOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
   const [authCheckError, setAuthCheckError] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -216,6 +218,7 @@ function App() {
           themeId={activeThemeId}
           onMultiplayer={() => setMultiplayerView("lobby")}
           onOpenRanking={() => setRankingOpen(true)}
+          onOpenProfile={() => setProfileOpen(true)}
           onOpenShop={() => {
             void shopAccount.refresh();
             setShopOpen(true);
@@ -227,6 +230,7 @@ function App() {
             clearAuth();
           }}
         />
+        {profileOpen && <ProfileModal user={user} baseLoadout={startScreenProps.baseLoadout} loadoutIds={startScreenProps.loadoutIds} onClose={() => setProfileOpen(false)} onUserChange={setUser} />}
       </ThemeScope>
     );
   }
