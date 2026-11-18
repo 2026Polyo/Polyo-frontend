@@ -202,9 +202,10 @@ function App() {
     }
     if (rankingOpen) {
       return (
-        <ThemeScope themeId={equippedThemeId}>
+        <ThemeScope themeId={activeThemeId}>
           <RankingScreen
             currentUserId={user.id}
+            themeId={activeThemeId}
             onBack={() => setRankingOpen(false)}
           />
         </ThemeScope>
@@ -230,7 +231,15 @@ function App() {
             clearAuth();
           }}
         />
-        {profileOpen && <ProfileModal user={user} baseLoadout={startScreenProps.baseLoadout} loadoutIds={startScreenProps.loadoutIds} onClose={() => setProfileOpen(false)} onUserChange={setUser} />}
+        {profileOpen && (
+          <ProfileModal
+            user={user}
+            baseLoadout={startScreenProps.baseLoadout}
+            loadoutIds={startScreenProps.loadoutIds}
+            onClose={() => setProfileOpen(false)}
+            onUserChange={setUser}
+          />
+        )}
       </ThemeScope>
     );
   }

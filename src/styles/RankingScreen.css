@@ -33,7 +33,9 @@
   font-weight: 800;
   gap: 7px;
   padding: 9px 13px;
-  transition: box-shadow 140ms ease, transform 140ms ease;
+  transition:
+    box-shadow 140ms ease,
+    transform 140ms ease;
 }
 
 .ranking-back-action:hover,
@@ -199,9 +201,15 @@
   width: 28px;
 }
 
-.ranking-row.rank-1 .ranking-position { color: hsl(43 95% 48%); }
-.ranking-row.rank-2 .ranking-position { color: hsl(210 18% 58%); }
-.ranking-row.rank-3 .ranking-position { color: hsl(26 70% 48%); }
+.ranking-row.rank-1 .ranking-position {
+  color: hsl(43 95% 48%);
+}
+.ranking-row.rank-2 .ranking-position {
+  color: hsl(210 18% 58%);
+}
+.ranking-row.rank-3 .ranking-position {
+  color: hsl(26 70% 48%);
+}
 
 .ranking-nickname {
   color: var(--text-strong);
@@ -232,7 +240,10 @@
   gap: 14px;
 }
 
-.ranking-error p { color: var(--text-muted); text-align: center; }
+.ranking-error p {
+  color: var(--text-muted);
+  text-align: center;
+}
 
 .ranking-retry-action {
   background: var(--accent);
@@ -244,12 +255,24 @@
   padding: 10px 18px;
 }
 
-.is-spinning { animation: ranking-spin 850ms linear infinite; }
+.is-spinning {
+  animation: ranking-spin 850ms linear infinite;
+}
 
-@keyframes ranking-spin { to { transform: rotate(360deg); } }
+@keyframes ranking-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 @media (max-width: 520px) {
-  .ranking-shell { padding: 18px; }
-  .ranking-screen { min-height: calc(100vh - 36px); }
-  .ranking-card { padding: 18px; }
+  .ranking-shell {
+    padding: 18px;
+  }
+  .ranking-screen {
+    min-height: calc(100vh - 36px);
+  }
+  .ranking-card {
+    padding: 18px;
+  }
 }
