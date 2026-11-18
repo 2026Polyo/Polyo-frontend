@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./styles/App.css";
 import "./styles/AuthScreen.css";
+import "./styles/MenuChrome.css";
 import "./styles/StartScreen.css";
 import "./styles/RankingScreen.css";
 import "./styles/AutoUndoFlash.css";
@@ -161,6 +162,7 @@ function App() {
   if (shopOpen)
     return (
       <ShopScreen
+        themeId={equippedThemeId}
         wallet={shopAccount}
         onGoHome={() => setShopOpen(false)}
         onDevPreview={

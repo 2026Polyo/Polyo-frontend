@@ -97,16 +97,16 @@ export default function ShopThemeDialog({
           </button>
           <ThemePreview themeId={theme.themeId} />
           <div className="shop-detail-body">
-            <span className="shop-category">BLOCK THEME</span>
             <h2 id="shop-detail-title">{theme.name}</h2>
             {description && <p>{description}</p>}
             <strong className="shop-detail-price">
               <Coins size={21} /> {theme.price.toLocaleString("ko-KR")} 코인
             </strong>
             {owned ? (
-              <button className="shop-purchase" type="button" disabled={equipped || wallet.pending}
-                onClick={() => void wallet.equip(theme.themeId)}>
-                {equipped ? "장착 중" : "보유 테마 장착"}
+              <button className="shop-purchase" type="button" disabled={wallet.pending}
+                aria-pressed={equipped}
+                onClick={() => void wallet.equip(equipped ? "theme_classic" : theme.themeId)}>
+                {equipped ? "장착 완료" : "보유 테마 장착"}
               </button>
             ) : (
               <button className="shop-purchase" type="button" disabled={wallet.pending || !wallet.account || insufficient}

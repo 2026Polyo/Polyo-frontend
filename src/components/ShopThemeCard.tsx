@@ -3,17 +3,22 @@ import type { MouseEvent } from "react";
 import type { ShopTheme } from "../features/shop";
 import { getThemePresentation } from "../features/themePresentation";
 import ThemePreview from "./ThemePreview";
+import type { ShopAccountState } from "../hooks/useShopAccount";
 
 interface ShopThemeCardProps {
   theme: ShopTheme;
+  wallet: ShopAccountState;
   onOpenDetails: (theme: ShopTheme, trigger: HTMLButtonElement) => void;
 }
 
 export default function ShopThemeCard({
   theme,
+  wallet,
   onOpenDetails,
 }: ShopThemeCardProps) {
   const { description } = getThemePresentation(theme.themeId);
+  const equipped = wallet.account?.equippedThemeId === theme.themeId;
+  const owned = equipped || wallet.account?.ownedThemeIds.includes(theme.themeId);
 
   function openDetails(event: MouseEvent<HTMLButtonElement>) {
     onOpenDetails(theme, event.currentTarget);
@@ -30,16 +35,27 @@ export default function ShopThemeCard({
         <ThemePreview themeId={theme.themeId} />
       </button>
       <div className="shop-card-body">
-        <span className="shop-category">BLOCK THEME</span>
         <h3>{theme.name}</h3>
         {description && <p>{description}</p>}
         <div className="shop-card-footer">
-          <strong>
-            <Coins size={17} /> {theme.price.toLocaleString("ko-KR")} 코인
-          </strong>
-          <button type="button" onClick={openDetails}>
-            자세히 보기
-          </button>
+          {owned ? (
+            <button
+              className="shop-purchase"
+              type="button"
+              disabled={wallet.pending}
+              aria-pressed={equipped}
+              onClick={() => void wallet.equip(equipped ? "theme_classic" : theme.themeId)}
+            >
+              {equipped ? "장착 완료" : "보유 테마 장착"}
+            </button>
+          ) : (
+            <>
+              <strong>
+                <Coins size={17} /> {theme.price.toLocaleString("ko-KR")} 코인
+              </strong>
+              <button type="button" onClick={openDetails}>자세히 보기</button>
+            </>
+          )}
         </div>
       </div>
     </article>

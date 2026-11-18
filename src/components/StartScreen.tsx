@@ -1,4 +1,5 @@
 import StartDeckModal from "./StartDeckModal";
+import MenuBlock from "./MenuBlock";
 import { Copy, LogOut, ShoppingCart, Trophy, UserRound } from "lucide-react";
 import type { GameMode, PieceTemplate } from "../types";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
@@ -66,16 +67,11 @@ function StartScreen({
   onRandomizeDeck,
 }: StartScreenProps) {
   return (
-    <main className="app-shell start-shell" data-game-theme={themeId}>
+    <main className="app-shell start-shell menu-scene" data-game-theme={themeId}>
       <section className="start-screen" aria-labelledby="start-title">
         <div className="start-decoration" aria-hidden="true">
           {["yellow", "purple", "green", "pink", "cyan"].map((color) => (
-            <span className={`start-piece start-piece-${color}`} key={color}>
-              <i />
-              <i />
-              <i />
-              <i />
-            </span>
+            <MenuBlock color={color} key={color} />
           ))}
           {[
             ["left-top", "green"],
@@ -85,15 +81,11 @@ function StartScreen({
             ["right-middle", "yellow"],
             ["right-bottom", "pink"],
           ].map(([position, color]) => (
-            <span
-              className={`start-piece start-piece-${color} start-side-piece start-side-${position}`}
+            <MenuBlock
+              color={color}
+              className={`start-side-piece start-side-${position}`}
               key={position}
-            >
-              <i />
-              <i />
-              <i />
-              <i />
-            </span>
+            />
           ))}
         </div>
         <h1 id="start-title">Polyo</h1>
