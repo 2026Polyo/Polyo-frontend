@@ -1,0 +1,417 @@
+.play-shell[data-game-theme="theme_minecraft"] {
+  --surface-card: #e6e6e6;
+  --surface-card-soft: #f1f1f1;
+  --surface-card-border: #a3a3a3;
+  --text-strong: #292929;
+  --text-body: #454545;
+  --text-muted: #686868;
+  --text-on-board: #555555;
+  --accent: #78a948;
+  --accent-strong: #41672e;
+  --tray-slot: #c6c6c6;
+  --tray-slot-border: #555555;
+  --tray-slot-hover: #dedede;
+  --tray-slot-empty: #8b8b8b;
+  --panel-dark: #e2e2e2;
+  --panel-dark-border: #a3a3a3;
+  --panel-slot: #cdcdcd;
+  --panel-slot-hover: #dedede;
+  --panel-slot-empty: #d5d5d5;
+  background: #ffffff;
+  color: var(--text-body);
+}
+
+.play-shell[data-game-theme="theme_minecraft"] .undo-item,
+.play-shell[data-game-theme="theme_minecraft"] .undo-item-label,
+.play-shell[data-game-theme="theme_minecraft"] .undo-items-head strong,
+.play-shell[data-game-theme="theme_minecraft"] .deck-view-button {
+  color: var(--text-body);
+}
+.play-shell[data-game-theme="theme_minecraft"] .tray {
+  border-radius: 3px;
+  box-shadow:
+    inset 2px 2px 0 #fff,
+    inset -2px -2px 0 #555;
+}
+
+.board[data-game-theme="theme_minecraft"],
+.shop-preview-minecraft .shop-preview-board {
+  background: #c6c6c6;
+  border: 1px solid #373737;
+  border-radius: 3px;
+  box-shadow:
+    inset 2px 2px 0 #ffffff,
+    inset -3px -3px 0 #555555,
+    0 4px 0 #00000014;
+}
+.board[data-game-theme="theme_minecraft"] .board-cell {
+  position: relative;
+  border: 0;
+  border-radius: 1px;
+  background: #8b8b8b;
+  box-shadow:
+    inset 1px 1px 0 #373737,
+    inset -1px -1px 0 #ffffff;
+}
+.board[data-game-theme="theme_minecraft"] .board-cell[data-filled="true"],
+.mini-grid[data-game-theme="theme_minecraft"] .mini-cell[data-filled="true"] {
+  position: relative;
+  background: transparent;
+  border: 0;
+  border-radius: 1px;
+  box-shadow: none;
+}
+.mc-tile-face,
+.shop-preview-minecraft .shop-preview-board .mc-tile-face {
+  --mc-frame-width: 2px;
+  display: block;
+  position: absolute;
+  inset: 0;
+  border: 0;
+  border-radius: 1px;
+  background: var(--mc-fallback, #65e5dc) var(--mc-face) center / 100% 100%
+    no-repeat;
+  outline: 1px solid
+    color-mix(in srgb, var(--mc-fallback, #65e5dc) 55%, #151515);
+  outline-offset: 0;
+  box-shadow:
+    inset 0 0 0 var(--mc-frame-width) var(--mc-fallback, #65e5dc),
+    inset 0 0 0 calc(var(--mc-frame-width) + 1px) #171717b3;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+.mini-grid[data-game-theme="theme_minecraft"] .mc-tile-face {
+  --mc-frame-width: 1px;
+}
+.mc-tile-place {
+  animation: mc-place 180ms ease-out both;
+}
+@keyframes mc-place {
+  0% {
+    transform: translateY(-3px) scale(0.96);
+  }
+  70% {
+    transform: translateY(0) scale(1.015);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+.board[data-game-theme="theme_minecraft"] .board-cell.preview {
+  opacity: 0.65;
+}
+.board[data-game-theme="theme_minecraft"] .board-cell.preview-clearing {
+  outline: 2px solid #fff2a6;
+  outline-offset: -2px;
+}
+.board[data-game-theme="theme_minecraft"] .board-cell.clearing {
+  animation: none;
+  filter: none;
+  box-shadow: none;
+}
+.board[data-game-theme="theme_minecraft"] .board-cell.clearing > .mc-tile-face {
+  visibility: hidden;
+}
+
+.board-minecraft-effects {
+  position: absolute;
+  inset: var(--board-padding, 10px);
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: var(--board-gap, 3px);
+  overflow: clip;
+  overflow-clip-margin: var(--board-padding, 10px);
+  pointer-events: none;
+  z-index: 4;
+  --mc-cube-size: clamp(16px, 2.8vw, 26px);
+}
+.mc-effect-batch {
+  display: contents;
+}
+.mc-effect-cell {
+  position: relative;
+  min-width: 0;
+  pointer-events: none;
+}
+.mc-mining-block {
+  position: absolute;
+  inset: 0;
+  animation: mc-mining-hold var(--mc-mining-duration) step-end var(--mc-offset)
+    both;
+}
+@keyframes mc-mining-hold {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.mc-mining-cracks {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+  mix-blend-mode: multiply;
+  animation: mc-mining-cracks var(--mc-mining-duration) step-end
+    var(--mc-offset) both;
+}
+@keyframes mc-mining-cracks {
+  0% {
+    background-image: var(--mc-crack-0);
+  }
+  10% {
+    background-image: var(--mc-crack-1);
+  }
+  20% {
+    background-image: var(--mc-crack-2);
+  }
+  30% {
+    background-image: var(--mc-crack-3);
+  }
+  40% {
+    background-image: var(--mc-crack-4);
+  }
+  50% {
+    background-image: var(--mc-crack-5);
+  }
+  60% {
+    background-image: var(--mc-crack-6);
+  }
+  70% {
+    background-image: var(--mc-crack-7);
+  }
+  80% {
+    background-image: var(--mc-crack-8);
+  }
+  90%,
+  100% {
+    background-image: var(--mc-crack-9);
+  }
+}
+.mc-item-stage {
+  position: absolute;
+  inset: 0;
+  perspective: 220px;
+  animation: mc-item-disappear var(--mc-disappear-duration) linear
+    var(--mc-disappear-delay) forwards;
+}
+@keyframes mc-item-disappear {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.mc-item-lift {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--mc-cube-size);
+  height: var(--mc-cube-size);
+  margin-left: calc(var(--mc-cube-size) * -0.5);
+  margin-top: calc(var(--mc-cube-size) * -0.5);
+  transform-style: preserve-3d;
+  animation: mc-item-bob var(--mc-item-duration) linear var(--mc-item-delay)
+    both;
+  z-index: 1;
+}
+@keyframes mc-item-bob {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.65);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(-9px) scale(1);
+  }
+  32% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1);
+  }
+  58% {
+    opacity: 1;
+    transform: translateY(-9px) scale(1);
+  }
+  84%,
+  92% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-8px) scale(0.9);
+  }
+}
+.mc-item-cube {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: mc-item-spin var(--mc-item-duration) linear var(--mc-item-delay)
+    both;
+}
+@keyframes mc-item-spin {
+  from {
+    transform: rotateX(-22deg) rotateY(var(--mc-start-angle));
+  }
+  to {
+    transform: rotateX(-22deg) rotateY(calc(var(--mc-start-angle) + 480deg));
+  }
+}
+.mc-item-cube > i {
+  display: block;
+  position: absolute;
+  inset: 0;
+  border: 0;
+  outline: 1px solid
+    color-mix(in srgb, var(--mc-fallback, #65e5dc) 55%, #151515);
+  outline-offset: -1px;
+  box-shadow:
+    inset 0 0 0 1px var(--mc-fallback, #65e5dc),
+    inset 0 0 0 2px #171717b3;
+  backface-visibility: hidden;
+  image-rendering: pixelated;
+  background: var(--mc-fallback, #65e5dc) var(--mc-side) center / 100% 100%
+    no-repeat;
+}
+.mc-cube-front {
+  transform: translateZ(calc(var(--mc-cube-size) * 0.5));
+}
+.mc-cube-back {
+  transform: rotateY(180deg) translateZ(calc(var(--mc-cube-size) * 0.5));
+  filter: brightness(0.82);
+}
+.mc-cube-right {
+  transform: rotateY(90deg) translateZ(calc(var(--mc-cube-size) * 0.5));
+  filter: brightness(0.78);
+}
+.mc-cube-left {
+  transform: rotateY(-90deg) translateZ(calc(var(--mc-cube-size) * 0.5));
+  filter: brightness(0.9);
+}
+.mc-item-cube > .mc-cube-top {
+  transform: rotateX(90deg) translateZ(calc(var(--mc-cube-size) * 0.5));
+  background-image: var(--mc-top);
+}
+.mc-item-cube > .mc-cube-bottom {
+  transform: rotateX(-90deg) translateZ(calc(var(--mc-cube-size) * 0.5));
+  background-image: var(--mc-bottom);
+  filter: brightness(0.65);
+}
+.mc-item-stage::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 64%;
+  width: var(--mc-cube-size);
+  height: 5px;
+  margin-left: calc(var(--mc-cube-size) * -0.5);
+  border-radius: 50%;
+  background: #0d170c55;
+  animation: mc-item-shadow var(--mc-item-duration) linear var(--mc-item-delay)
+    both;
+}
+@keyframes mc-item-shadow {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  10%,
+  92% {
+    opacity: 0.7;
+  }
+}
+.mc-poof {
+  display: block;
+  position: absolute;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+  filter: brightness(0) invert(1);
+  animation: mc-poof var(--mc-poof-duration) step-end var(--mc-poof-delay) both;
+  z-index: 3;
+}
+@keyframes mc-poof {
+  0% {
+    background-image: var(--mc-poof-0);
+    opacity: 0;
+    transform: translate(0, 0) scale(0.7);
+  }
+  12.5% {
+    background-image: var(--mc-poof-1);
+    opacity: 0.95;
+  }
+  25% {
+    background-image: var(--mc-poof-2);
+    transform: translate(
+        calc(var(--mc-poof-x) * 0.3),
+        calc(var(--mc-poof-y) * 0.3)
+      )
+      scale(1);
+  }
+  37.5% {
+    background-image: var(--mc-poof-3);
+  }
+  50% {
+    background-image: var(--mc-poof-4);
+    transform: translate(
+        calc(var(--mc-poof-x) * 0.65),
+        calc(var(--mc-poof-y) * 0.65)
+      )
+      scale(1.15);
+  }
+  62.5% {
+    background-image: var(--mc-poof-5);
+  }
+  75% {
+    background-image: var(--mc-poof-6);
+    opacity: 0.8;
+  }
+  87.5% {
+    background-image: var(--mc-poof-7);
+    opacity: 0.5;
+  }
+  100% {
+    background-image: var(--mc-poof-7);
+    opacity: 0;
+    transform: translate(var(--mc-poof-x), var(--mc-poof-y)) scale(1.25);
+  }
+}
+.shop-preview.shop-preview-minecraft {
+  background: #f3f3f3;
+}
+.shop-preview-minecraft .shop-preview-board > span {
+  position: relative;
+  border-radius: 1px;
+}
+.shop-preview-minecraft .shop-preview-board > span:not(.shop-preview-filled) {
+  background: #8b8b8b;
+  box-shadow:
+    inset 1px 1px 0 #373737,
+    inset -1px -1px 0 #fff;
+}
+.shop-preview-minecraft .shop-preview-board > .shop-preview-filled {
+  background: transparent;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-tile-place {
+    animation: none;
+  }
+  .board-minecraft-effects {
+    display: none;
+  }
+  .board[data-game-theme="theme_minecraft"]
+    .board-cell.clearing
+    > .mc-tile-face {
+    visibility: visible;
+    opacity: 0.3;
+  }
+}

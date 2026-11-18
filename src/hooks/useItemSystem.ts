@@ -10,20 +10,31 @@ import {
   type SavedItemState
 } from "../features/items";
 import { cloneBoard, simulateGravity } from "../utils/boardUtils";
+import {
+  moveSpecialPieceGroups,
+  normalizeSpecialPieceGroups
+} from "../features/themes/specialAppearance";
 import { rerollOnePiece } from "../utils/tray";
 import type {
   AugmentState,
   Board,
+  BonusTimeState,
   ItemSlots,
   ItemType,
   PieceTemplate,
   SavedGame,
+  SpecialPieceGroups,
   Tray,
   UndoSnapshot
 } from "../types";
 import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 
 interface UseItemSystemArgs {
+  enabled: boolean;
+  bonusTime: BonusTimeState;
+  restoreBonusTime: (state: BonusTimeState, tray: Tray) => Tray;
+  specialPieceGroups: SpecialPieceGroups;
+  setSpecialPieceGroups: Dispatch<SetStateAction<SpecialPieceGroups>>;
   augmentState: AugmentState;
   board: Board;
   bombCells: Set<string>;
@@ -49,6 +60,11 @@ interface UseItemSystemArgs {
 }
 
 export function useItemSystem({
+  enabled,
+  bonusTime,
+  restoreBonusTime,
+  specialPieceGroups,
+  setSpecialPieceGroups,
   augmentState,
   board,
   bombCells,
@@ -88,6 +104,7 @@ export function useItemSystem({
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     const combo = augmentState.combo;
     const prevCombo = comboMilestoneRef.current;
     comboMilestoneRef.current = combo;
@@ -115,7 +132,7 @@ export function useItemSystem({
 
     const gainLevel = getAugmentLevel(augmentState, "item-gain-score");
     if (gainLevel > 0 && placed > 0) setScore((current) => current + placed * gainLevel * ITEM_GAIN_SCORE);
-  }, [augmentState, setScore]);
+  }, [augmentState, enabled, setScore]);
 
   function clearItemSlot(slotIndex: number) {
     setItemSlots((current) =>
@@ -133,10 +150,18 @@ export function useItemSystem({
     setRerollModalSlot(null);
   }
 
+  function restoreItems(saved: SavedItemState & { augmentState: AugmentState }) {
+    setItemSlots(saved.itemSlots);
+    setUndoSnapshot(saved.undoSnapshot);
+    comboMilestoneRef.current = saved.augmentState.combo;
+  }
+
   function saveUndoSnapshot() {
     setUndoSnapshot({
+      bonusTime,
       augmentState,
       board: cloneBoard(board),
+      specialPieceGroups: { ...specialPieceGroups },
       bombCells: [...bombCells],
       boostCells: [...boostCells],
       ghostCells: [...ghostCells],
@@ -160,7 +185,8 @@ export function useItemSystem({
     if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
     setAugmentState(getSavedAugmentState(undoSnapshot as unknown as SavedGame));
     setBoard(cloneBoard(undoSnapshot.board));
-    setTray(undoSnapshot.tray);
+    setTray(undoSnapshot.bonusTime ? restoreBonusTime(undoSnapshot.bonusTime, undoSnapshot.tray) : undoSnapshot.tray);
+    setSpecialPieceGroups(normalizeSpecialPieceGroups(undoSnapshot.board, undoSnapshot.specialPieceGroups));
     setScore(undoSnapshot.score);
     setGhostCells(new Set(undoSnapshot.ghostCells ?? []));
     setGoldenCells(new Set(undoSnapshot.goldenCells ?? []));
@@ -215,7 +241,7 @@ export function useItemSystem({
   function handleGravity(slotIndex: number) {
     if (isClearing || gravityAnimating || itemSlots[slotIndex] !== "gravity") return;
 
-    const { frames, finalBoard, moved } = simulateGravity(board);
+    const { frames, frameMoves, finalBoard, moved } = simulateGravity(board);
     if (!frames.length) return;
 
     clearSelection();
@@ -228,6 +254,7 @@ export function useItemSystem({
     gravityTimerRef.current = setInterval(() => {
       if (frameIndex < frames.length) {
         setBoard(frames[frameIndex]);
+        setSpecialPieceGroups(moveSpecialPieceGroups(specialPieceGroups, frameMoves[frameIndex]));
         frameIndex += 1;
         return;
       }
@@ -238,6 +265,7 @@ export function useItemSystem({
       const remap = (cells: Set<string>) =>
         new Set([...cells].flatMap((key) => (moved.has(key) ? [moved.get(key)!] : [])));
       setBoard(finalBoard);
+      setSpecialPieceGroups(moveSpecialPieceGroups(specialPieceGroups, moved));
       setGhostCells(remap);
       setGoldenCells(remap);
       setBombCells(remap);
@@ -274,6 +302,7 @@ export function useItemSystem({
     itemSlots,
     rerollModalSlot,
     resetItems,
+    restoreItems,
     saveUndoSnapshot,
     undoSnapshot
   };

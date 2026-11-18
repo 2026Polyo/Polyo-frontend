@@ -1,0 +1,443 @@
+/* 1:1 VS waiting room. Builds on .create-room-screen for the page background and fonts. */
+.vs-lobby {
+  gap: 28px;
+}
+
+.vs-lobby-header {
+  width: min(100%, 1120px);
+}
+
+.vs-room-info {
+  align-items: center;
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--modal-shadow-md);
+  display: grid;
+  gap: 4px 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 14px 20px;
+  width: min(100%, 1120px);
+}
+
+.vs-room-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vs-room-title strong {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 26px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vs-room-title span {
+  align-items: center;
+  color: var(--modal-text-body);
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 6px;
+}
+
+.vs-room-code {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.vs-room-code label {
+  color: var(--modal-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.vs-room-code input {
+  background: var(--board-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-sm);
+  color: var(--modal-text);
+  font: 700 16px/24px monospace;
+  letter-spacing: 2px;
+  padding: 6px 8px;
+  text-align: center;
+  width: 128px;
+}
+
+.vs-room-code .room-copy {
+  min-height: 38px;
+}
+
+.vs-room-code input:focus-visible,
+.vs-room-code .room-copy:focus-visible {
+  outline: 2px solid var(--blue-100);
+  outline-offset: 3px;
+}
+
+.vs-copy-message {
+  color: var(--modal-text-body);
+  font-size: 12px;
+  grid-column: 1 / -1;
+  min-height: 0;
+}
+
+.vs-copy-message:empty {
+  display: none;
+}
+
+/* Stage: two mirrored profiles with VS between them. */
+.vs-stage {
+  align-items: center;
+  display: grid;
+  flex: 1;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  max-width: 1120px;
+  width: 100%;
+}
+
+.vs-player {
+  align-items: center;
+  background: var(--modal-bg);
+  border: 2px solid var(--modal-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--modal-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 36px 24px 32px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.vs-player.is-ready {
+  border-color: var(--blue-100);
+  box-shadow: var(--modal-shadow-lg), 0 0 0 4px hsl(202 100% 80% / 0.25);
+}
+
+.vs-player.is-offline .vs-avatar {
+  filter: grayscale(0.7);
+  opacity: 0.6;
+}
+
+.vs-player.is-empty {
+  background: hsl(210 85% 22% / 0.55);
+  border-style: dashed;
+}
+
+.vs-avatar-wrap {
+  position: relative;
+}
+
+.vs-avatar {
+  align-items: center;
+  background: linear-gradient(160deg, var(--blue-500), var(--blue-800));
+  border: 4px solid var(--modal-surface-soft);
+  border-radius: 28%;
+  box-shadow: inset 0 6px 0 hsl(0 0% 100% / 0.22), var(--modal-shadow-md);
+  color: var(--modal-text);
+  display: flex;
+  font-size: 64px;
+  font-weight: 900;
+  height: 160px;
+  justify-content: center;
+  line-height: 1;
+  width: 160px;
+}
+
+.vs-player-right .vs-avatar {
+  background: linear-gradient(200deg, hsl(196 80% 58%), var(--blue-900));
+}
+
+.vs-player.is-empty .vs-avatar {
+  background: var(--modal-surface);
+  border-style: dashed;
+  box-shadow: none;
+  color: var(--modal-text-muted);
+}
+
+.vs-host-badge {
+  align-items: center;
+  background: var(--score-gold);
+  border: 3px solid var(--modal-bg);
+  border-radius: var(--radius-pill);
+  color: var(--text-on-accent);
+  display: flex;
+  height: 36px;
+  justify-content: center;
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  width: 36px;
+}
+
+.vs-player-right .vs-host-badge {
+  left: -8px;
+  right: auto;
+}
+
+.vs-player-tag {
+  background: var(--modal-surface);
+  border-radius: var(--radius-pill);
+  color: var(--modal-text-body);
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 6px;
+  padding: 2px 12px;
+}
+
+.vs-player-name {
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 32px;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vs-player.is-empty .vs-player-name {
+  color: var(--modal-text-body);
+  font-size: 18px;
+}
+
+.vs-player-status {
+  align-items: center;
+  color: var(--modal-text-muted);
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 700;
+  gap: 4px;
+  justify-content: center;
+  min-height: 20px;
+  text-align: center;
+}
+
+.vs-player.is-ready .vs-player-status {
+  color: var(--blue-100);
+}
+
+/* Emote bubble: no text, just the emote, beside the avatar (mirrored for the right player). */
+.vs-emote-bubble {
+  animation: vs-bubble-pop 2500ms ease forwards;
+  background: var(--surface-card);
+  border-radius: 20px;
+  box-shadow: var(--modal-shadow-md);
+  left: calc(100% + 14px);
+  line-height: 0;
+  padding: 8px;
+  position: absolute;
+  top: 8px;
+  transform-origin: left bottom;
+  z-index: 2;
+}
+
+.vs-emote-bubble::after {
+  border-color: transparent var(--surface-card) transparent transparent;
+  border-style: solid;
+  border-width: 8px 12px 8px 0;
+  bottom: 14px;
+  content: "";
+  left: -11px;
+  position: absolute;
+}
+
+.vs-player-right .vs-emote-bubble {
+  left: auto;
+  right: calc(100% + 14px);
+  transform-origin: right bottom;
+}
+
+.vs-player-right .vs-emote-bubble::after {
+  border-color: transparent transparent transparent var(--surface-card);
+  border-width: 8px 0 8px 12px;
+  left: auto;
+  right: -11px;
+}
+
+@keyframes vs-bubble-pop {
+  0% { opacity: 0; transform: scale(0.4); }
+  10% { opacity: 1; transform: scale(1.08); }
+  16% { transform: scale(1); }
+  85% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
+
+.vs-mark {
+  color: var(--text-on-board);
+  font-family: Inter, "Arial Black", system-ui, sans-serif;
+  font-size: 72px;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  text-shadow: 0 4px 0 var(--blue-900), 0 10px 24px hsl(208 70% 6% / 0.45);
+}
+
+.vs-status {
+  color: var(--text-on-board);
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 24px;
+  text-align: center;
+}
+
+.vs-error {
+  color: hsl(0 100% 88%);
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+/* Bottom bar: emotes left, main action centred, exit right. */
+.vs-actions {
+  align-items: end;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr auto 1fr;
+  max-width: 1120px;
+  width: 100%;
+}
+
+.vs-actions-left { justify-self: start; }
+.vs-actions-right { justify-self: end; }
+
+.vs-main-action {
+  font-size: 20px;
+  min-height: 60px;
+  min-width: 240px;
+  padding: 12px 32px;
+}
+
+.vs-main-action.is-ready {
+  background: var(--modal-surface-soft);
+}
+
+.vs-main-action:disabled {
+  cursor: default;
+  opacity: 0.5;
+  transform: none;
+}
+
+.vs-exit {
+  min-height: 48px;
+  padding: 0 18px;
+}
+
+.emote-picker {
+  position: relative;
+}
+
+.emote-toggle {
+  align-items: center;
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--modal-shadow-sm);
+  color: var(--modal-text);
+  cursor: pointer;
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  padding: 0;
+  width: 44px;
+}
+
+.emote-toggle[aria-expanded="true"] {
+  background: var(--modal-surface-soft);
+}
+
+.emote-toggle:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.emote-popup {
+  animation: vs-popup-in 140ms ease-out;
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-lg);
+  bottom: calc(100% + 10px);
+  box-shadow: var(--modal-shadow-lg);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, 52px);
+  grid-template-rows: repeat(2, 52px);
+  left: 0;
+  padding: 10px;
+  position: absolute;
+  z-index: 5;
+}
+
+@keyframes vs-popup-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.emote-option {
+  align-items: center;
+  background: var(--modal-surface);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  transition: transform 120ms ease, background 120ms ease;
+}
+
+.emote-option:hover {
+  background: var(--modal-surface-soft);
+  transform: translateY(-2px);
+}
+
+.emote-toggle:focus-visible,
+.emote-option:focus-visible,
+.vs-main-action:focus-visible,
+.vs-exit:focus-visible {
+  outline: 2px solid var(--blue-100);
+  outline-offset: 3px;
+}
+
+@media (max-width: 860px) {
+  .vs-avatar { font-size: 44px; height: 112px; width: 112px; }
+  .vs-mark { font-size: 48px; }
+  .vs-player { padding: 28px 14px 24px; }
+  .vs-player-name { font-size: 20px; }
+  .vs-stage { gap: 12px; }
+}
+
+@media (max-width: 600px) {
+  .vs-lobby { gap: 20px; padding: 20px 16px; }
+  .vs-room-info { grid-template-columns: minmax(0, 1fr); }
+  .vs-room-code input { flex: 1; min-width: 0; width: auto; }
+  .vs-stage { gap: 8px; }
+  .vs-player { border-radius: var(--radius-lg); gap: 6px; padding: 20px 8px 16px; }
+  .vs-avatar { border-width: 3px; font-size: 32px; height: 76px; width: 76px; }
+  .vs-host-badge { height: 28px; width: 28px; }
+  .vs-mark { font-size: 32px; letter-spacing: -1px; }
+  .vs-player-name { font-size: 16px; line-height: 22px; }
+  .vs-player.is-empty .vs-player-name { font-size: 14px; white-space: normal; }
+  .vs-player-status { font-size: 12px; }
+  /* No room beside a small avatar, so the bubble floats above it instead. */
+  .vs-emote-bubble,
+  .vs-player-right .vs-emote-bubble { left: 50%; right: auto; top: -58px; transform-origin: center bottom; translate: -50% 0; }
+  .vs-emote-bubble::after,
+  .vs-player-right .vs-emote-bubble::after { border-color: var(--surface-card) transparent transparent; border-width: 10px 8px 0; bottom: -9px; left: calc(50% - 8px); right: auto; }
+  .vs-emote-bubble svg { height: 40px; width: 40px; }
+  .vs-actions { gap: 8px; }
+  .vs-main-action { font-size: 17px; min-height: 52px; min-width: 0; padding: 10px 20px; }
+  .vs-exit { min-width: 0; padding: 0 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-emote-bubble { animation: none; }
+  .emote-popup { animation: none; }
+  .emote-option, .vs-player { transition: none; }
+}

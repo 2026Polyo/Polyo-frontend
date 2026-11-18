@@ -1,4 +1,5 @@
 import { Home, LogOut, Settings } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface GameSettingsMenuProps {
   open: boolean;
@@ -6,6 +7,7 @@ interface GameSettingsMenuProps {
   onGoHome: () => void;
   onQuit: () => void;
   onToggle: () => void;
+  status?: ReactNode;
 }
 
 function GameSettingsMenu({
@@ -13,7 +15,8 @@ function GameSettingsMenu({
   onClose,
   onGoHome,
   onQuit,
-  onToggle
+  onToggle,
+  status
 }: GameSettingsMenuProps) {
   return (
     <>
@@ -38,6 +41,7 @@ function GameSettingsMenu({
         >
           <section className="game-settings-menu" onClick={(event) => event.stopPropagation()}>
             <strong id="settings-title" className="game-settings-title">설정</strong>
+            {status}
             <button className="game-settings-menu-button" onClick={onQuit} type="button">
               <LogOut size={18} aria-hidden="true" />
               <span>그만하기</span>

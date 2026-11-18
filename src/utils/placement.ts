@@ -133,3 +133,38 @@ export function getSpreadFillCells(
   const candidates = shuffleInPlace(findEmptyNeighbors(board, piece, row, col, ADJACENT_DELTAS));
   return candidates.slice(0, count);
 }
+
+export interface PlacementPreview {
+  /** Cells the piece will cover as "row-col"; the fill block adds the empty cells it fills in. */
+  cells: Set<string>;
+  /** Cells that the placement will clear; the line block marks its whole cross. */
+  clearingCells: Set<string>;
+}
+
+/** What placing the piece at (row, col) will look like; used for my drag preview and the rival's. */
+export function getPlacementPreview(board: Board, piece: PieceInstance, row: number, col: number): PlacementPreview {
+  const cells = new Set(piece.cells.map(([dr, dc]) => `${row + dr}-${col + dc}`));
+
+  if (piece.special === "line") {
+    const cross = new Set<string>();
+    piece.cells.forEach(([dr, dc]) => {
+      for (let i = 0; i < SIZE; i += 1) {
+        cross.add(`${row + dr}-${i}`);
+        cross.add(`${i}-${col + dc}`);
+      }
+    });
+    return { cells, clearingCells: cross };
+  }
+
+  const result = placePiece(board, piece, row, col);
+  if (piece.special === "fill") {
+    const filledBoard = cloneBoard(result.placedBoard);
+    getSurroundingEmptyCells(result.placedBoard, piece, row, col).forEach((cell) => {
+      cells.add(`${cell.row}-${cell.col}`);
+      filledBoard[cell.row][cell.col] = piece.color;
+    });
+    return { cells, clearingCells: new Set(clearLines(filledBoard).clearedCells) };
+  }
+
+  return { cells, clearingCells: new Set(result.clearedCells) };
+}

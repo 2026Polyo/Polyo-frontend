@@ -1,21 +1,29 @@
+import { getSavedBonusTime } from "./bonusTime";
 import { SAVED_GAME_KEY } from "../constants/config";
 import { DEFAULT_DECK, isValidDeck, normalizePieceId, SIZE } from "../constants/gameData";
 import { getSavedAugmentState } from "./augments";
 import { getSavedItemState, type SavedItemState } from "./items";
 import { isValidSpecialPiece } from "./specials";
 import { cloneBoard } from "../utils/boardUtils";
+import { normalizeSpecialPieceGroups } from "./themes/specialAppearance";
 import type {
   AugmentState,
+  BonusTimeState,
+  GameMode,
   Board,
   ItemSlots,
   PieceInstance,
   PieceTemplate,
   SavedGame,
+  SpecialPieceGroups,
   Tray,
   UndoSnapshot
 } from "../types";
 
 export interface LoadedGame extends SavedItemState {
+  gameMode: GameMode;
+  bonusTime: BonusTimeState;
+  specialPieceGroups: SpecialPieceGroups;
   augmentState: AugmentState;
   board: Board;
   bombCells: string[];
@@ -30,6 +38,9 @@ export interface LoadedGame extends SavedItemState {
 }
 
 export interface CurrentGameSnapshot {
+  gameMode: GameMode;
+  bonusTime: BonusTimeState;
+  specialPieceGroups?: SpecialPieceGroups;
   augmentState: AugmentState;
   board: Board;
   bombCells: Set<string>;
@@ -93,13 +104,18 @@ export function loadSavedGame(): LoadedGame | null {
   try {
     const raw = localStorage.getItem(SAVED_GAME_KEY);
     const savedGame = raw ? (JSON.parse(raw) as SavedGame) : null;
-    if (!savedGame || !isValidBoard(savedGame.board) || !isValidTray(savedGame.tray)) {
+    if (!savedGame || savedGame.gameMode === "hard" || !isValidBoard(savedGame.board) || !isValidTray(savedGame.tray)) {
       return null;
     }
 
     return {
+      gameMode: "normal",
+      bonusTime: getSavedBonusTime(savedGame.bonusTime, isValidTray),
       augmentState: getSavedAugmentState(savedGame),
       board: cloneBoard(savedGame.board as Board),
+      specialPieceGroups: normalizeSpecialPieceGroups(
+        savedGame.board as Board, savedGame.specialPieceGroups
+      ),
       bombCells: toStringArray(savedGame.bombCells),
       boostCells: toStringArray(savedGame.boostCells),
       deck: isValidDeck(savedGame.deck) ? normalizeSavedDeck(savedGame.deck) : DEFAULT_DECK,
@@ -129,6 +145,9 @@ export function clearSavedGame(): void {
 }
 
 export function saveCurrentGame({
+  gameMode,
+  bonusTime,
+  specialPieceGroups,
   augmentState,
   board,
   bombCells,
@@ -143,12 +162,16 @@ export function saveCurrentGame({
   tray,
   undoSnapshot
 }: CurrentGameSnapshot): void {
+  if (gameMode !== "normal") return;
   try {
     localStorage.setItem(
       SAVED_GAME_KEY,
       JSON.stringify({
+        gameMode,
+        bonusTime,
         augmentState,
         board,
+        specialPieceGroups: normalizeSpecialPieceGroups(board, specialPieceGroups),
         bombCells: [...bombCells],
         boostCells: [...boostCells],
         deck,

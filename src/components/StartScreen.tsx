@@ -1,106 +1,207 @@
-import { Layers, Play, Trophy } from "lucide-react";
 import StartDeckModal from "./StartDeckModal";
-import type { PieceTemplate } from "../types";
-
-const START_PREVIEW_CELLS: string[] = [
-  "piece-cyan", "piece-lime", "piece-amber", "", "",
-  "piece-rose", "piece-violet", "piece-blue", "piece-teal", "piece-orange", "", "",
-  "piece-pink", "piece-green", "piece-indigo", ""
-];
+import MenuBlock from "./MenuBlock";
+import { Copy, LogOut, ShoppingCart, Trophy, UserRound } from "lucide-react";
+import type { GameMode, PieceTemplate } from "../types";
+import type { HardGameRequest } from "../hooks/useHardGameRequest";
+import type { GameThemeId } from "../features/themes/gameThemes";
 
 interface StartScreenProps {
+  startFlow: "mode" | "continue" | null;
+  hardRequest?: HardGameRequest;
+  onModeSelect: (mode: GameMode) => void;
+  onCloseStartFlow: () => void;
+  onStartFresh: () => void;
+  themeId: GameThemeId;
+  onOpenShop: () => void;
   availableBaseIds: string[];
   baseLoadout: string[];
   best: number;
-  canContinue: boolean;
   canStartNewGame: boolean;
   loadoutIds: string[];
   maxBase: number;
   maxSpecial: number;
-  score: number;
   startDeckOpen: boolean;
   stash: PieceTemplate[];
   onAddBase: (id: string) => void;
   onAddSpecial: (id: string) => void;
   onCloseDeck: () => void;
   onContinue: () => void;
+  onMultiplayer: () => void;
   onNewGame: () => void;
   onOpenDeck: () => void;
+  onOpenRanking: () => void;
+  onOpenProfile: () => void;
+  onLogout: () => void;
   onRemoveBase: (id: string) => void;
   onRemoveSpecial: (id: string) => void;
+  onRandomizeDeck: () => void;
 }
 
 function StartScreen({
+  startFlow,
+  hardRequest,
+  onModeSelect,
+  onCloseStartFlow,
+  onStartFresh,
+  themeId,
+  onOpenShop,
   availableBaseIds,
   baseLoadout,
-  best,
-  canContinue,
-  canStartNewGame,
   loadoutIds,
   maxBase,
   maxSpecial,
-  score,
   startDeckOpen,
   stash,
   onAddBase,
   onAddSpecial,
   onCloseDeck,
   onContinue,
+  onMultiplayer,
   onNewGame,
   onOpenDeck,
+  onOpenRanking,
+  onOpenProfile,
+  onLogout,
   onRemoveBase,
-  onRemoveSpecial
+  onRemoveSpecial,
+  onRandomizeDeck,
 }: StartScreenProps) {
   return (
-    <main className="app-shell start-shell">
+    <main className="app-shell start-shell menu-scene" data-game-theme={themeId}>
       <section className="start-screen" aria-labelledby="start-title">
-        <div className="start-preview" aria-hidden="true">
-          {START_PREVIEW_CELLS.map((cellClass, index) => (
-            <span className={`start-cell ${cellClass}`} key={index} />
+        <div className="start-decoration" aria-hidden="true">
+          {["yellow", "purple", "green", "pink", "cyan"].map((color) => (
+            <MenuBlock color={color} key={color} />
+          ))}
+          {[
+            ["left-top", "green"],
+            ["left-middle", "purple"],
+            ["left-bottom", "cyan"],
+            ["right-top", "cyan"],
+            ["right-middle", "yellow"],
+            ["right-bottom", "pink"],
+          ].map(([position, color]) => (
+            <MenuBlock
+              color={color}
+              className={`start-side-piece start-side-${position}`}
+              key={position}
+            />
           ))}
         </div>
-        <h1 id="start-title">Polyomino</h1>
-        <div className="start-actions">
-          {canContinue && (
-            <button className="primary-action" onClick={onContinue} type="button">
-              <Play size={20} aria-hidden="true" />
-              이어하기
-            </button>
-          )}
+        <h1 id="start-title">Polyo</h1>
+        <button
+          aria-label="로그아웃"
+          className="start-control start-logout"
+          onClick={onLogout}
+          type="button"
+        >
+          <LogOut aria-hidden="true" />
+        </button>
+        <button aria-label="마이페이지" className="start-control start-profile" onClick={onOpenProfile} type="button">
+          <UserRound aria-hidden="true" /><span>마이페이지</span>
+        </button>
+        <section className="start-games" aria-labelledby="start-games-title">
+          <h2 id="start-games-title">게임 시작</h2>
           <button
-            aria-label={canStartNewGame ? "새 게임" : "일반 블록 10개를 선택해야 새 게임을 시작할 수 있습니다."}
-            aria-describedby={!canStartNewGame ? "new-game-disabled-reason" : undefined}
-            className={canContinue ? "secondary-action" : "primary-action"}
-            disabled={!canStartNewGame}
+            className="start-control start-new"
             onClick={onNewGame}
-            title={canStartNewGame ? undefined : "일반 블록 10개를 선택해야 시작할 수 있습니다."}
             type="button"
           >
-            {!canContinue && <Play size={20} aria-hidden="true" />}
             새 게임
           </button>
-          {!canStartNewGame && (
-            <p className="start-disabled-hint" id="new-game-disabled-reason">
-              일반 블록 {maxBase}개를 선택해야 시작할 수 있습니다.
-            </p>
-          )}
-          <button className="start-deck-action" onClick={onOpenDeck} type="button">
-            <Layers size={20} aria-hidden="true" />
-            덱 구성
+          <button
+            className="start-control start-multi"
+            id="start-multiplayer"
+            onClick={onMultiplayer}
+            type="button"
+          >
+            멀티플레이
           </button>
-        </div>
-        {canContinue && (
-          <div className="start-saved-score" aria-label="Saved game score">
-            <span>진행 점수</span>
-            <strong>{score}</strong>
-          </div>
-        )}
-        <div className="start-best" aria-label="Best score">
-          <Trophy size={20} aria-hidden="true" />
-          <span>Best</span>
-          <strong>{best}</strong>
-        </div>
+        </section>
+        <nav className="start-utilities" aria-label="부가 메뉴">
+          <button className="start-control" onClick={onOpenDeck} type="button">
+            <Copy aria-hidden="true" />덱 구성
+          </button>
+          <button
+            className="start-control"
+            onClick={onOpenRanking}
+            type="button"
+          >
+            <Trophy aria-hidden="true" />
+            랭킹
+          </button>
+          <button className="start-control" onClick={onOpenShop} type="button">
+            <ShoppingCart aria-hidden="true" />
+            상점
+          </button>
+        </nav>
       </section>
+      {startFlow && (
+        <div className="start-dialog-backdrop">
+          <section
+            className="start-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="start-dialog-title"
+          >
+            <h2 id="start-dialog-title">
+              {startFlow === "mode"
+                ? "모드 선택"
+                : "이전 게임을 이어가시겠습니까?"}
+            </h2>
+            <div className="start-dialog-actions">
+              {startFlow === "mode" ? (
+                <>
+                  <button
+                    className="primary-action"
+                    type="button"
+                    autoFocus
+                    onClick={() => onModeSelect("normal")}
+                  >
+                    일반모드
+                  </button>
+                  <button
+                    className="secondary-action"
+                    type="button"
+                    onClick={() => onModeSelect("hard")}
+                  >
+                    하드모드
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="primary-action"
+                    type="button"
+                    autoFocus
+                    onClick={onContinue}
+                  >
+                    예
+                  </button>
+                  <button
+                    className="secondary-action"
+                    type="button"
+                    onClick={onStartFresh}
+                  >
+                    아니요
+                  </button>
+                </>
+              )}
+              <button
+                className="start-dialog-cancel"
+                type="button"
+                onClick={onCloseStartFlow}
+              >
+                취소
+              </button>
+            </div>
+            {hardRequest?.pending && (
+              <p role="status">하드모드를 시작하는 중입니다.</p>
+            )}
+            {hardRequest?.error && <p role="alert">{hardRequest.error}</p>}
+          </section>
+        </div>
+      )}
       {startDeckOpen && (
         <StartDeckModal
           stash={stash}
@@ -113,6 +214,7 @@ function StartScreen({
           onRemoveBase={onRemoveBase}
           onAddSpecial={onAddSpecial}
           onRemoveSpecial={onRemoveSpecial}
+          onRandomize={onRandomizeDeck}
           onClose={onCloseDeck}
         />
       )}

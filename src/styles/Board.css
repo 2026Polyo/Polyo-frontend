@@ -1,4 +1,6 @@
 .board {
+  --board-gap: 3px;
+  --board-padding: 10px;
   aspect-ratio: 1;
   background: var(--board-bg);
   border: 1px solid hsl(0 0% 100% / 0.18);
@@ -7,9 +9,9 @@
     inset 0 2px 6px hsl(205 60% 18% / 0.35),
     var(--shadow-lg);
   display: grid;
-  gap: 3px;
+  gap: var(--board-gap);
   grid-template-columns: repeat(8, 1fr);
-  padding: 10px;
+  padding: var(--board-padding);
   position: relative;
   width: 100%;
 }
@@ -20,7 +22,10 @@
   min-width: 0;
   padding: 0;
   touch-action: manipulation;
-  transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
+  transition:
+    transform 120ms ease,
+    filter 120ms ease,
+    opacity 120ms ease;
 }
 
 .board-cell:focus-visible {
@@ -30,8 +35,8 @@
 
 @media (max-width: 720px) {
   .board {
-    gap: 2px;
-    padding: 7px;
+    --board-gap: 2px;
+    --board-padding: 7px;
   }
 }
 
@@ -67,7 +72,6 @@
   filter: brightness(1.42) saturate(1.22);
   z-index: 1;
 }
-
 
 @keyframes clear-pop {
   0% {

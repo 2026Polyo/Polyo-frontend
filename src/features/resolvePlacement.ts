@@ -19,6 +19,9 @@ export interface ResolvePlacementInput {
   goldenCells: Set<string>;
   piece: PieceInstance;
   row: number;
+  /** Optional mode-specific score multipliers. */
+  scoreMultiplier?: number;
+  comboMultiplier?: number;
   /** Preview mode: skip the random spread augments so the result is deterministic. */
   preview?: boolean;
 }
@@ -59,7 +62,9 @@ export function resolvePlacement({
   goldenCells,
   piece,
   row,
-  preview = false
+  preview = false,
+  scoreMultiplier = 1,
+  comboMultiplier = 1
 }: ResolvePlacementInput): PlacementOutcome {
   const echoBonus = piece.special === "echo" ? getEchoScore(board) : 0;
 
@@ -113,7 +118,10 @@ export function resolvePlacement({
   const scoreBreakdown = getAugmentedScore({
     augmentState, cleared: result.cleared, piece,
     allClear: isBoardEmpty(result.board), extraCells, boardFillRatio,
-    clearedCellCount: result.clearedCells.length, crackCount
+    clearedCellCount: result.clearedCells.length,
+    crackCount,
+    scoreMultiplier,
+    comboMultiplier
   });
   const ghostResult = resolveGhostClears(ghostCells, newOverlapCells, clearingCells);
   const goldenResult = resolveGoldenClears(goldenCells, clearingCells, scoreBreakdown.clearScore);

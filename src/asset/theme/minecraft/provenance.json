@@ -1,0 +1,342 @@
+{
+  "copyright": "Original Minecraft artwork © Mojang AB. Source availability does not grant a new license.",
+  "sources": {
+    "particleVersion": "Minecraft Java Edition 1.21.1",
+    "poofDefinition": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/particles/poof.json",
+    "blockRenders": "https://blockrender.dev/minecraft-textures/"
+  },
+  "poof": {
+    "textures": [
+      "minecraft:generic_7",
+      "minecraft:generic_6",
+      "minecraft:generic_5",
+      "minecraft:generic_4",
+      "minecraft:generic_3",
+      "minecraft:generic_2",
+      "minecraft:generic_1",
+      "minecraft:generic_0"
+    ]
+  },
+  "files": [
+    {
+      "file": "diamond_block.png",
+      "url": "https://blockrender.dev/render/block/diamond_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 628,
+      "width": 64,
+      "height": 64,
+      "sha256": "de7fc51f80ada981c74720402cdbb9a6934bcce098d991bc2787a24b71b93bcd"
+    },
+    {
+      "file": "slime_block.png",
+      "url": "https://blockrender.dev/render/block/slime_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 673,
+      "width": 64,
+      "height": 64,
+      "sha256": "ad98751fa42b5fdfab22a4f2774a8dcba8a561125b47c45669f07fad05a84069"
+    },
+    {
+      "file": "honeycomb_block.png",
+      "url": "https://blockrender.dev/render/block/honeycomb_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 681,
+      "width": 64,
+      "height": 64,
+      "sha256": "36a3297491788c040d1de84fd72d01314166d5c79f694ec85d9bfb141bc289f7"
+    },
+    {
+      "file": "crimson_nylium.png",
+      "url": "https://blockrender.dev/render/block/crimson_nylium.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 688,
+      "width": 64,
+      "height": 64,
+      "sha256": "569d173249036424d10272d07cb2024188038330c3f9d8f5b2b63bb234b9672d"
+    },
+    {
+      "file": "purpur_block.png",
+      "url": "https://blockrender.dev/render/block/purpur_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 627,
+      "width": 64,
+      "height": 64,
+      "sha256": "8c4dc0af72039317d62d0caa2f5d0d4a9c22a7e4e02a3dd0682a050774012f77"
+    },
+    {
+      "file": "lapis_block.png",
+      "url": "https://blockrender.dev/render/block/lapis_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 715,
+      "width": 64,
+      "height": 64,
+      "sha256": "1a4d4ebd6fb9ba1f6b6686eb3400e298d4a15c7512301ba1dc377e6a914615ab"
+    },
+    {
+      "file": "warped_wart_block.png",
+      "url": "https://blockrender.dev/render/block/warped_wart_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 622,
+      "width": 64,
+      "height": 64,
+      "sha256": "f9a3174b94900dd84fc6b0004cf20f77a74a0868c4b5edcfc139c23334f56638"
+    },
+    {
+      "file": "magma_block.png",
+      "url": "https://blockrender.dev/render/block/magma_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 685,
+      "width": 64,
+      "height": 64,
+      "sha256": "682def12685e39776af2b929f68e768aad4cc05ce0a2aa2eb5eec752706a7124"
+    },
+    {
+      "file": "cherry_planks.png",
+      "url": "https://blockrender.dev/render/block/cherry_planks.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 658,
+      "width": 64,
+      "height": 64,
+      "sha256": "1050bfe67afd9e016895b2a38324b573ec7b55e0b83f919ff2c82607aaab7476"
+    },
+    {
+      "file": "moss_block.png",
+      "url": "https://blockrender.dev/render/block/moss_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 679,
+      "width": 64,
+      "height": 64,
+      "sha256": "e7337480a7c71f52e3e5602c63de68cd6d626df7d315e466733962e792dc48d3"
+    },
+    {
+      "file": "crying_obsidian.png",
+      "url": "https://blockrender.dev/render/block/crying_obsidian.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 683,
+      "width": 64,
+      "height": 64,
+      "sha256": "d6845e9555bc16c7d9ae120d5182f63456fcc672bc8caef3d002940e3924d0cf"
+    },
+    {
+      "file": "sea_lantern.png",
+      "url": "https://blockrender.dev/render/block/sea_lantern.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 1170,
+      "width": 64,
+      "height": 64,
+      "sha256": "b64b7b61043a9afa02cee19c469cd564941719ac7fd9475b1b4ebc9dfb86d1cf"
+    },
+    {
+      "file": "end_stone.png",
+      "url": "https://blockrender.dev/render/block/end_stone.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 652,
+      "width": 64,
+      "height": 64,
+      "sha256": "9e7a71e351b475ae8a4bf2df508ffc8a3e8ffd7112ae0b6acc3c142541c8fe6c"
+    },
+    {
+      "file": "amethyst_block.png",
+      "url": "https://blockrender.dev/render/block/amethyst_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 670,
+      "width": 64,
+      "height": 64,
+      "sha256": "a550eeacb964979867b2609c019cf8f9eb8b948550e186626915154d28e143af"
+    },
+    {
+      "file": "gold_block.png",
+      "url": "https://blockrender.dev/render/block/gold_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 636,
+      "width": 64,
+      "height": 64,
+      "sha256": "fee53d0d08353c87dd7afb4d0ae784d5253a2902379eb45cbfe82755e24c2ec0"
+    },
+    {
+      "file": "tnt.png",
+      "url": "https://blockrender.dev/render/block/tnt.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 477,
+      "width": 64,
+      "height": 64,
+      "sha256": "6f8b18b206f103c37159c0f1c9c08e9c580418db375fc8b0eae7d65bc2d5cc27"
+    },
+    {
+      "file": "emerald_block.png",
+      "url": "https://blockrender.dev/render/block/emerald_block.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 589,
+      "width": 64,
+      "height": 64,
+      "sha256": "f5dab1ae49b9f96eaf5233a2379f1208333dcbf8bae8b1e9f815ffa5d0f2cc46"
+    },
+    {
+      "file": "magenta_wool.png",
+      "url": "https://blockrender.dev/render/block/magenta_wool.png?size=64&view=front&shading=0&margin=0&aa=1",
+      "bytes": 859,
+      "width": 64,
+      "height": 64,
+      "sha256": "35b7547036a034be9d05cd4dcb283f36c733d03d2c84902fb792ffee7562d24a"
+    },
+    {
+      "file": "crimson_nylium_top.png",
+      "url": "https://blockrender.dev/render/block/crimson_nylium.png?size=64&view=top&shading=0&margin=0&aa=1",
+      "bytes": 688,
+      "width": 64,
+      "height": 64,
+      "sha256": "18defd42b6005d27dd6a1f8b90e8edbd8590d977153c3133f809125bd2d7d334"
+    },
+    {
+      "file": "crimson_nylium_bottom.png",
+      "url": "https://blockrender.dev/render/block/crimson_nylium.png?size=64&view=bottom&shading=0&margin=0&aa=1",
+      "bytes": 670,
+      "width": 64,
+      "height": 64,
+      "sha256": "2e42144a5bae66b62470484a90bb7727af4f49f2904c297ac133261d3f6e8e14"
+    },
+    {
+      "file": "tnt_top.png",
+      "url": "https://blockrender.dev/render/block/tnt.png?size=64&view=top&shading=0&margin=0&aa=1",
+      "bytes": 590,
+      "width": 64,
+      "height": 64,
+      "sha256": "d3ec1b6ccad78a1a3fa11fb455fffeb60e432e7628cbfd738feb676596b54d45"
+    },
+    {
+      "file": "tnt_bottom.png",
+      "url": "https://blockrender.dev/render/block/tnt.png?size=64&view=bottom&shading=0&margin=0&aa=1",
+      "bytes": 296,
+      "width": 64,
+      "height": 64,
+      "sha256": "20083db959731252c24998762ca17604be00231f06917a25063203ba67467ec1"
+    },
+    {
+      "file": "destroy_stage_0.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_0.png",
+      "bytes": 89,
+      "width": 16,
+      "height": 16,
+      "sha256": "a9646f290314ddff5edf4e8cfcaeabf5cd3679f35256547f9ab606139fd66cf7"
+    },
+    {
+      "file": "destroy_stage_1.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_1.png",
+      "bytes": 102,
+      "width": 16,
+      "height": 16,
+      "sha256": "888c47b9ddfa60a35d3a8323829aa2db75ae19d2e04b82951510b755a5f7b6db"
+    },
+    {
+      "file": "destroy_stage_2.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_2.png",
+      "bytes": 111,
+      "width": 16,
+      "height": 16,
+      "sha256": "b4d1779c587523960817b862611bd13375415892a739751cd518b82574d108b4"
+    },
+    {
+      "file": "destroy_stage_3.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_3.png",
+      "bytes": 128,
+      "width": 16,
+      "height": 16,
+      "sha256": "a4ff05650ad917dd875ba2b6fa0b3fd4ed4a1773ecac87ef241ec0d3c4ff2cd1"
+    },
+    {
+      "file": "destroy_stage_4.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_4.png",
+      "bytes": 139,
+      "width": 16,
+      "height": 16,
+      "sha256": "ba6abd3eef8474fb5b769f7a26e400769d7a806048c9b95e7bea91e7de47ef1f"
+    },
+    {
+      "file": "destroy_stage_5.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_5.png",
+      "bytes": 153,
+      "width": 16,
+      "height": 16,
+      "sha256": "633e558c9bb13da4ab71df667bb4533c484f9cc5c166164e04292502ab2351a9"
+    },
+    {
+      "file": "destroy_stage_6.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_6.png",
+      "bytes": 160,
+      "width": 16,
+      "height": 16,
+      "sha256": "e2d6371698dff727db1f06f9176033c3f6774671f4c87718c05ac38910b12e21"
+    },
+    {
+      "file": "destroy_stage_7.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_7.png",
+      "bytes": 171,
+      "width": 16,
+      "height": 16,
+      "sha256": "6e5ccf47bd4534bca0ef360bd93330e354bfc3f7aaf1d6c498cd9f30c21bd8a5"
+    },
+    {
+      "file": "destroy_stage_8.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_8.png",
+      "bytes": 179,
+      "width": 16,
+      "height": 16,
+      "sha256": "b3ca3a7f5c75c242bf3adbe0f63289e6ab28dd2f6b8f7d6f25f3da39b10eb4aa"
+    },
+    {
+      "file": "destroy_stage_9.png",
+      "url": "https://blockrender.dev/texture/block/destroy_stage_9.png",
+      "bytes": 180,
+      "width": 16,
+      "height": 16,
+      "sha256": "37aff035cb4ba9d7666b4d8b3270caa5427d0d15ff6850d3bd6c105246bd0638"
+    },
+    {
+      "file": "generic_0.png",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/particle/generic_0.png",
+      "bytes": 74,
+      "width": 8,
+      "height": 8,
+      "sha256": "040799acfd2e753632cef5642ab07e0182a973cc990cbfcb6bf7d201f10cfa03"
+    },
+    {
+      "file": "generic_1.png",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/particle/generic_1.png",
+      "bytes": 76,
+      "width": 8,
+      "height": 8,
+      "sha256": "85fb6789e97a9385e823a6da6f6fbdd376c6e8165a449e8f1613ef34592afb2e"
+    },
+    {
+      "file": "generic_2.png",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/particle/generic_2.png",
+      "bytes": 96,
+      "width": 8,
+      "height": 8,
+      "sha256": "b685389739d5add8d9240511f15b60e3365262c9e557b80fc3bf352dc30564a2"
+    },
+    {
+      "file": "generic_3.png",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/particle/generic_3.png",
+      "bytes": 100,
+      "width": 8,
+      "height": 8,
+      "sha256": "0988037438acb1dab7e583e6e17dbdc0d47c51721d237ea628311fc7ae3e355a"
+    },
+    {
+      "file": "generic_4.png",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/particle/generic_4.png",
+      "bytes": 103,
+      "width": 8,
+      "height": 8,
+      "sha256": "2cacbc3e1b3297b34997fdb46aa35bbc3597d4f1a608f7412aa843a22bfb4a28"
+    },
+    {
+      "file": "generic_5.png",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/particle/generic_5.png",
+      "bytes": 104,
+      "width": 8,
+      "height": 8,
+      "sha256": "ea3bb652d7604349517ceb17061b0007578ff70f86e1adc5e823da767a315fcf"
+    },
+    {
+      "file": "generic_6.png",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/particle/generic_6.png",
+      "bytes": 109,
+      "width": 8,
+      "height": 8,
+      "sha256": "1d0bce47b910d93d60de34deca732abeeea2dcdf0d2ed16bf8881f1f2ee92442"
+    },
+    {
+      "file": "generic_7.png",
+      "url": "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.1/assets/minecraft/textures/particle/generic_7.png",
+      "bytes": 112,
+      "width": 8,
+      "height": 8,
+      "sha256": "858a9804aef73be823a616e0faf518ee425421a20ffbb68f2a686ac76c017ca3"
+    }
+  ]
+}

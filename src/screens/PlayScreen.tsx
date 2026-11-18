@@ -1,4 +1,6 @@
 import { Layers, Undo2 } from "lucide-react";
+import BonusTimeEffect from "../components/BonusTimeEffect";
+import { BONUS_PLACEMENT_TARGET } from "../features/bonusTime";
 import BlockRewardModal from "../components/BlockRewardModal";
 import Board from "../components/Board";
 import DeckModal from "../components/DeckModal";
@@ -13,6 +15,8 @@ import { AugmentChoiceModal } from "../components/AugmentChoiceModal";
 import { AugmentPanel } from "../components/AugmentPanel";
 import { ItemSlots as ItemSlotsView } from "../components/ItemSlots";
 import type {
+  BonusTimeState,
+  GameMode,
   AugmentId,
   AugmentState,
   Board as BoardType,
@@ -29,12 +33,28 @@ import type {
 } from "../types";
 import type { Dispatch, RefObject, SetStateAction } from "react";
 import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
+import type { HardGameRequest } from "../hooks/useHardGameRequest";
+import type { GameRewardSession } from "../features/gameReward";
+import GameRewardStatus from "../components/GameRewardStatus";
+import { ThemeScope } from "../components/ThemeScope";
+import type { GameThemeId } from "../features/themes/gameThemes";
+import type { BoardFeedback } from "../features/themes/boardFeedback";
+import type { SpecialPieceGroups } from "../types";
 
 interface PlayScreenProps {
+  bonusTime: BonusTimeState;
+  gameMode: GameMode;
+  hardTimeRemainingMs: number;
+  hardTimeLimitMs: number;
+  themeId?: GameThemeId;
+  rewardSession?: GameRewardSession;
+  hardRequest?: HardGameRequest;
   augmentState: AugmentState;
   autoUndoFlash: boolean;
   best: number;
   board: {
+    specialPieceGroups?: SpecialPieceGroups;
+    feedback?: BoardFeedback | null;
     board: BoardType;
     boardMetrics: BoardMetrics;
     boardRef: RefObject<HTMLDivElement | null>;
@@ -65,6 +85,7 @@ interface PlayScreenProps {
     augmentChoiceOpen: boolean;
     deckModalOpen: boolean;
     deckPieces: PieceTemplate[];
+    rerollPieces: PieceTemplate[];
     handleAugmentChoose: (augmentId: AugmentId) => void;
     handleSpecialChoose: (template: PieceTemplate) => void;
     onCloseDeckModal: () => void;
@@ -95,8 +116,15 @@ interface PlayScreenProps {
   undoSnapshot: UndoSnapshot | null;
 }
 
-function PlayScreen({
+function PlayScreenContent({
+  bonusTime,
+  gameMode,
+  themeId = "theme_classic",
+  rewardSession,
+  hardRequest,
   augmentState,
+  hardTimeRemainingMs,
+  hardTimeLimitMs,
   autoUndoFlash,
   best,
   board,
@@ -115,23 +143,55 @@ function PlayScreen({
   undoSnapshot
 }: PlayScreenProps) {
   const selectedPiece = board.selectedPiece;
+  const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
+  const requestError = hardRequest?.error && (
+    <div>
+      <p role="alert">{hardRequest.error}</p>
+      {hardRequest.retry && <button type="button" className="secondary-action" onClick={hardRequest.retry}>다시 시도</button>}
+    </div>
+  );
 
   return (
-    <main className={`app-shell play-shell ${board.cursorPoint ? "has-cursor-piece" : ""}`}>
+    <main data-game-theme={themeId} className={`app-shell play-shell ${bonusActive ? "bonus-playing" : ""} ${board.cursorPoint ? "has-cursor-piece" : ""}`}>
       <GameSettingsMenu
         open={settings.open}
         onClose={settings.onClose}
         onGoHome={settings.onGoHome}
         onQuit={settings.onQuit}
         onToggle={settings.onToggle}
+        status={settings.open ? requestError : undefined}
       />
       <section className="game-area">
         <ScoreBoard best={best} score={score} previewGain={previewGain} />
+        <div className={`bonus-status ${gameMode === "hard" ? "hard-status" : ""} ${bonusTime.remainingMs > 0 ? "is-active" : ""}`}>
+          <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
+          {gameMode !== "hard" && (bonusTime.remainingMs > 0 ? (
+            <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
+          ) : <span>보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}</span>)}
+        </div>
+        {!settings.open && !gameOver && requestError}
         <div className="board-layout">
-          <AugmentPanel augmentState={augmentState} />
+          {gameMode === "normal" && <AugmentPanel augmentState={augmentState} />}
           <div className="board-stack">
+            {gameMode === "hard" && (
+              <div
+                aria-label="다음 블록까지 남은 시간"
+                aria-valuemax={hardTimeLimitMs}
+                aria-valuemin={0}
+                aria-valuenow={hardTimeRemainingMs}
+                className="hard-timer"
+                role="progressbar"
+              >
+                <span
+                  className="hard-timer-fill"
+                  style={{ width: `${hardTimeLimitMs > 0 ? (hardTimeRemainingMs / hardTimeLimitMs) * 100 : 0}%` }}
+                />
+              </div>
+            )}
             <div className="board-combo-stage">
               <Board
+                specialPieceGroups={board.specialPieceGroups}
+                feedback={board.feedback}
                 board={board.board}
                 boardRef={board.boardRef}
                 hoverCell={board.hoverCell}
@@ -143,6 +203,7 @@ function PlayScreen({
                 previewCells={board.previewCells}
                 selectedPiece={selectedPiece}
               />
+              {bonusActive && <BonusTimeEffect remainingMs={bonusTime.remainingMs} />}
               {comboEffectValue !== null && (
                 <div className="combo-burst" aria-live="polite">
                   combo {comboEffectValue}
@@ -155,7 +216,7 @@ function PlayScreen({
               )}
             </div>
             <PieceTray
-              disabled={modals.augmentChoiceOpen || Boolean(modals.specialChoices) || Boolean(modals.rewardPiece) || settings.open || modals.deckModalOpen || modals.rerollModalSlot !== null || gameOver || isClearing || gravityAnimating}
+              disabled={modals.augmentChoiceOpen || Boolean(modals.specialChoices) || Boolean(modals.rewardPiece) || settings.open || modals.deckModalOpen || modals.rerollModalSlot !== null || gameOver || isClearing || gravityAnimating || Boolean(hardRequest?.pending || hardRequest?.retry)}
               onEmptySlotClick={tray.clearSelection}
               onPieceSelect={tray.handlePieceSelect}
               onPieceActivate={tray.handlePieceActivate}
@@ -166,12 +227,14 @@ function PlayScreen({
               {selectedPiece ? "놓을 칸을 누르세요 · 블록을 다시 누르면 선택 취소" : "블록을 끌어 놓거나, 블록과 놓을 칸을 차례로 누르세요"}
             </p>
           </div>
-          <ItemSlotsView
-            isClearing={isClearing || gravityAnimating}
-            itemSlots={itemSlots}
-            onItemClick={handleItemClick}
-            undoSnapshot={undoSnapshot}
-          />
+          {gameMode === "normal" && (
+            <ItemSlotsView
+              isClearing={isClearing || gravityAnimating}
+              itemSlots={itemSlots}
+              onItemClick={handleItemClick}
+              undoSnapshot={undoSnapshot}
+            />
+          )}
           <button
             aria-label="현재 덱 보기"
             className="deck-view-button"
@@ -200,10 +263,10 @@ function PlayScreen({
           </div>
         )}
       </section>
-      {modals.augmentChoiceOpen && (
+      {!bonusActive && modals.augmentChoiceOpen && (
         <AugmentChoiceModal augmentState={augmentState} onChoose={modals.handleAugmentChoose} score={score} />
       )}
-      {modals.specialChoices && (
+      {!bonusActive && modals.specialChoices && (
         <SpecialChoiceModal choices={modals.specialChoices} onChoose={modals.handleSpecialChoose} />
       )}
       {modals.rewardPiece && <BlockRewardModal onConfirm={modals.onConfirmReward} piece={modals.rewardPiece} />}
@@ -213,7 +276,7 @@ function PlayScreen({
       {modals.rerollModalSlot !== null && (
         <RerollModal
           board={board.board}
-          deckPieces={modals.deckPieces}
+          deckPieces={modals.rerollPieces}
           level={modals.rerollLevel}
           onApply={modals.applyReroll}
           onCancel={modals.cancelReroll}
@@ -222,6 +285,12 @@ function PlayScreen({
       )}
       {gameOver && (
         <GameOver
+          rewardContent={
+            <>
+              {rewardSession && <GameRewardStatus session={rewardSession} className="game-over-reward" showStatus />}
+              {requestError}
+            </>
+          }
           best={best}
           onGoHome={modals.onGameOverGoHome}
           onRestart={modals.onGameOverRestart}
@@ -240,4 +309,10 @@ function PlayScreen({
   );
 }
 
-export default PlayScreen;
+export default function PlayScreen(props: PlayScreenProps) {
+  return (
+    <ThemeScope themeId={props.themeId ?? "theme_classic"}>
+      <PlayScreenContent {...props} />
+    </ThemeScope>
+  );
+}

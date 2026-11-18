@@ -1,9 +1,20 @@
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
+export type GameMode = "normal" | "hard";
+
+export interface BonusTimeState {
+  placements: number;
+  remainingMs: number;
+  regularTray: Tray | null;
+}
+
 export type Cell = string | null;
 
 /** 8×8 grid of Cell values. */
 export type Board = Cell[][];
+
+/** Visual-only ownership of special cells; independent of scoring and special ability marks. */
+export type SpecialPieceGroups = Record<string, string>;
 
 /** Coordinate pair [row, col] */
 export type CellCoord = [number, number];
@@ -91,6 +102,8 @@ export type ItemType = "undo" | "reroll" | "gravity";
 export type ItemSlots = [ItemType | null, ItemType | null, ItemType | null];
 
 export interface UndoSnapshot {
+  bonusTime?: BonusTimeState;
+  specialPieceGroups?: SpecialPieceGroups;
   augmentState: AugmentState;
   board: Board;
   bombCells: string[];
@@ -155,6 +168,9 @@ export interface AnchorOffset {
 // ─── Saved game (raw JSON from localStorage) ─────────────────────────────────
 
 export interface SavedGame {
+  gameMode?: unknown;
+  bonusTime?: unknown;
+  specialPieceGroups?: unknown;
   augmentState?: Partial<AugmentState> & { levels?: Partial<AugmentLevels> };
   board?: unknown;
   bombCells?: unknown;
