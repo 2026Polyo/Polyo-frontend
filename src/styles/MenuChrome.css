@@ -1,0 +1,24 @@
+.menu-scene {
+  --menu-ink: #101b50;
+  --menu-outline: #07318a;
+  --menu-paper: linear-gradient(145deg, #fbfdff, #e1f1fc);
+  --menu-paper-shadow: #005db946;
+  --menu-blue-button: linear-gradient(160deg, #effaff, #b5dcf8);
+  --menu-yellow-button: linear-gradient(165deg, #fff06a, #ffc62b 57%, #ffab16);
+  background:
+    radial-gradient(ellipse at 50% 25%, #15a8fa, transparent 70%),
+    linear-gradient(#208dee, #38adf8);
+}
+
+.menu-scene[data-game-theme="theme_neon"] {
+  background: radial-gradient(#234277, #101b37);
+}
+.menu-scene[data-game-theme="theme_jelly"] {
+  background: linear-gradient(#f7c9ee, #bceaff);
+}
+.menu-scene[data-game-theme="theme_minecraft"] {
+  background: linear-gradient(#88c674, #4c8564);
+}
+.menu-scene[data-game-theme="theme_cat"] {
+  background: linear-gradient(#f8aacc, #c0b7fa);
+}
