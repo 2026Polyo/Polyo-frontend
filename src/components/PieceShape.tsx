@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { colorClass } from "../constants/gameData";
 import "../styles/PieceShape.css";
 import { pieceBounds } from "../utils/pieceUtils";
@@ -101,4 +102,4 @@ function PieceShape({
   );
 }
 
-export default PieceShape;
+export default memo(PieceShape);
