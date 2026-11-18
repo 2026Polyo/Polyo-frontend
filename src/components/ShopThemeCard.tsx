@@ -35,7 +35,14 @@ export default function ShopThemeCard({
         <ThemePreview themeId={theme.themeId} />
       </button>
       <div className="shop-card-body">
-        <h3>{theme.name}</h3>
+        <div className="shop-card-heading">
+          <h3>{theme.name}</h3>
+          {wallet.account && (
+            <span className="shop-ownership" data-owned={owned}>
+              {owned ? "보유 중" : "미보유"}
+            </span>
+          )}
+        </div>
         {description && <p>{description}</p>}
         <div className="shop-card-footer">
           {owned ? (
