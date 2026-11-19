@@ -152,7 +152,7 @@ function PlayScreenContent({
   );
 
   return (
-    <main data-game-theme={themeId} className={`app-shell play-shell ${bonusActive ? "bonus-playing" : ""} ${board.cursorPoint ? "has-cursor-piece" : ""}`}>
+    <main data-game-theme={themeId} className={`app-shell play-shell solo-play-shell ${gameMode === "hard" ? "is-hard" : ""} ${bonusActive ? "bonus-playing" : ""} ${board.cursorPoint ? "has-cursor-piece" : ""}`}>
       <GameSettingsMenu
         open={settings.open}
         onClose={settings.onClose}
@@ -167,7 +167,7 @@ function PlayScreenContent({
           <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
           {gameMode !== "hard" && (bonusTime.remainingMs > 0 ? (
             <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
-          ) : <span>보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}</span>)}
+          ) : <span className="bonus-progress">보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}</span>)}
         </div>
         {!settings.open && !gameOver && requestError}
         <div className="board-layout">

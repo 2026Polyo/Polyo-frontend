@@ -241,7 +241,7 @@
 
 }
 
-@media (max-width: 720px) {
+@media (max-width: 1199px) {
   .undo-items {
     border-radius: var(--radius-md);
     gap: 6px;
