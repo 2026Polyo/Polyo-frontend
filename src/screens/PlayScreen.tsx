@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Layers, Undo2 } from "lucide-react";
 import { GAME_OVER_PANEL_DELAY_MS } from "../constants/config";
 import BonusTimeEffect from "../components/BonusTimeEffect";
-import { BONUS_PLACEMENT_TARGET } from "../features/bonusTime";
 import BlockRewardModal from "../components/BlockRewardModal";
 import Board from "../components/Board";
 import DeckModal from "../components/DeckModal";
@@ -144,6 +143,7 @@ function PlayScreenContent({
   tray,
   undoSnapshot
 }: PlayScreenProps) {
+  const selectedPiece = board.selectedPiece;
   // Play stops at once on game over; only the panel waits a moment so the final board is seen.
   const [showGameOverPanel, setShowGameOverPanel] = useState(false);
   useEffect(() => {
@@ -154,7 +154,6 @@ function PlayScreenContent({
     const timerId = window.setTimeout(() => setShowGameOverPanel(true), GAME_OVER_PANEL_DELAY_MS);
     return () => window.clearTimeout(timerId);
   }, [gameOver]);
-  const selectedPiece = board.selectedPiece;
   const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
   const requestError = hardRequest?.error && (
     <div>
@@ -175,12 +174,9 @@ function PlayScreenContent({
       />
       <section className="game-area">
         <ScoreBoard best={best} score={score} previewGain={previewGain} />
-        <div className={`bonus-status ${gameMode === "hard" ? "hard-status" : ""} ${bonusTime.remainingMs > 0 ? "is-active" : ""}`}>
-          <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
-          {gameMode !== "hard" && (bonusTime.remainingMs > 0 ? (
-            <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
-          ) : <span className="bonus-progress">보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}</span>)}
-        </div>
+        {/* No visible status row: the board's bonus effect shows bonus time on screen.
+            This hidden live region still announces it to screen readers. */}
+        <p className="solo-sr-only" role="status">{bonusActive ? "보너스 타임 · 한 칸 블록!" : ""}</p>
         {!settings.open && !gameOver && requestError}
         <div className="board-layout">
           {gameMode === "normal" && <AugmentPanel augmentState={augmentState} />}
@@ -235,9 +231,6 @@ function PlayScreenContent({
               selectedId={tray.selectedPiece?.uid ?? null}
               tray={tray.pieces}
             />
-            <p className="placement-hint" aria-live="polite">
-              {selectedPiece ? "놓을 칸을 누르세요 · 블록을 다시 누르면 선택 취소" : "블록을 끌어 놓거나, 블록과 놓을 칸을 차례로 누르세요"}
-            </p>
           </div>
           {gameMode === "normal" && (
             <ItemSlotsView

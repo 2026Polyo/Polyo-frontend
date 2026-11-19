@@ -486,17 +486,16 @@
 
 /* ---------- Solo play (일반모드 / 하드모드): the whole game always fits one screen ----------
    The shell is locked to the viewport height and never scrolls. The board-layout takes the height
-   left after the score and status rows, and the board side (--solo-board) is the smallest of 600px,
-   the width it may use, and the height left after the timer, tray and hint (--solo-stack-chrome).
+   left after the score row, and the board side (--solo-board) is the smallest of 600px,
+   the width it may use, and the height left after the timer and tray (--solo-stack-chrome).
    Wide screens (>= 1200px) keep the augment | board | items columns; narrower screens stack the
    compact item / augment / deck row above the board. */
 .solo-play-shell {
   --solo-tray-h: clamp(56px, 14dvh, 124px);
   --solo-tray-gap: clamp(6px, 1.4dvh, 18px);
   --solo-tray-pad: 8px;
-  --solo-hint-h: 24px;
   --solo-timer-h: 0px;
-  --solo-stack-chrome: calc(var(--solo-timer-h) + var(--solo-tray-gap) + var(--solo-tray-h) + 2 * var(--solo-tray-pad) + 2px + var(--solo-hint-h));
+  --solo-stack-chrome: calc(var(--solo-timer-h) + var(--solo-tray-gap) + var(--solo-tray-h) + 2 * var(--solo-tray-pad) + 2px);
   align-items: stretch;
   height: 100vh;
   height: 100dvh;
@@ -525,17 +524,64 @@
   flex: 0 0 auto;
 }
 
+/* Score line (all screen sizes): the current score alone, or score + gap + "+gain" as one group,
+   always centred on the board's centre line. The hidden gain takes no space, so the score alone is
+   centred too. Equal side margins keep clear of the trophy and settings button without shifting
+   the centre; the fixed row height keeps the board still when the gain appears or disappears.
+   Long numbers shrink the font (--score-chars is set by ScoreBoard) instead of overlapping. */
+.solo-play-shell {
+  --solo-score-font: clamp(1.8rem, 6dvh, 3.7rem);
+}
+
 .solo-play-shell .score-row {
+  align-items: center;
+  container-type: inline-size;
+  height: calc(var(--solo-score-font) * 1.1);
+  justify-content: center;
   margin-bottom: clamp(2px, 1dvh, 18px);
+  margin-inline: 76px;
 }
 
-.solo-play-shell .score-box strong,
+.solo-play-shell .score-box {
+  align-items: baseline;
+  font-size: min(var(--solo-score-font), 100cqw / (var(--score-chars, 1) * 0.62 + 0.35));
+  gap: 0.3em;
+  justify-content: center;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.solo-play-shell .score-box strong {
+  font-size: 1em;
+  line-height: 1;
+  min-width: 0;
+  overflow-wrap: normal;
+}
+
 .solo-play-shell .score-preview-gain {
-  font-size: clamp(1.8rem, 6dvh, 3.7rem);
+  display: none;
 }
 
-.solo-play-shell .bonus-status {
-  padding-block: clamp(2px, 0.8dvh, 8px);
+.solo-play-shell .score-preview-gain.is-visible {
+  animation: score-gain-in 140ms ease-out;
+  bottom: auto;
+  display: inline-block;
+  font-size: 1em;
+  line-height: 1;
+  opacity: 1;
+  position: static;
+  transform: none;
+}
+
+/* Visually hidden, still read by screen readers (bonus time announcement). */
+.solo-sr-only {
+  clip-path: inset(50%);
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
 
 .solo-play-shell .game-area > .board-layout {
@@ -566,10 +612,13 @@
   margin-bottom: 10px;
 }
 
-.solo-play-shell .board-stack > .tray,
-.solo-play-shell .board-stack > .placement-hint {
+.solo-play-shell .board-stack {
   /* On very short windows the board gets small; keep the tray wide enough to pick pieces. */
-  width: min(100cqw, max(var(--solo-board), 320px));
+  --solo-tray-w: min(100cqw, max(var(--solo-board), 320px));
+}
+
+.solo-play-shell .board-stack > .tray {
+  width: var(--solo-tray-w);
 }
 
 .solo-play-shell .tray {
@@ -585,8 +634,15 @@
 }
 
 .solo-play-shell .piece-preview .mini-grid {
-  /* Pieces are at most 5 cells long, so a slot fits 5 cells + 4 gaps in both directions. */
-  --mini-cell-size: max(6px, min(26px, (var(--solo-tray-h) - 20px) / 5, ((min(100cqw, max(var(--solo-board), 320px)) - 2 * var(--solo-tray-pad) - 22px) / 3 - 20px) / 5)) !important;
+  /* Each piece is sized to its own span (longest side, at least 3 cells) so small pieces read
+     clearly while a 5-cell line still fits its slot. Slot = tray width minus padding, border and
+     the two 10px gaps, split in 3, minus the 6px preview padding on each side. */
+  --solo-piece-span: max(var(--piece-span, 5), 3);
+  --mini-cell-size: max(6px, min(
+    var(--solo-cell-max, 26px),
+    (((var(--solo-tray-w) - 2 * var(--solo-tray-pad) - 22px) / 3 - 12px) - (var(--solo-piece-span) - 1) * 2px) / var(--solo-piece-span),
+    ((var(--solo-tray-h) - 12px) - (var(--solo-piece-span) - 1) * 2px) / var(--solo-piece-span)
+  )) !important;
   --mini-cell-gap: 2px !important;
   gap: 2px;
 }
@@ -596,18 +652,9 @@
   width: var(--mini-cell-size);
 }
 
-.solo-play-shell .placement-hint {
-  font-size: clamp(0.62rem, 3.1cqw, 0.75rem);
-  height: var(--solo-hint-h);
-  margin-top: 0;
-  overflow: hidden;
-  padding-top: 6px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Wide: augment column | board | items + deck column, all inside the one row. */
-@media (min-width: 1200px) {
+/* Wide landscape: augment column | board | items + deck column, all inside the one row.
+   Portrait screens use the stacked HUD layout below at any width. */
+@media (min-width: 1200px) and (orientation: landscape) {
   .solo-play-shell .game-area {
     width: min(100%, 1920px);
   }
@@ -677,12 +724,12 @@
     grid-column: 3;
     grid-row: 1;
     justify-self: start;
-    margin-bottom: calc(var(--solo-hint-h) + 8px);
+    margin-bottom: 0;
   }
 }
 
 /* Short wide windows: shrink the item and deck tiles so the right column still fits. */
-@media (min-width: 1200px) and (max-height: 760px) {
+@media (min-width: 1200px) and (orientation: landscape) and (max-height: 760px) {
   .solo-play-shell .board-layout > .undo-items {
     --item-panel-pad: 10px;
     gap: 8px;
@@ -704,42 +751,59 @@
   }
 }
 
-/* Narrow: item row, then the augment + deck HUD buttons, then the board taking the rest.
-   All three rows share the board's width (--solo-row-w), computed from the board-layout size
-   minus the fixed item / HUD row heights, so their left and right edges line up with the board. */
-@media (max-width: 1199px) {
+/* Narrow or portrait: one centred play group with even gaps.
+   Score, item row, augment + deck HUD row, board and tray stack top to bottom with the
+   same gap (--solo-gap); the spare height is split above and below the group. The game-area is the
+   size container, so the shared row width (--solo-row-w) is the board side: the smallest of 720px,
+   the width, and the height left after every fixed-height row. The board stays square. */
+@media (max-width: 1199px), (orientation: portrait) {
   .solo-play-shell {
-    --solo-hint-h: 0px;
+    --solo-gap: clamp(8px, 1.6dvh, 14px);
+    --solo-score-h: clamp(40px, 6.5dvh, 64px);
     --solo-items-h: 64px;
     --solo-hud-h: 44px;
-    --solo-layout-gap: clamp(6px, 1.2dvh, 10px);
+    --solo-row-gaps: 3;
+    --solo-tray-gap: var(--solo-gap);
+    --solo-tray-h: clamp(72px, min(24vw, 13dvh), 150px);
+    --solo-cell-max: 30px;
   }
 
   .solo-play-shell.is-hard {
     --solo-items-h: 0px;
+    --solo-row-gaps: 2;
   }
 
   .solo-play-shell .game-area {
+    --solo-row-w: max(min(220px, 100cqw), min(720px, 100cqw, 100cqh - var(--solo-score-h) - var(--solo-items-h) - var(--solo-hud-h) - var(--solo-row-gaps) * var(--solo-gap) - var(--solo-stack-chrome)));
+    container-type: size;
+    gap: var(--solo-gap);
+    height: 100%;
+    justify-content: center;
     width: min(100%, 720px);
   }
 
-  /* Mobile drops the bonus progress count and the placement hint to give the board room. */
-  .solo-play-shell .bonus-progress,
-  .solo-play-shell .placement-hint {
-    display: none;
+  .solo-play-shell .score-row {
+    align-items: center;
+    height: var(--solo-score-h);
+    margin-block: 0;
   }
 
-  .solo-play-shell .board-layout {
-    --solo-row-w: max(min(220px, 100cqw), min(600px, 100cqw, 100cqh - var(--solo-items-h) - var(--solo-hud-h) - 2 * var(--solo-layout-gap) - var(--solo-stack-chrome)));
-    gap: var(--solo-layout-gap);
+  .solo-play-shell {
+    --solo-score-font: calc(var(--solo-score-h) * 0.82);
+  }
+
+  .solo-play-shell .game-area > .board-layout {
+    container-type: normal;
+    flex: 0 0 auto;
+    gap: var(--solo-gap);
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: var(--solo-items-h) var(--solo-hud-h) minmax(0, 1fr);
+    grid-template-rows: auto;
   }
 
   .solo-play-shell .board-layout > .undo-items {
-    align-self: stretch;
     grid-column: 1;
     grid-row: 1;
+    height: var(--solo-items-h);
     justify-self: center;
     width: var(--solo-row-w);
   }
@@ -781,9 +845,34 @@
   }
 
   .solo-play-shell .board-layout > .board-stack {
+    /* Exactly the board + timer + tray; never taller than the height left for it. */
+    --solo-board: max(120px, min(100cqw, 100cqh - var(--solo-stack-chrome)));
+    --solo-tray-w: 100cqw;
     grid-column: 1;
     grid-row: 3;
+    height: min(var(--solo-row-w) + var(--solo-stack-chrome), 100cqh - var(--solo-score-h) - var(--solo-items-h) - var(--solo-hud-h) - var(--solo-row-gaps) * var(--solo-gap));
     justify-self: center;
     width: var(--solo-row-w);
+  }
+
+  /* Hard mode has no item row: the deck row moves up so the gaps stay even. */
+  .solo-play-shell.is-hard .board-layout > .deck-view-button {
+    grid-row: 1;
+  }
+
+  .solo-play-shell.is-hard .board-layout > .board-stack {
+    grid-row: 2;
+  }
+}
+
+@keyframes score-gain-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

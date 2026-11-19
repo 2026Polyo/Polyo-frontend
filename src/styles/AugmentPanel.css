@@ -195,7 +195,7 @@
   }
 }
 
-@media (max-width: 1199px) {
+@media (max-width: 1199px), (orientation: portrait) {
   .augment-panel {
     background: none;
     border: 0;
@@ -479,7 +479,7 @@
 }
 
 /* The sheet belongs to the compact HUD; on wide screens the full augment panel is shown instead. */
-@media (min-width: 1200px) {
+@media (min-width: 1200px) and (orientation: landscape) {
   .augment-sheet-backdrop {
     display: none;
   }
