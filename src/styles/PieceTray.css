@@ -41,7 +41,7 @@
 }
 
 .app-shell.has-cursor-piece .piece-preview.empty {
-  cursor: none;
+  cursor: grabbing;
 }
 
 @media (max-width: 720px) {

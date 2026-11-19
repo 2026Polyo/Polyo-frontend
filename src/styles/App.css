@@ -6,9 +6,10 @@
   justify-content: center;
 }
 
+/* While a block is held, keep the pointer visible as a closed "grabbing" hand. */
 .app-shell.has-cursor-piece,
 .app-shell.has-cursor-piece * {
-  cursor: none;
+  cursor: grabbing;
 }
 
 .app-shell.has-cell-mode .board-cell {
