@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { Layers, Undo2 } from "lucide-react";
+import { GAME_OVER_PANEL_DELAY_MS } from "../constants/config";
 import BonusTimeEffect from "../components/BonusTimeEffect";
 import { BONUS_PLACEMENT_TARGET } from "../features/bonusTime";
 import BlockRewardModal from "../components/BlockRewardModal";
@@ -142,6 +144,16 @@ function PlayScreenContent({
   tray,
   undoSnapshot
 }: PlayScreenProps) {
+  // Play stops at once on game over; only the panel waits a moment so the final board is seen.
+  const [showGameOverPanel, setShowGameOverPanel] = useState(false);
+  useEffect(() => {
+    if (!gameOver) {
+      setShowGameOverPanel(false);
+      return undefined;
+    }
+    const timerId = window.setTimeout(() => setShowGameOverPanel(true), GAME_OVER_PANEL_DELAY_MS);
+    return () => window.clearTimeout(timerId);
+  }, [gameOver]);
   const selectedPiece = board.selectedPiece;
   const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
   const requestError = hardRequest?.error && (
@@ -283,7 +295,7 @@ function PlayScreenContent({
           tray={tray.pieces}
         />
       )}
-      {gameOver && (
+      {gameOver && showGameOverPanel && (
         <GameOver
           rewardContent={
             <>
