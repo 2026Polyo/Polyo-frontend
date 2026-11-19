@@ -37,6 +37,7 @@ import ProfileModal from "./components/ProfileModal";
 function App() {
   const [shopOpen, setShopOpen] = useState(false);
   const [rankingOpen, setRankingOpen] = useState(false);
+  const [rankingProfileId, setRankingProfileId] = useState<string | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
   const [authCheckError, setAuthCheckError] = useState<string | null>(null);
@@ -205,8 +206,10 @@ function App() {
         <ThemeScope themeId={equippedThemeId}>
           <RankingScreen
             currentUserId={user.id}
-            onBack={() => setRankingOpen(false)}
+            onBack={() => { setRankingOpen(false); setRankingProfileId(null); }}
+            onSelectProfile={setRankingProfileId}
           />
+          {rankingProfileId && <ProfileModal user={{ id: rankingProfileId, loginId: "", nickname: "" }} profileUserId={rankingProfileId} readOnly={rankingProfileId !== user.id} onClose={() => setRankingProfileId(null)} onUserChange={rankingProfileId === user.id ? setUser : undefined} />}
         </ThemeScope>
       );
     }

@@ -8,6 +8,7 @@ import medalSilver from "../asset/medal-silver.svg";
 interface RankingScreenProps {
   onBack: () => void;
   currentUserId: string;
+  onSelectProfile: (userId: string) => void;
 }
 
 const CATEGORIES: { type: RankingType; label: string }[] = [
@@ -22,7 +23,7 @@ const MEDAL_ASSETS = {
   3: { alt: "동메달", src: medalBronze },
 } as const;
 
-function RankingScreen({ onBack, currentUserId }: RankingScreenProps) {
+function RankingScreen({ onBack, currentUserId, onSelectProfile }: RankingScreenProps) {
   const [activeType, setActiveType] = useState<RankingType>("normal");
   const [rankings, setRankings] = useState<RankingEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,12 +111,12 @@ function RankingScreen({ onBack, currentUserId }: RankingScreenProps) {
           ) : (
             <ol aria-label="랭킹 목록" className="ranking-list">
               {topRankings.map((entry) => (
-                <RankingRow currentUserId={currentUserId} entry={entry} key={`${entry.userId}-${entry.rank}`} />
+                <RankingRow currentUserId={currentUserId} entry={entry} onSelectProfile={onSelectProfile} key={`${entry.userId}-${entry.rank}`} />
               ))}
               {showMyRankingBelow && myRanking && (
                 <>
                   <li aria-hidden="true" className="ranking-ellipsis">⋮</li>
-                  <RankingRow currentUserId={currentUserId} entry={myRanking} />
+                  <RankingRow currentUserId={currentUserId} entry={myRanking} onSelectProfile={onSelectProfile} />
                 </>
               )}
             </ol>
@@ -126,7 +127,7 @@ function RankingScreen({ onBack, currentUserId }: RankingScreenProps) {
   );
 }
 
-function RankingRow({ currentUserId, entry }: { currentUserId: string; entry: RankingEntry }) {
+function RankingRow({ currentUserId, entry, onSelectProfile }: { currentUserId: string; entry: RankingEntry; onSelectProfile: (userId: string) => void }) {
   const isCurrentUser = entry.userId === currentUserId;
   const className = [
     "ranking-row",
@@ -136,7 +137,7 @@ function RankingRow({ currentUserId, entry }: { currentUserId: string; entry: Ra
   const medal = MEDAL_ASSETS[entry.rank as keyof typeof MEDAL_ASSETS];
 
   return (
-    <li aria-current={isCurrentUser ? "true" : undefined} className={className}>
+    <li aria-current={isCurrentUser ? "true" : undefined} aria-label={`${entry.nickname} 프로필 보기`} className={className} onClick={() => onSelectProfile(entry.userId)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelectProfile(entry.userId); } }} role="button" tabIndex={0}>
       <span aria-label={`${entry.rank}위`} className="ranking-position">
         {medal ? <img alt={medal.alt} className="ranking-medal" src={medal.src} /> : entry.rank}
       </span>
