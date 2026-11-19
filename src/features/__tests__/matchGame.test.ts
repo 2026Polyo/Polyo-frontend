@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_CURSOR, gameAfterWaiting, getCursorPreview, getMatchSocketUrl, parseServerMessage, sameCursor } from "../matchGame";
+import { EMPTY_CURSOR, gameAfterWaiting, getCursorPreview, getMatchSocketUrl, getTrophyResult, parseServerMessage, sameCursor } from "../matchGame";
 import type { MatchGameState } from "../matchGame";
 
 const location = { protocol: "http:", host: "127.0.0.1:5173" };
@@ -117,5 +117,48 @@ describe("gameAfterWaiting", () => {
   it("keeps a finished result up until the player goes back to the waiting room", () => {
     expect(gameAfterWaiting(finished)).toBe(finished);
     expect(gameAfterWaiting(null)).toBeNull();
+  });
+});
+
+describe("getTrophyResult", () => {
+  // The backend's finished STATE: one top-level reward for the winner (TrophyService.TROPHIES_PER_WIN = 30).
+  const finishedWith = (trophyReward: unknown) => ({
+    ...state, status: "FINISHED", winnerUserId: "1", finishReason: "NO_MOVES", trophyReward
+  }) as unknown as MatchGameState;
+
+  it("returns the trophies the server gave the winner", () => {
+    expect(getTrophyResult(finishedWith({ userId: "1", gained: 30, trophy: 90 }), "1")).toEqual({ delta: 30, trophyCount: 90 });
+  });
+
+  it("shows nothing to the loser, whose count does not change", () => {
+    expect(getTrophyResult(finishedWith({ userId: "1", gained: 30, trophy: 90 }), "2")).toBeNull();
+  });
+
+  it("shows nothing while the game runs, after a failed save or on servers without trophies", () => {
+    const playing = { ...finishedWith({ userId: "1", gained: 30, trophy: 30 }), status: "PLAYING" } as MatchGameState;
+    expect(getTrophyResult(playing, "1")).toBeNull();
+    expect(getTrophyResult(finishedWith(null), "1")).toBeNull();
+    expect(getTrophyResult(finishedWith(undefined), "1")).toBeNull();
+    expect(getTrophyResult(null, "1")).toBeNull();
+  });
+
+  it("ignores values that cannot be a real reward", () => {
+    for (const reward of [
+      { userId: "1", gained: -30, trophy: 30 },
+      { userId: "1", gained: 0, trophy: 30 },
+      { userId: "1", gained: 1.5, trophy: 30 },
+      { userId: "1", gained: 30, trophy: 10 },
+      { userId: "1", gained: "30", trophy: 30 },
+      { userId: 1, gained: 30, trophy: 30 },
+      { userId: "1", gained: 30, trophy: Number.MAX_SAFE_INTEGER + 1 },
+      "30"
+    ]) {
+      expect(getTrophyResult(finishedWith(reward), "1")).toBeNull();
+    }
+  });
+
+  it("still parses a finished state that carries a reward", () => {
+    const message = { ...finishedWith({ userId: "1", gained: 30, trophy: 30 }), type: "STATE" };
+    expect(parseServerMessage(JSON.stringify(message))).toMatchObject({ type: "STATE", trophyReward: { gained: 30 } });
   });
 });
