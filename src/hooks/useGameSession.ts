@@ -721,7 +721,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     });
     const feedback = createBoardFeedback(
       ++feedbackSequence.current, piece, row, col,
-      outcome.displayBoard, outcome.clearingCells
+      outcome.displayBoard, outcome.clearingCells, outcome.cleared
     );
     audio.playClearFeedback(outcome.cleared, outcome.clearingCells.size, feedback.cleared);
     setBoardFeedback(feedback);

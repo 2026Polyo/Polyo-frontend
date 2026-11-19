@@ -97,6 +97,7 @@ describe("visual feedback separated from game resolution", () => {
 
     expect(feedback).toEqual({
       id: 10,
+      clearedLines: 0,
       placed: [
         { row: 4, col: 5, color: "cyan" },
         { row: 4, col: 6, color: "cyan" },
