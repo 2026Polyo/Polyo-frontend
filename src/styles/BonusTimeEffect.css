@@ -74,11 +74,15 @@
 }
 
 .bonus-playing .bonus-status.is-active {
-  background: linear-gradient(115deg, #8a2858, #b44232, #7140a0);
+  --bonus-progress: 100%;
+  background:
+    linear-gradient(115deg, #8a2858, #b44232, #7140a0) 0 0 / var(--bonus-progress) 100% no-repeat,
+    hsl(0 0% 100% / 0.5);
   border: 1px solid #ffe697;
   box-shadow: 0 0 20px #ffd96a60, inset 0 0 14px #ffd96a30;
   color: #fff4c7;
   font-weight: 900;
+  transition: background-size 80ms linear;
 }
 
 .bonus-playing .bonus-status.is-active [role="timer"] {
