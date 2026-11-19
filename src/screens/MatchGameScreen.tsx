@@ -9,9 +9,10 @@ import PieceShape from "../components/PieceShape";
 import PieceTray from "../components/PieceTray";
 import RivalHeldPiece from "../components/RivalHeldPiece";
 import { ThemeScope } from "../components/ThemeScope";
+import TrophyReward from "../components/TrophyReward";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
-import { EMPTY_CURSOR, FINISH_REASON_LABELS, getCursorPreview, ROOM_CLOSED_MESSAGES } from "../features/matchGame";
+import { EMPTY_CURSOR, FINISH_REASON_LABELS, getCursorPreview, getTrophyResult, ROOM_CLOSED_MESSAGES } from "../features/matchGame";
 import { MatchRoomApiError, matchRoomApi } from "../features/matchroomApi";
 import type { MatchCursor, MatchGameState } from "../features/matchGame";
 import type { MatchRoomDetails } from "../features/matchroom";
@@ -326,6 +327,8 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   }
 
   const won = game.winnerUserId === user.id;
+  // Only what the server confirmed is shown; a win on a server without trophies shows none.
+  const trophyResult = won ? getTrophyResult(game, user.id) : null;
   const selectedPiece = selection.selectedPiece;
   // Seconds left are shown on each board's own timer, so the top bar only says whose turn it is.
   const turnText = !playing ? "게임 종료" : myTurn ? "내 차례" : `${rival.nickname}님의 차례`;
@@ -477,6 +480,7 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
           </div>
           <h2 id="match-result-title">{won ? "승리!" : "패배"}</h2>
           <p className="match-result-reason">{game.finishReason ? FINISH_REASON_LABELS[game.finishReason] : ""}</p>
+          {trophyResult && <TrophyReward result={trophyResult} />}
           <div className="game-over-best" aria-label="상대 점수">
             <span>{rival.nickname}</span>
             <strong>{rival.score}</strong>

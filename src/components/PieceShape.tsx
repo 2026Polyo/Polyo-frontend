@@ -44,6 +44,7 @@ function PieceShape({
           gridTemplateRows: `repeat(${bounds.rows}, var(--mini-cell-size))`,
           "--mini-cell-gap": `${cellGap}px`,
           "--mini-cell-size": `${cellSize}px`,
+          "--piece-span": Math.max(bounds.cols, bounds.rows),
         } as React.CSSProperties
       }
     >

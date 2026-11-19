@@ -437,3 +437,46 @@
   font: inherit;
   min-height: 44px;
 }
+
+/* ---------- Portrait (mobile) home ----------
+   The 3:4 stage keeps the logo, start card and utility menu together as one centred group.
+   마이페이지 and 로그아웃 leave the stage and sit in a top header at the viewport corners:
+   the stage is centred in the shell, so the header offsets are half the space around it. */
+@media (orientation: portrait) {
+  .start-screen {
+    --start-gap-y: max(0px, (100dvh - 133.333cqw) / 2);
+    --start-gap-x: max(0px, (100vw - 100cqw) / 2);
+  }
+
+  .start-profile,
+  .start-logout {
+    height: clamp(36px, 7.2cqw, 48px);
+    top: calc(max(12px, env(safe-area-inset-top)) - var(--start-gap-y));
+    z-index: 2;
+  }
+
+  .start-profile {
+    font-size: clamp(12px, 2.8cqw, 16px);
+    left: calc(max(16px, env(safe-area-inset-left)) - var(--start-gap-x));
+    padding: 0 clamp(10px, 2.2cqw, 16px);
+  }
+
+  .start-logout {
+    right: calc(max(16px, env(safe-area-inset-right)) - var(--start-gap-x));
+    width: clamp(44px, 9.5cqw, 60px);
+  }
+
+  .start-profile svg,
+  .start-logout svg {
+    height: clamp(16px, 4cqw, 22px);
+    width: clamp(16px, 4cqw, 22px);
+  }
+
+  /* The start card and the utility menu share one width. */
+  .start-games,
+  .start-utilities {
+    box-sizing: border-box;
+    left: 14.5%;
+    width: 71%;
+  }
+}

@@ -33,7 +33,8 @@
   line-height: 1;
 }
 
-.augment-panel-toggle {
+/* Compact HUD button + bottom sheet replace the panel on narrow screens only. */
+.augment-hud-button {
   display: none;
 }
 
@@ -194,11 +195,10 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 1199px), (orientation: portrait) {
   .augment-panel {
-    background: var(--surface-card);
-    border: 1px solid var(--surface-card-border);
-    border-radius: var(--radius-md);
+    background: none;
+    border: 0;
     gap: 0;
     min-width: 0;
   }
@@ -207,107 +207,280 @@
     padding: 0;
   }
 
-  .augment-panel-desktop-heading {
-    display: none;
-  }
-
-  .augment-panel-toggle {
-    align-items: center;
-    background: none;
-    border: 0;
-    border-radius: var(--radius-md);
-    color: var(--text-strong);
-    cursor: pointer;
-    display: flex;
-    gap: 8px;
-    justify-content: space-between;
-    min-height: 44px;
-    padding: 10px 12px;
-    text-align: left;
-    width: 100%;
-  }
-
-  .augment-panel-toggle:focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
-  }
-
-  .augment-panel-toggle strong {
-    font-size: 0.9rem;
-  }
-
-  .augment-panel-toggle svg {
-    transition: transform 140ms ease;
-  }
-
-  .augment-panel.expanded .augment-panel-toggle svg {
-    transform: rotate(180deg);
-  }
-
+  .augment-panel-desktop-heading,
   .augment-panel-content {
     display: none;
-    gap: 8px;
-    padding: 0 8px 8px;
   }
 
-  .augment-panel.expanded .augment-panel-content {
-    display: grid;
-  }
-
-  .augment-list {
-    border-radius: var(--radius-sm);
-    display: flex;
-    gap: 12px;
-    justify-content: flex-start;
-    min-height: 0;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    padding: 10px 10px 14px;
-  }
-
-  .augment-list-entry {
-    flex: 0 0 48px;
-    width: 48px;
-  }
-
-  .augment-card {
-    min-height: 48px;
-    min-width: 48px;
-  }
-
-  .augment-card:hover {
-    transform: none;
-  }
-
-  .augment-detail-panel {
-    border-radius: var(--radius-sm);
-    gap: 12px;
-    grid-template-columns: 44px minmax(0, 1fr);
-    min-height: 0;
-    padding: 12px;
-  }
-
-  .augment-detail-icon {
-    border-radius: var(--radius-sm);
-    width: 44px;
-  }
-
-  .augment-detail-icon svg {
-    height: 26px;
-    width: 26px;
-  }
-
-  .augment-detail-copy {
+  /* Same height and tone as the deck HUD button beside it. */
+  .augment-hud-button {
+    align-items: center;
+    background: var(--panel-dark);
+    border: 1px solid var(--panel-dark-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    color: hsl(0 0% 100%);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.95rem;
+    font-weight: 800;
     gap: 6px;
+    height: 44px;
+    padding: 0 14px;
+    white-space: nowrap;
   }
 
-  .augment-detail-copy strong {
-    font-size: 1rem;
-    line-height: 1.25;
+  .augment-hud-button svg {
+    color: var(--blue-300);
+    flex: none;
   }
 
-  .augment-detail-copy p {
-    font-size: 0.82rem;
-    margin: 0;
+  /* Override the panel heading's text styles, which also match inside the header. */
+  .augment-panel-head .augment-hud-button span,
+  .augment-panel-head .augment-hud-button strong {
+    color: inherit;
+    font-size: inherit;
+    letter-spacing: 0;
+    line-height: 1;
+    text-transform: none;
+  }
+
+  .augment-panel-head .augment-hud-button strong {
+    font-variant-numeric: tabular-nums;
+    font-weight: 900;
+  }
+
+  .augment-hud-button:focus-visible {
+    outline: 3px solid hsl(0 0% 100%);
+    outline-offset: 2px;
+  }
+}
+
+/* ---------- Owned-augment bottom sheet (opened from the mobile HUD button) ---------- */
+.augment-sheet-backdrop {
+  align-items: flex-end;
+  animation: augment-sheet-fade 160ms ease-out;
+  background: hsl(205 70% 16% / 0.45);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  z-index: 95;
+}
+
+.augment-sheet {
+  animation: augment-sheet-rise 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-bottom: 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--modal-shadow-lg);
+  color: var(--modal-text);
+  display: flex;
+  flex-direction: column;
+  max-height: min(70dvh, 560px);
+  padding: 8px 16px max(16px, env(safe-area-inset-bottom));
+  width: min(100%, 560px);
+}
+
+.augment-sheet-grabber {
+  align-self: center;
+  background: hsl(0 0% 100% / 0.3);
+  border-radius: var(--radius-pill);
+  flex: none;
+  height: 4px;
+  margin-bottom: 8px;
+  width: 40px;
+}
+
+.augment-sheet-head {
+  align-items: center;
+  display: flex;
+  flex: none;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.augment-sheet-head h2 {
+  color: var(--modal-text);
+  font-size: 1.15rem;
+  font-weight: 900;
+  margin: 0;
+}
+
+.augment-sheet-head h2 span {
+  color: var(--modal-text-muted);
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-left: 4px;
+}
+
+.augment-sheet-close {
+  align-items: center;
+  background: var(--modal-surface);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-md);
+  color: var(--modal-text);
+  cursor: pointer;
+  display: inline-flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+}
+
+/* Title and close button stay put; only the card list scrolls inside this frame. */
+.augment-sheet-scroll {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+}
+
+/* Thin dark-blue fade, shown only while more cards are below the visible area. */
+.augment-sheet-scroll::after {
+  background: linear-gradient(to bottom, hsl(210 85% 22% / 0), var(--modal-bg));
+  bottom: 0;
+  content: "";
+  height: 28px;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  transition: opacity 160ms ease;
+}
+
+.augment-sheet-scroll.has-more-below::after {
+  opacity: 1;
+}
+
+.augment-sheet-list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0;
+  touch-action: pan-y;
+}
+
+/* Touch devices: no visible scrollbar, swipe scrolling stays. */
+@media (pointer: coarse) {
+  .augment-sheet-list {
+    scrollbar-width: none;
+  }
+
+  .augment-sheet-list::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Mouse / trackpad: transparent track with a thin blue thumb, matching the panel. */
+@media (pointer: fine) {
+  .augment-sheet-list {
+    padding-right: 6px;
+    scrollbar-color: var(--modal-border) transparent;
+    scrollbar-width: thin;
+  }
+
+  .augment-sheet-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .augment-sheet-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .augment-sheet-list::-webkit-scrollbar-thumb {
+    background: var(--modal-border);
+    border-radius: var(--radius-pill);
+  }
+}
+
+.augment-sheet-item {
+  align-items: start;
+  background: var(--modal-surface);
+  border: 1px solid hsl(0 0% 100% / 0.08);
+  border-radius: var(--radius-md);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 44px minmax(0, 1fr);
+  padding: 12px;
+}
+
+.augment-sheet-icon {
+  align-items: center;
+  aspect-ratio: 1;
+  background: var(--modal-surface-soft);
+  border-radius: var(--radius-sm);
+  color: var(--blue-100);
+  display: inline-flex;
+  justify-content: center;
+  width: 44px;
+}
+
+.augment-sheet-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.augment-sheet-copy strong {
+  color: var(--modal-text);
+  font-size: 0.98rem;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.augment-sheet-level {
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  color: hsl(0 0% 100%);
+  font-size: 0.72rem;
+  font-weight: 900;
+  margin-left: 4px;
+  padding: 1px 7px;
+  vertical-align: 2px;
+}
+
+.augment-sheet-copy p {
+  color: var(--modal-text-body);
+  font-size: 0.84rem;
+  line-height: 1.45;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.augment-sheet-empty {
+  color: var(--modal-text-muted);
+  font-size: 0.9rem;
+  padding: 16px 4px 8px;
+  text-align: center;
+}
+
+@keyframes augment-sheet-rise {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes augment-sheet-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .augment-sheet,
+  .augment-sheet-backdrop {
+    animation: none;
+  }
+}
+
+/* The sheet belongs to the compact HUD; on wide screens the full augment panel is shown instead. */
+@media (min-width: 1200px) and (orientation: landscape) {
+  .augment-sheet-backdrop {
+    display: none;
   }
 }
