@@ -50,7 +50,7 @@ function AuthScreen({ onAuthenticated }: AuthScreenProps) {
         <div className="auth-intro">
           <div className="auth-block-logo" aria-hidden="true"><i /><i /><i /><i /></div>
           <p className="auth-kicker"><Sparkles size={16} /> BLOCK BY BLOCK</p>
-          <h1>Polyomino</h1>
+          <h1>Polyo</h1>
           <p className="auth-tagline">당신만의 블록 플레이를<br />다시 이어가세요.</p>
         </div>
         <div className="auth-card">
