@@ -8,11 +8,11 @@ import MatchLobby from "../components/MatchLobby";
 import PieceShape from "../components/PieceShape";
 import PieceTray from "../components/PieceTray";
 import RivalHeldPiece from "../components/RivalHeldPiece";
-import { ThemeScope } from "../components/ThemeScope";
+import { ThemeScope, useGameTheme } from "../components/ThemeScope";
 import TrophyReward from "../components/TrophyReward";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
-import { EMPTY_CURSOR, FINISH_REASON_LABELS, getCursorPreview, getTrophyResult, ROOM_CLOSED_MESSAGES } from "../features/matchGame";
+import { EMPTY_CURSOR, FINISH_REASON_LABELS, getCursorPreview, getMatchMoveFeedback, getMatchSpecialPieceGroups, getPlayerThemeId, getTrophyResult, ROOM_CLOSED_MESSAGES } from "../features/matchGame";
 import { MatchRoomApiError, matchRoomApi } from "../features/matchroomApi";
 import type { MatchCursor, MatchGameState } from "../features/matchGame";
 import type { MatchRoomDetails } from "../features/matchroom";
@@ -21,7 +21,7 @@ import type { EmoteId } from "../features/matchLobby";
 import type { EmoteBubble } from "../hooks/useEmoteBubbles";
 import { useComboEffect } from "../hooks/useComboEffect";
 import { useEmoteBubbles } from "../hooks/useEmoteBubbles";
-import { useGameAudio } from "../hooks/useGameAudio";
+import { useMatchThemeAudio } from "../hooks/useThemeAudio";
 import { useMatchGame } from "../hooks/useMatchGame";
 import { usePieceSelection } from "../hooks/usePieceSelection";
 import { usePulseLabel } from "../hooks/usePulseLabel";
@@ -30,7 +30,8 @@ import "../styles/GameOver.css";
 // Emote picker and bubble animation styles live with the lobby.
 import "../styles/MatchLobby.css";
 import "../styles/MatchGameScreen.css";
-import type { Board as BoardType, PieceInstance } from "../types";
+import type { BoardFeedback } from "../features/themes/boardFeedback";
+import type { Board as BoardType, PieceInstance, SpecialPieceGroups } from "../types";
 
 const NO_CELLS = new Set<string>();
 const PLACE_TIMEOUT_MS = 3000;
@@ -112,11 +113,21 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   const [leaveError, setLeaveError] = useState("");
   const leaveControllerRef = useRef<AbortController | null>(null);
   useEffect(() => () => leaveControllerRef.current?.abort(), []);
-  const audio = useGameAudio();
   const { label: clearLabel, pulseId: clearLabelId, pulse: pulseClearLabel } = usePulseLabel();
 
   const me = game?.players.find((player) => player.userId === user.id);
   const rival = game?.players.find((player) => player.userId !== user.id);
+  // My board, the tray and the rest of my screen keep my own equipped theme from the surrounding ThemeScope.
+  const myThemeId = useGameTheme().id;
+  const rivalThemeId = rival ? getPlayerThemeId(rival) : "theme_classic";
+  // Each move sounds in the theme of the board it landed on; common cues are shared.
+  const themeAudio = useMatchThemeAudio(myThemeId, rivalThemeId);
+  const audio = themeAudio.mine;
+  // The latest theme effect per board, so one player's move never cuts the other board's effect short.
+  const [boardFeedback, setBoardFeedback] = useState<Record<string, BoardFeedback>>({});
+  const feedbackSequence = useRef(0);
+  // Per board, which special cells came from one piece, so the cat theme joins them like in solo play.
+  const [specialGroups, setSpecialGroups] = useState<Record<string, SpecialPieceGroups>>({});
   const playing = game?.status === "PLAYING";
   const myTurn = Boolean(playing && game?.turnUserId === user.id);
   // Each time the turn passes to me (the first turn included), "MY TURN" bursts in the middle of
@@ -211,14 +222,28 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   // Same feedback as solo play after each move: sound, clear highlight and the good/great/excellent label.
   const signature = moveSignature(game);
   const lastSignatureRef = useRef("");
+  const lastGameRef = useRef<MatchGameState | null>(null);
   useEffect(() => {
     const previous = lastSignatureRef.current;
+    const previousGame = lastGameRef.current;
     lastSignatureRef.current = signature;
+    lastGameRef.current = game;
     const move = game?.lastMove;
     if (!previous || !move || previous === signature) return undefined;
-    audio.playPlacement();
+    const moveAudio = move.userId === user.id ? themeAudio.mine : themeAudio.rival;
+    // Unknown placements (e.g. states missed while reconnecting) still get the plain sounds.
+    const moveFeedback = previousGame && game ? getMatchMoveFeedback(++feedbackSequence.current, previousGame, game) : null;
+    if (moveFeedback) setBoardFeedback((current) => ({ ...current, [moveFeedback.userId]: moveFeedback.feedback }));
+    const moverBoard = game?.players.find((player) => player.userId === move.userId)?.board;
+    if (moverBoard) {
+      setSpecialGroups((current) => ({
+        ...current,
+        [move.userId]: getMatchSpecialPieceGroups(current[move.userId] ?? {}, moverBoard, moveFeedback)
+      }));
+    }
+    moveAudio.playPlacement(moveFeedback?.color);
     if (move.cleared === 0) return undefined;
-    audio.playClearFeedback(move.cleared);
+    moveAudio.playClearFeedback(move.cleared, move.clearingCells.length, moveFeedback?.feedback.cleared);
     if (move.userId === user.id) {
       const tier = getClearTier(move.cleared);
       if (tier) pulseClearLabel(CLEAR_TIER_LABEL[tier]);
@@ -379,6 +404,8 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
                 <div className="board-combo-stage">
                   <Board
                     board={me.board}
+                    feedback={boardFeedback[me.userId] ?? null}
+                    specialPieceGroups={specialGroups[me.userId]}
                     boardRef={selection.boardRef}
                     clearingCells={clearingUserId === me.userId ? clearingCells : NO_CELLS}
                     hoverCell={selection.hoverCell}
@@ -404,10 +431,12 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
                   {rivalPreview && <span className="match-rival-holding">블록 고르는 중…</span>}
                 </div>
                 <div className="board-combo-stage">
-                  {/* My equipped theme is mine alone; the rival's board is always drawn in the classic theme. */}
-                  <ThemeScope themeId="theme_classic">
+                  {/* The rival's board is drawn in the theme they equipped, as they see it themselves. */}
+                  <ThemeScope themeId={rivalThemeId}>
                     <Board
                       board={rival.board}
+                      feedback={boardFeedback[rival.userId] ?? null}
+                      specialPieceGroups={specialGroups[rival.userId]}
                       boardRef={rivalBoardRef}
                       clearingCells={clearingUserId === rival.userId ? clearingCells : NO_CELLS}
                       hoverCell={null}
@@ -434,8 +463,8 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
             tray={game.tray}
           />
           {rivalPreview && rivalCursor && (
-            // Drawn in the rival board's classic theme, since that is where it is about to land.
-            <ThemeScope themeId="theme_classic">
+            // Drawn in the rival board's theme, since that is where it is about to land.
+            <ThemeScope themeId={rivalThemeId}>
               <RivalHeldPiece
                 arenaRef={arenaRef}
                 boardRef={rivalBoardRef}

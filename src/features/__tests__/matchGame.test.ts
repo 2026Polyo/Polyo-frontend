@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_CURSOR, gameAfterWaiting, getCursorPreview, getMatchSocketUrl, getTrophyResult, parseServerMessage, sameCursor } from "../matchGame";
+import { EMPTY_CURSOR, gameAfterWaiting, getCursorPreview, getMatchMoveFeedback, getMatchSocketUrl, getMatchSpecialPieceGroups, getPlayerThemeId, getTrophyResult, parseServerMessage, sameCursor } from "../matchGame";
 import type { MatchGameState } from "../matchGame";
 
 const location = { protocol: "http:", host: "127.0.0.1:5173" };
@@ -11,6 +11,17 @@ const state = {
   tray: [{ uid: "x", id: "square-2x2", cells: [[0, 0]], color: "cyan", special: null }, null],
   winnerUserId: null, finishReason: null, lastMove: null
 };
+
+describe("getPlayerThemeId", () => {
+  it("uses the theme the server sent for the player", () => {
+    expect(getPlayerThemeId({ themeId: "theme_neon" })).toBe("theme_neon");
+  });
+
+  it("falls back to classic for a missing or unknown theme", () => {
+    expect(getPlayerThemeId({})).toBe("theme_classic");
+    expect(getPlayerThemeId({ themeId: "theme_unknown" })).toBe("theme_classic");
+  });
+});
 
 describe("getMatchSocketUrl", () => {
   it("uses the page origin when no API base is configured", () => {
@@ -160,5 +171,82 @@ describe("getTrophyResult", () => {
   it("still parses a finished state that carries a reward", () => {
     const message = { ...finishedWith({ userId: "1", gained: 30, trophy: 30 }), type: "STATE" };
     expect(parseServerMessage(JSON.stringify(message))).toMatchObject({ type: "STATE", trophyReward: { gained: 30 } });
+  });
+});
+
+describe("getMatchMoveFeedback", () => {
+  const empty = () => Array.from({ length: 8 }, () => Array<string | null>(8).fill(null));
+  const domino = { uid: "d", id: "line-2", cells: [[0, 0], [0, 1]], color: "red", special: null };
+  const other = { uid: "o", id: "dot", cells: [[0, 0]], color: "blue", special: null };
+  function game(board: (string | null)[][], tray: unknown[], lastMove: unknown): MatchGameState {
+    return {
+      ...state, tray, lastMove,
+      players: [{ ...player, board }, { ...player, userId: "2", board: empty() }]
+    } as unknown as MatchGameState;
+  }
+
+  it("finds the placed piece and where it landed", () => {
+    const after = empty();
+    after[3][4] = after[3][5] = "red";
+    const result = getMatchMoveFeedback(1, game(empty(), [domino, other], null),
+      game(after, [null, other], { userId: "1", scoreGain: 2, cleared: 0, clearingCells: [] }));
+    expect(result?.userId).toBe("1");
+    expect(result?.color).toBe("red");
+    expect(result?.feedback.placed).toEqual([{ row: 3, col: 4, color: "red" }, { row: 3, col: 5, color: "red" }]);
+    expect(result?.feedback.cleared).toEqual([]);
+  });
+
+  it("keeps the colors of a cleared line, the placed cells included, after the tray refills", () => {
+    const before = empty();
+    for (let col = 2; col < 8; col += 1) before[0][col] = "green";
+    const clearingCells = Array.from({ length: 8 }, (_, col) => `0-${col}`);
+    const result = getMatchMoveFeedback(2, game(before, [null, domino, null], null),
+      game(empty(), [{ ...other, uid: "n1" }, { ...other, uid: "n2" }], { userId: "1", scoreGain: 10, cleared: 1, clearingCells }));
+    expect(result?.feedback.placed).toEqual([{ row: 0, col: 0, color: "red" }, { row: 0, col: 1, color: "red" }]);
+    expect(result?.feedback.cleared.map((cell) => cell.color)).toEqual(["red", "red", "green", "green", "green", "green", "green", "green"]);
+  });
+
+  it("gives up when the used piece cannot be told", () => {
+    const after = empty();
+    after[0][0] = "blue";
+    expect(getMatchMoveFeedback(3, game(empty(), [domino, other], null),
+      game(after, [], { userId: "1", scoreGain: 1, cleared: 0, clearingCells: [] }))).toBeNull();
+  });
+
+  it("gives up when no landing matches the new board", () => {
+    const after = empty();
+    after[5][5] = "red";
+    expect(getMatchMoveFeedback(4, game(empty(), [domino, other], null),
+      game(after, [null, other], { userId: "1", scoreGain: 1, cleared: 0, clearingCells: [] }))).toBeNull();
+  });
+});
+
+describe("getMatchSpecialPieceGroups", () => {
+  const empty = () => Array.from({ length: 8 }, () => Array<string | null>(8).fill(null));
+  const ghost = (uid: string) => ({ uid, id: "ghost-line-2", cells: [[0, 0], [0, 1]], color: "ghost", special: "ghost" });
+  function game(board: (string | null)[][], tray: unknown[], lastMove: unknown): MatchGameState {
+    return {
+      ...state, tray, lastMove,
+      players: [{ ...player, board }, { ...player, userId: "2", board: empty() }]
+    } as unknown as MatchGameState;
+  }
+  const move = { userId: "1", scoreGain: 2, cleared: 0, clearingCells: [] };
+
+  it("joins a special piece's cells and keeps a neighbouring special piece apart", () => {
+    const first = empty();
+    first[2][2] = first[2][3] = "ghost";
+    const second = first.map((line) => [...line]);
+    second[2][4] = second[2][5] = "ghost";
+    const a = getMatchMoveFeedback(1, game(empty(), [ghost("a"), ghost("b")], null), game(first, [null, ghost("b")], move));
+    const afterFirst = getMatchSpecialPieceGroups({}, first, a);
+    const b = getMatchMoveFeedback(2, game(first, [null, ghost("b")], null), game(second, [null, null], move));
+    const groups = getMatchSpecialPieceGroups(afterFirst, second, b);
+    expect(groups).toEqual({ "2-2": "a", "2-3": "a", "2-4": "b", "2-5": "b" });
+  });
+
+  it("keeps special cells apart when the placement is unknown", () => {
+    const board = empty();
+    board[0][0] = board[0][1] = "ghost";
+    expect(getMatchSpecialPieceGroups({}, board, null)).toEqual({ "0-0": "legacy-0-0", "0-1": "legacy-0-1" });
   });
 });

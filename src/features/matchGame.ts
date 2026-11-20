@@ -1,6 +1,13 @@
 import { SIZE } from "../constants/gameData";
-import type { Board, PieceInstance } from "../types";
+import type { Board, PieceInstance, SpecialPieceGroups } from "../types";
+import { cloneBoard } from "../utils/boardUtils";
+import { canPlace, getPlacementPreview } from "../utils/placement";
+import { createBoardFeedback } from "./themes/boardFeedback";
+import type { BoardFeedback } from "./themes/boardFeedback";
+import { normalizeSpecialPieceGroups, placeSpecialPieceGroups } from "./themes/specialAppearance";
 import { isEmoteId } from "./matchLobby";
+import { getGameTheme } from "./themes/gameThemes";
+import type { GameThemeId } from "./themes/gameThemes";
 import type { EmoteId } from "./matchLobby";
 
 export type FinishReason = "NO_MOVES" | "TIMEOUT" | "FORFEIT";
@@ -19,6 +26,13 @@ export interface MatchPlayerState {
   combo: number;
   turnLimitMs: number;
   connected: boolean;
+  /** The theme the player had equipped when the game started; absent on older servers. */
+  themeId?: string;
+}
+
+/** The theme a player's board is drawn in on every screen; unknown or missing themes fall back to classic. */
+export function getPlayerThemeId(player: Pick<MatchPlayerState, "themeId">): GameThemeId {
+  return getGameTheme(player.themeId).id;
 }
 
 /** What the server gave the winner of a finished game: the trophies gained and the total after it. */
@@ -202,4 +216,83 @@ export function getCursorPreview(cursor: MatchCursor | null, tray: readonly (Pie
     }
   }
   return { piece, cells };
+}
+
+export interface MatchMoveFeedback {
+  /** The player whose board the move landed on. */
+  userId: string;
+  /** The placed piece's color, for the theme's placement sound. */
+  color: string;
+  feedback: BoardFeedback;
+  /** The placement itself, for keeping which cells came from which piece. */
+  piece: PieceInstance;
+  row: number;
+  col: number;
+  /** The mover's board before the move, and with the piece landed but nothing cleared yet. */
+  before: Board;
+  displayBoard: Board;
+}
+
+/**
+ * Rebuilds the placement behind next.lastMove from two consecutive states, so a match move gets the same
+ * theme effects and sounds as a solo one. The server sends no piece or position, so the piece is the one
+ * that left the shared tray and the position is the one whose landing matches the mover's new board.
+ * Returns null when that cannot be told for sure (e.g. states were missed while reconnecting).
+ */
+export function getMatchMoveFeedback(id: number, previous: MatchGameState, next: MatchGameState): MatchMoveFeedback | null {
+  const move = next.lastMove;
+  if (!move) return null;
+  const before = previous.players.find((player) => player.userId === move.userId)?.board;
+  const after = next.players.find((player) => player.userId === move.userId)?.board;
+  if (!before || !after) return null;
+  const nextUids = new Set(next.tray.flatMap((slot) => (slot ? [slot.uid] : [])));
+  const used = previous.tray.filter((slot): slot is PieceInstance => slot !== null && !nextUids.has(slot.uid));
+  if (used.length !== 1) return null;
+  const piece = used[0];
+  const clearing = new Set(move.clearingCells);
+  const newlyFilled: string[] = [];
+  for (let row = 0; row < SIZE; row += 1) {
+    for (let col = 0; col < SIZE; col += 1) {
+      if (!before[row]?.[col] && after[row]?.[col]) newlyFilled.push(`${row}-${col}`);
+    }
+  }
+  for (let row = -SIZE; row < SIZE; row += 1) {
+    for (let col = -SIZE; col < SIZE; col += 1) {
+      if (!canPlace(before, piece, row, col)) continue;
+      const { cells } = getPlacementPreview(before, piece, row, col);
+      const landed = [...cells].every((key) => clearing.has(key) || isFilled(after, key));
+      if (!landed || !newlyFilled.every((key) => cells.has(key))) continue;
+      const displayBoard = cloneBoard(before);
+      cells.forEach((key) => {
+        const [r, c] = key.split("-").map(Number);
+        displayBoard[r][c] = piece.color;
+      });
+      return {
+        userId: move.userId, color: piece.color,
+        feedback: createBoardFeedback(id, piece, row, col, displayBoard, clearing),
+        piece, row, col, before, displayBoard
+      };
+    }
+  }
+  return null;
+}
+
+function isFilled(board: Board, key: string): boolean {
+  const [row, col] = key.split("-").map(Number);
+  return Boolean(board[row]?.[col]);
+}
+
+/**
+ * Which special cells came from the same piece on a player's board after a move, as solo play keeps it,
+ * so the cat theme joins a special piece's cells into one cat. Without a known placement the new special
+ * cells stay apart rather than merge with unrelated ones.
+ */
+export function getMatchSpecialPieceGroups(
+  previous: SpecialPieceGroups,
+  board: Board,
+  move: MatchMoveFeedback | null,
+): SpecialPieceGroups {
+  if (!move) return normalizeSpecialPieceGroups(board, previous);
+  const placed = placeSpecialPieceGroups(move.before, previous, move.piece, move.row, move.col, move.displayBoard);
+  return normalizeSpecialPieceGroups(board, placed);
 }

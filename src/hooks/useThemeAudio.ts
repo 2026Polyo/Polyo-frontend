@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
+import { useEffect, useRef, type RefObject } from "react";
+import { getGameTheme, type GameTheme, type GameThemeId } from "../features/themes/gameThemes";
 import { createThemeAudioPlayer, type ThemeAudioPlayer } from "../features/themes/themeAudio";
 import { preloadMinecraftOriginalAudio } from "../features/themes/minecraftOriginalAudio";
 import { preloadThemeFiles } from "../features/themes/themeFileAudio";
@@ -30,7 +30,6 @@ export function useThemeAudio(themeId: GameThemeId, active = true): GameAudio {
   // Unlock this one context from the start-screen gesture, before entering play.
   const context = useRef<AudioContext | null>(null);
   const shared = useGameAudio(true, context);
-  const player = useRef<ThemeAudioPlayer | null>(null);
   useEffect(() => {
     const ctx = context.current;
     if (active || !ctx) return;
@@ -38,6 +37,18 @@ export function useThemeAudio(themeId: GameThemeId, active = true): GameAudio {
     if (cue?.kind === "minecraft") void preloadMinecraftOriginalAudio(ctx).catch(() => undefined);
     if (cue?.kind === "file" || cue?.kind === "files") void preloadThemeFiles(ctx, cue);
   }, [active, theme]);
+  const player = useThemeFieldPlayer(context, theme, active);
+
+  return routeThemeAudio(shared, () => player.current, theme.soundMode === "custom");
+}
+
+/** The field-cue player for one theme on a context that the shared cues already opened. */
+function useThemeFieldPlayer(
+  context: RefObject<AudioContext | null>,
+  theme: GameTheme,
+  active: boolean,
+): RefObject<ThemeAudioPlayer | null> {
+  const player = useRef<ThemeAudioPlayer | null>(null);
   useEffect(() => {
     const ctx = context.current;
     if (!active || theme.soundMode !== "custom" || !ctx) return;
@@ -51,7 +62,30 @@ export function useThemeAudio(themeId: GameThemeId, active = true): GameAudio {
     } catch {
       // Unsupported/unavailable audio must never prevent placing blocks.
     }
-  }, [active, theme]);
+  }, [active, context, theme]);
+  return player;
+}
 
-  return routeThemeAudio(shared, () => player.current, theme.soundMode === "custom");
+export interface MatchThemeAudio {
+  /** For my moves: field cues in my theme. */
+  mine: GameAudio;
+  /** For the rival's moves: field cues in the theme their board is drawn in. */
+  rival: GameAudio;
+}
+
+/**
+ * Match play: both players' cues share one context and one set of common cues (clear voice, combo,
+ * game over), while each player's field cues come from their own theme player.
+ */
+export function useMatchThemeAudio(myThemeId: GameThemeId, rivalThemeId: GameThemeId): MatchThemeAudio {
+  const myTheme = getGameTheme(myThemeId);
+  const rivalTheme = getGameTheme(rivalThemeId);
+  const context = useRef<AudioContext | null>(null);
+  const shared = useGameAudio(true, context);
+  const myPlayer = useThemeFieldPlayer(context, myTheme, true);
+  const rivalPlayer = useThemeFieldPlayer(context, rivalTheme, true);
+  return {
+    mine: routeThemeAudio(shared, () => myPlayer.current, myTheme.soundMode === "custom"),
+    rival: routeThemeAudio(shared, () => rivalPlayer.current, rivalTheme.soundMode === "custom"),
+  };
 }
