@@ -60,8 +60,7 @@ function MultiplayerScreen({
   return (
     <main className="create-room-screen multiplayer-screen">
       <header className="room-brand">
-        <span className="room-wordmark">POLYOMINO</span>
-        <span className="room-mode-badge">MULTIPLAYER</span>
+        <span className="room-wordmark">POLYO</span>
       </header>
       <section
         aria-labelledby="multiplayer-title"

@@ -147,7 +147,7 @@ function MatchLobby({
   return (
     <main className="create-room-screen vs-lobby">
       <header className="room-brand vs-lobby-header">
-        <span className="room-wordmark">POLYOMINO</span>
+        <span className="room-wordmark">POLYO</span>
         <span className="room-mode-badge">1 : 1 대전</span>
       </header>
 
