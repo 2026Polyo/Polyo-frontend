@@ -269,7 +269,7 @@ export function getMatchMoveFeedback(id: number, previous: MatchGameState, next:
       });
       return {
         userId: move.userId, color: piece.color,
-        feedback: createBoardFeedback(id, piece, row, col, displayBoard, clearing),
+        feedback: createBoardFeedback(id, piece, row, col, displayBoard, clearing, move.cleared),
         piece, row, col, before, displayBoard
       };
     }

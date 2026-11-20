@@ -30,14 +30,20 @@ import {
   type AuthUser,
 } from "./api/auth";
 import ShopScreen from "./screens/ShopScreen";
+import PracticeScreen from "./screens/PracticeScreen";
 import { ThemeScope } from "./components/ThemeScope";
 import { getGameTheme, type GameThemeId } from "./features/themes/gameThemes";
 import { useShopAccount } from "./hooks/useShopAccount";
 import ProfileModal from "./components/ProfileModal";
 
+const PRACTICE_DISCOVERY_KEY = "polyo.practice.discovered";
+
 function App() {
   const [shopOpen, setShopOpen] = useState(false);
+  const [practice, setPractice] = useState<{ firstVisit: boolean } | null>(null);
+  const discoveredPractice = useRef(false);
   const [rankingOpen, setRankingOpen] = useState(false);
+  const [rankingProfileId, setRankingProfileId] = useState<string | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
   const [authCheckError, setAuthCheckError] = useState<string | null>(null);
@@ -69,7 +75,7 @@ function App() {
       document.getElementById(restoreRoomFocus.current)?.focus();
       restoreRoomFocus.current = null;
     }
-  }, [multiplayerView]);
+  }, [multiplayerView, practice]);
 
   useEffect(() => {
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
@@ -97,6 +103,7 @@ function App() {
     function handleAuthExpired() {
       setUser(null);
       setShopOpen(false);
+      setPractice(null);
       setRankingOpen(false);
     }
 
@@ -177,6 +184,18 @@ function App() {
     );
 
   if (gamePhase === "start") {
+    if (practice) {
+      return (
+        <PracticeScreen
+          initialTheme={activeThemeId}
+          firstVisit={practice.firstVisit}
+          onClose={() => {
+            restoreRoomFocus.current = "start-logo-button";
+            setPractice(null);
+          }}
+        />
+      );
+    }
     if (multiplayerView === "create") {
       return (
         <CreateRoomScreen
@@ -208,8 +227,10 @@ function App() {
           <RankingScreen
             currentUserId={user.id}
             themeId={activeThemeId}
-            onBack={() => setRankingOpen(false)}
+            onBack={() => { setRankingOpen(false); setRankingProfileId(null); }}
+            onSelectProfile={setRankingProfileId}
           />
+          {rankingProfileId && <ProfileModal user={{ id: rankingProfileId, loginId: "", nickname: "" }} profileUserId={rankingProfileId} readOnly={rankingProfileId !== user.id} onClose={() => setRankingProfileId(null)} onUserChange={rankingProfileId === user.id ? setUser : undefined} />}
         </ThemeScope>
       );
     }
@@ -225,6 +246,17 @@ function App() {
           onOpenShop={() => {
             void shopAccount.refresh();
             setShopOpen(true);
+          }}
+          onOpenPractice={() => {
+            let firstVisit = !discoveredPractice.current;
+            try {
+              firstVisit &&= localStorage.getItem(PRACTICE_DISCOVERY_KEY) !== "true";
+              if (firstVisit) localStorage.setItem(PRACTICE_DISCOVERY_KEY, "true");
+            } catch {
+              // The current session still remembers the discovery if browser storage is unavailable.
+            }
+            discoveredPractice.current = true;
+            setPractice({ firstVisit });
           }}
           onLogout={() => {
             clearActiveRoom();

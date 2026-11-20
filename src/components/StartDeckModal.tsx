@@ -4,7 +4,7 @@ import { Check, Shuffle, X } from "lucide-react";
 import PieceShape from "./PieceShape";
 import { PIECES } from "../constants/gameData";
 import { SPECIAL_LABELS } from "../features/specials";
-import { createPieceInstance, pieceBounds } from "../utils/pieceUtils";
+import { blockName, createPieceInstance, pieceBounds } from "../utils/pieceUtils";
 import type { PieceInstance, PieceTemplate, SpecialType } from "../types";
 
 interface StartDeckModalProps {
@@ -26,32 +26,6 @@ function countsOf(ids: string[]): Map<string, number> {
   const counts = new Map<string, number>();
   ids.forEach((id) => counts.set(id, (counts.get(id) ?? 0) + 1));
   return counts;
-}
-
-function blockName(piece: PieceInstance): string {
-  const bounds = pieceBounds(piece);
-  const shapeName = piece.id
-    .replace(/^tetromino-([ljzst])-/, (_, shape: string) => `${shape.toUpperCase()}자 `)
-    .replace(/^square-/, "정사각형 ")
-    .replace(/^rectangle-/, "직사각형 ")
-    .replace(/^corner-/, "모서리 ")
-    .replace(/^line-(\d)-/, "$1칸 직선 ")
-    .replace(/^diagonal-(\d)-/, "$1칸 대각선 ")
-    .replace(/^domino-/, "2칸 직선 ")
-    .replace("monomino-single", "한 칸")
-    .replace(/horizontal/g, "가로")
-    .replace(/vertical/g, "세로")
-    .replace(/bottom/g, "아래")
-    .replace(/top/g, "위")
-    .replace(/down/g, "아래")
-    .replace(/up/g, "위")
-    .replace(/left/g, "왼쪽")
-    .replace(/right/g, "오른쪽")
-    .replace(/deg/g, "도")
-    .replace(/-/g, " ");
-  return piece.special
-    ? `${SPECIAL_LABELS[piece.special]}, ${bounds.cols}열 ${bounds.rows}행 ${piece.cells.length}칸`
-    : `기본 블록 ${shapeName}`;
 }
 
 interface BlockTileProps {

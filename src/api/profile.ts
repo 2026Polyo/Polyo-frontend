@@ -18,5 +18,6 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 export const profileApi = {
   get: () => request<Profile>("/api/v1/profile"),
+  getById: (userId: string) => request<Profile>(`/api/v1/profile/${encodeURIComponent(userId)}`),
   update: (profile: Omit<Profile, "userId" | "loginId" | "normalBestScore" | "hardBestScore" | "trophyCount">) => request<Profile>("/api/v1/profile", { method: "PATCH", body: JSON.stringify(profile) }),
 };

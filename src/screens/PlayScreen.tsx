@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Layers, Undo2 } from "lucide-react";
 import { GAME_OVER_PANEL_DELAY_MS } from "../constants/config";
 import BonusTimeEffect from "../components/BonusTimeEffect";
+import { BONUS_DURATION_MS, BONUS_PLACEMENT_TARGET } from "../features/bonusTime";
 import BlockRewardModal from "../components/BlockRewardModal";
 import Board from "../components/Board";
 import DeckModal from "../components/DeckModal";
@@ -32,7 +33,7 @@ import type {
   Tray,
   UndoSnapshot
 } from "../types";
-import type { Dispatch, RefObject, SetStateAction } from "react";
+import type { CSSProperties, Dispatch, RefObject, SetStateAction } from "react";
 import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
 import type { GameRewardSession } from "../features/gameReward";
@@ -174,9 +175,17 @@ function PlayScreenContent({
       />
       <section className="game-area">
         <ScoreBoard best={best} score={score} previewGain={previewGain} />
-        {/* No visible status row: the board's bonus effect shows bonus time on screen.
-            This hidden live region still announces it to screen readers. */}
-        <p className="solo-sr-only" role="status">{bonusActive ? "보너스 타임 · 한 칸 블록!" : ""}</p>
+        <div
+          className={`bonus-status ${gameMode === "hard" ? "hard-status" : ""} ${bonusTime.remainingMs > 0 ? "is-active" : ""}`}
+          style={bonusActive ? {
+            "--bonus-progress": `${(bonusTime.remainingMs / BONUS_DURATION_MS) * 100}%`,
+          } as CSSProperties : undefined}
+        >
+          <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
+          {gameMode !== "hard" && (bonusTime.remainingMs > 0 ? (
+            <><strong role="status">보너스 타임 · 한 칸 블록!</strong><span role="timer" aria-label="보너스 남은 시간">{(bonusTime.remainingMs / 1000).toFixed(1)}초</span></>
+          ) : <span>보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}</span>)}
+        </div>
         {!settings.open && !gameOver && requestError}
         <div className="board-layout">
           {gameMode === "normal" && <AugmentPanel augmentState={augmentState} />}

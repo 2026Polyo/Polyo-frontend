@@ -37,6 +37,25 @@
   pointer-events: none;
   position: absolute;
 }
+.start-logo-button {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-shadow: inherit;
+  paint-order: inherit;
+  -webkit-text-stroke: inherit;
+  cursor: pointer;
+  transform-origin: 50% 8%;
+}
+.start-logo-button:focus-visible {
+  outline: 3px solid var(--menu-outline);
+  outline-offset: 8px;
+  border-radius: 12px;
+}
 
 .start-decoration::before,
 .start-decoration::after {

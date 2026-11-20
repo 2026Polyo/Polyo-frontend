@@ -204,6 +204,8 @@ describe("getMatchMoveFeedback", () => {
       game(empty(), [{ ...other, uid: "n1" }, { ...other, uid: "n2" }], { userId: "1", scoreGain: 10, cleared: 1, clearingCells }));
     expect(result?.feedback.placed).toEqual([{ row: 0, col: 0, color: "red" }, { row: 0, col: 1, color: "red" }]);
     expect(result?.feedback.cleared.map((cell) => cell.color)).toEqual(["red", "red", "green", "green", "green", "green", "green", "green"]);
+    // The cat theme's giant paw reads the line count, as in solo play.
+    expect(result?.feedback.clearedLines).toBe(1);
   });
 
   it("gives up when the used piece cannot be told", () => {
