@@ -51,10 +51,8 @@ function AuthScreen({ onAuthenticated }: AuthScreenProps) {
           <div className="auth-block-logo" aria-hidden="true"><i /><i /><i /><i /></div>
           <p className="auth-kicker"><Sparkles size={16} /> BLOCK BY BLOCK</p>
           <h1>Polyo</h1>
-          <p className="auth-tagline">당신만의 블록 플레이를<br />다시 이어가세요.</p>
         </div>
         <div className="auth-card">
-          <p className="auth-eyebrow">WELCOME BACK</p>
           <h2>{isSignup ? "새 계정 만들기" : "다시 만나요"}</h2>
           <div className="auth-tabs">
             <button className={!isSignup ? "active" : ""} onClick={() => changeMode(false)} type="button">로그인</button>
