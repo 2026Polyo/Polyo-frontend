@@ -173,6 +173,7 @@ export default function PracticeScreen({
         col,
         result.placedBoard,
         cells,
+        result.cleared,
       ),
       lines: result.cleared,
     });

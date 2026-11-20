@@ -15,6 +15,8 @@ import {
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useGameTheme } from "./ThemeScope";
 import { getSpecialAppearance } from "../features/themes/specialAppearance";
+import NeonBlackHole from "./NeonBlackHole";
+import { NEON_HOLE_LIFETIME_MS } from "../features/themes/neonBlackHole";
 
 interface EffectCell extends FeedbackCell {
   particles: PixelParticle[];
@@ -24,6 +26,7 @@ interface EffectBatch {
   id: number;
   placed: EffectCell[];
   cleared: EffectCell[];
+  holeCells: FeedbackCell[];
 }
 
 const PixelCell = memo(function PixelCell({
@@ -92,6 +95,7 @@ const PixelEffectBatch = memo(function PixelEffectBatch({ batch }: { batch: Effe
       {batch.cleared.map((cell) => (
         <PixelCell key={`clear-${cell.row}-${cell.col}`} cell={cell} kind="clear" />
       ))}
+      {batch.holeCells.length > 0 && <NeonBlackHole cells={batch.holeCells} />}
     </div>
   );
 });
@@ -123,13 +127,16 @@ export default memo(function BoardEffects({
     if (lastFeedbackId.current === feedback.id) return;
     lastFeedbackId.current = feedback.id;
 
+    const blackHole = (feedback.clearedLines ?? 0) >= 3;
+    const removed = uniqueFeedbackCells(feedback.cleared);
     const batch: EffectBatch = {
       id: feedback.id,
       placed: uniqueFeedbackCells(feedback.placed).map((cell) => ({
         ...cell,
         particles: createPixelParticles("place"),
       })),
-      cleared: uniqueFeedbackCells(feedback.cleared).map((cell) => ({
+      holeCells: blackHole ? removed : [],
+      cleared: (blackHole ? [] : removed).map((cell) => ({
         ...cell,
         particles: createPixelParticles("clear"),
       })),
@@ -159,7 +166,7 @@ export default memo(function BoardEffects({
         );
         setBatches(active.current.map((entry) => entry.feedback));
       },
-      feedback.cleared.length > 0
+      blackHole ? NEON_HOLE_LIFETIME_MS : feedback.cleared.length > 0
         ? PIXEL_EFFECT_LIFETIME_MS
         : PLACEMENT_EFFECT_LIFETIME_MS,
     );

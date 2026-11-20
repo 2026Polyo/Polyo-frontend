@@ -1,0 +1,152 @@
+.neon-hole-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 24;
+  overflow: clip;
+  contain: paint;
+  pointer-events: none;
+}
+
+.neon-hole-fracture,
+.neon-hole-core {
+  position: absolute;
+  left: var(--hole-x);
+  top: var(--hole-y);
+  translate: -50% -50%;
+}
+
+.neon-hole-fracture {
+  width: 145vmax;
+  height: 145vmax;
+}
+.neon-hole-fracture svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.neon-hole-fracture path {
+  fill: none;
+  stroke: #f1edff;
+  opacity: 0.82;
+  stroke-linejoin: miter;
+  stroke-linecap: butt;
+  animation: neon-fracture-fade 420ms both;
+}
+.neon-hole-fracture polygon {
+  fill: #d7e2ff6b;
+  stroke: #f1edffb0;
+  stroke-width: 0.03;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: neon-glass-break 560ms ease-out 70ms both;
+}
+.neon-hole-core {
+  z-index: 2;
+  width: var(--hole-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #01020a;
+  box-shadow:
+    0 0 5px 2px #d5afff,
+    0 0 26px #9b41f2b3,
+    inset 0 0 18px #3e1563;
+  animation: neon-hole-open 1850ms 370ms both;
+}
+.neon-hole-disk {
+  position: absolute;
+  inset: -22%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 20deg,
+    transparent,
+    #54208c66,
+    #a266fa99,
+    #f4c9ff,
+    transparent 40%,
+    #7455d244,
+    #65d9f4bb,
+    transparent 80%
+  );
+  mask-image: radial-gradient(
+    ellipse,
+    transparent 47%,
+    #000 49%,
+    #000 53%,
+    transparent 70%
+  );
+  animation: neon-hole-spin 1800ms linear infinite;
+}
+.neon-hole-tile {
+  position: absolute;
+  border-radius: 3px;
+  background: #02050b;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--theme-tile-color) 50%, white),
+    inset 0 0 0 2px var(--theme-tile-color),
+    0 0 7px color-mix(in srgb, var(--theme-tile-color) 70%, transparent);
+}
+.neon-hole-tile[data-special] {
+  background: radial-gradient(
+    ellipse at 35% 28%,
+    color-mix(in srgb, var(--theme-tile-color) 48%, white),
+    var(--theme-tile-color)
+  );
+}
+
+@keyframes neon-fracture-fade {
+  0%,
+  36% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes neon-glass-break {
+  from {
+    opacity: 0;
+    transform: translate(0) rotate(0);
+  }
+  15% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate(var(--shard-x), var(--shard-y))
+      rotate(var(--shard-angle));
+  }
+}
+@keyframes neon-hole-open {
+  0% {
+    opacity: 0;
+    transform: scale(0.015) rotate(-35deg);
+  }
+  17% {
+    opacity: 1;
+    transform: scale(1.07) rotate(0);
+  }
+  28%,
+  72% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+  86% {
+    opacity: 1;
+    transform: scale(0.13) rotate(15deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.015) rotate(15deg);
+  }
+}
+@keyframes neon-hole-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neon-hole-overlay {
+    display: none;
+  }
+}
