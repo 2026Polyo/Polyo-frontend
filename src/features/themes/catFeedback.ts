@@ -1,4 +1,9 @@
-import { createVisualRandom, uniqueFeedbackCells, type BoardFeedback, type FeedbackCell } from "./boardFeedback";
+import {
+  createVisualRandom,
+  uniqueFeedbackCells,
+  type BoardFeedback,
+  type FeedbackCell,
+} from "./boardFeedback";
 import { SIZE } from "../../constants/gameData";
 import { getCatConnections } from "./catConnections";
 import type { Board } from "../../types";
@@ -12,9 +17,13 @@ export const CAT_PAW_LIFETIME_MS =
   CAT_PAW_PRESS_MS + CAT_PAW_MAX_STAGGER_MS + 60;
 export const CAT_SLAM_IMPACT_MS = 344;
 export const CAT_STICKER_FLIGHT_MS = 1700;
-export const CAT_SLAM_LIFETIME_MS = CAT_SLAM_IMPACT_MS + CAT_STICKER_FLIGHT_MS + 60;
+export const CAT_SLAM_LIFETIME_MS =
+  CAT_SLAM_IMPACT_MS + CAT_STICKER_FLIGHT_MS + 60;
 
-export function createCatSlamMotion(cells: readonly FeedbackCell[], random = createVisualRandom()) {
+export function createCatSlamMotion(
+  cells: readonly FeedbackCell[],
+  random = createVisualRandom(),
+) {
   return {
     stickerIndex: Math.floor(random() * cells.length),
     flights: cells.map(({ row, col }) => {
@@ -40,13 +49,19 @@ export function createCatSlamMotion(cells: readonly FeedbackCell[], random = cre
 
 type CatSlamFlight = ReturnType<typeof createCatSlamMotion>["flights"][number];
 
-export function getCatFlightKeyframes(flight: CatSlamFlight, boardWidth: number): Keyframe[] {
+export function getCatFlightKeyframes(
+  flight: CatSlamFlight,
+  boardWidth: number,
+): Keyframe[] {
   const contactMs = 29;
   const flightSeconds = (flight.duration - contactMs) / 1000;
   const gravity = 3.9;
   const liftSpeed = gravity * flightSeconds * 0.39;
-  const contact = "perspective(750px) translate3d(0px, 0px, 0px) rotateX(0deg) rotateZ(0deg)";
-  const frames: Keyframe[] = [{ offset: 0, transform: `${contact} scale(1)`, opacity: 1 }];
+  const contact =
+    "perspective(750px) translate3d(0px, 0px, 0px) rotateX(0deg) rotateZ(0deg)";
+  const frames: Keyframe[] = [
+    { offset: 0, transform: `${contact} scale(1)`, opacity: 1 },
+  ];
 
   for (let step = 0; step <= 12; step++) {
     const progress = step / 12;
@@ -56,7 +71,9 @@ export function getCatFlightKeyframes(flight: CatSlamFlight, boardWidth: number)
     const y = flight.y * boardWidth * progress - lift;
     const z = Math.max(0, lift) * flight.depth;
     frames.push({
-      offset: (contactMs + progress * (flight.duration - contactMs)) / flight.duration,
+      offset:
+        (contactMs + progress * (flight.duration - contactMs)) /
+        flight.duration,
       transform: `perspective(750px) translate3d(${x}px, ${y}px, ${z}px) rotateX(${flight.pitch * progress}deg) rotateZ(${flight.roll * progress}deg) scale(${step === 0 ? "1.06, .78" : "1"})`,
       opacity: progress < 0.75 ? 1 : (1 - progress) * 4,
     });

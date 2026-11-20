@@ -12,5 +12,5 @@ export function getClearTier(cleared: number): ClearTier | null {
 export const CLEAR_TIER_LABEL: Record<ClearTier, string> = {
   good: "GOOD!",
   great: "GREAT!",
-  excellent: "EXCELLENT!"
+  excellent: "EXCELLENT!",
 };

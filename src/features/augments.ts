@@ -26,7 +26,7 @@ import {
   OVERHEAT_BONUS,
   PLACEMENT_MULT_PER_LEVEL,
   SPREAD_CLEAR_CHANCE_PER_LEVEL,
-  SPREAD_FILL_CHANCE_PER_LEVEL
+  SPREAD_FILL_CHANCE_PER_LEVEL,
 } from "./augmentData";
 import type {
   AugmentId,
@@ -34,7 +34,7 @@ import type {
   AugmentState,
   RerollReplacementMode,
   SavedGame,
-  ScoreBreakdown
+  ScoreBreakdown,
 } from "../types";
 import type { PieceInstance } from "../types";
 
@@ -45,12 +45,14 @@ function createAugmentLevels(): AugmentLevels {
   return Object.fromEntries(AUGMENT_IDS.map((id) => [id, 0])) as AugmentLevels;
 }
 
-function normalizeAugmentLevels(levels: Partial<AugmentLevels> | null | undefined): AugmentLevels {
+function normalizeAugmentLevels(
+  levels: Partial<AugmentLevels> | null | undefined,
+): AugmentLevels {
   return Object.fromEntries(
     AUGMENT_IDS.map((id) => {
       const raw = Number.isFinite(levels?.[id]) ? Math.max(0, levels![id]!) : 0;
       return [id, Math.min(getAugmentMaxLevel(id), raw)];
-    })
+    }),
   ) as AugmentLevels;
 }
 
@@ -66,21 +68,31 @@ export function getRerollReplacementMode(level: number): RerollReplacementMode {
   return "random";
 }
 
-export function getAugmentLevel(augmentState: AugmentState | null | undefined, id: AugmentId): number {
+export function getAugmentLevel(
+  augmentState: AugmentState | null | undefined,
+  id: AugmentId,
+): number {
   return normalizeAugmentLevels(augmentState?.levels)[id] || 0;
 }
 
 // Fraction (0–AUGMENT_DISCOUNT_MAX) by which the augment-discount augment lowers the gap.
 export function getAugmentDiscount(discountLevel: number): number {
-  return Math.min(AUGMENT_DISCOUNT_MAX, Math.max(0, discountLevel) * AUGMENT_DISCOUNT_PER_LEVEL);
+  return Math.min(
+    AUGMENT_DISCOUNT_MAX,
+    Math.max(0, discountLevel) * AUGMENT_DISCOUNT_PER_LEVEL,
+  );
 }
 
 // The next augment is offered after gaining another (50 + 10% of the score at the last
 // choice) points on top of that score — so the gap always stays ahead of the current
 // score. The very first augment needs AUGMENT_BASE_SCORE (50), since last = 0. The
 // augment-discount augment shrinks that extra gap by 10% per level.
-export function getNextAugmentScore(scoreAtLastChoice: number, discountLevel = 0): number {
-  const gap = AUGMENT_BASE_SCORE + Math.ceil(scoreAtLastChoice * AUGMENT_SCORE_RATE);
+export function getNextAugmentScore(
+  scoreAtLastChoice: number,
+  discountLevel = 0,
+): number {
+  const gap =
+    AUGMENT_BASE_SCORE + Math.ceil(scoreAtLastChoice * AUGMENT_SCORE_RATE);
   const discounted = Math.ceil(gap * (1 - getAugmentDiscount(discountLevel)));
   return scoreAtLastChoice + Math.max(1, discounted);
 }
@@ -94,26 +106,33 @@ export function createInitialAugmentState(): AugmentState {
     trayClearedLine: false,
     comboRetainCharges: 0,
     placementsSinceClear: 0,
-    itemChainPending: false
+    itemChainPending: false,
   };
 }
 // Fraction (0–COMBO_CORRECTION_MAX) controlling how strongly the tray favors small blocks.
 export function getComboCorrectionBias(augmentState: AugmentState): number {
   return Math.min(
     COMBO_CORRECTION_MAX,
-    getAugmentLevel(augmentState, "combo-correction") * COMBO_CORRECTION_PER_LEVEL
+    getAugmentLevel(augmentState, "combo-correction") *
+      COMBO_CORRECTION_PER_LEVEL,
   );
 }
 
-export function getSavedAugmentState(savedGame: SavedGame | UndoSnapshotLike): AugmentState {
+export function getSavedAugmentState(
+  savedGame: SavedGame | UndoSnapshotLike,
+): AugmentState {
   const augmentSaved = (savedGame as SavedGame).augmentState;
   const scoreAtLastChoice = Number.isFinite(augmentSaved?.scoreAtLastChoice)
     ? Math.max(0, augmentSaved!.scoreAtLastChoice!)
     : 0;
-  const levels = normalizeAugmentLevels(augmentSaved?.levels as Partial<AugmentLevels> | undefined);
+  const levels = normalizeAugmentLevels(
+    augmentSaved?.levels as Partial<AugmentLevels> | undefined,
+  );
 
   return {
-    combo: Number.isFinite(augmentSaved?.combo) ? Math.max(0, augmentSaved!.combo!) : 0,
+    combo: Number.isFinite(augmentSaved?.combo)
+      ? Math.max(0, augmentSaved!.combo!)
+      : 0,
     levels,
     nextChoiceScore: Number.isFinite(augmentSaved?.nextChoiceScore)
       ? Math.max(0, augmentSaved!.nextChoiceScore!)
@@ -126,7 +145,7 @@ export function getSavedAugmentState(savedGame: SavedGame | UndoSnapshotLike): A
     placementsSinceClear: Number.isFinite(augmentSaved?.placementsSinceClear)
       ? Math.max(0, augmentSaved!.placementsSinceClear!)
       : 0,
-    itemChainPending: Boolean(augmentSaved?.itemChainPending)
+    itemChainPending: Boolean(augmentSaved?.itemChainPending),
   };
 }
 
@@ -136,12 +155,18 @@ interface UndoSnapshotLike {
 }
 
 export function getTotalAugmentLevels(augmentState: AugmentState): number {
-  return AUGMENT_IDS.reduce((total, id) => total + getAugmentLevel(augmentState, id), 0);
+  return AUGMENT_IDS.reduce(
+    (total, id) => total + getAugmentLevel(augmentState, id),
+    0,
+  );
 }
 
 // Chance (0–1) that placing a block spreads fill into nearby empty cells.
 export function getSpreadFillChance(augmentState: AugmentState): number {
-  return Math.min(1, getAugmentLevel(augmentState, "spread-fill") * SPREAD_FILL_CHANCE_PER_LEVEL);
+  return Math.min(
+    1,
+    getAugmentLevel(augmentState, "spread-fill") * SPREAD_FILL_CHANCE_PER_LEVEL,
+  );
 }
 
 // How many nearby empty cells get filled when spread-fill triggers (level-based: 1, +1 every 3 levels).
@@ -159,12 +184,18 @@ export function rollSpreadFill(augmentState: AugmentState): number {
 
 // Chance (0–1) that clearing a line also clears nearby lines.
 export function getSpreadClearChance(augmentState: AugmentState): number {
-  return Math.min(1, getAugmentLevel(augmentState, "spread-clear") * SPREAD_CLEAR_CHANCE_PER_LEVEL);
+  return Math.min(
+    1,
+    getAugmentLevel(augmentState, "spread-clear") *
+      SPREAD_CLEAR_CHANCE_PER_LEVEL,
+  );
 }
 
 // How many nearby lines get cleared when spread-clear triggers.
 export function getSpreadClearCount(augmentState: AugmentState): number {
-  return 1 + Math.floor((getAugmentLevel(augmentState, "spread-clear") - 1) / 3);
+  return (
+    1 + Math.floor((getAugmentLevel(augmentState, "spread-clear") - 1) / 3)
+  );
 }
 
 // Roll the spread-clear effect after a line clear; returns the number of extra lines (0 = no effect).
@@ -174,15 +205,23 @@ export function rollSpreadClear(augmentState: AugmentState): number {
   return getSpreadClearCount(augmentState);
 }
 
-export function shouldOfferAugmentChoice(augmentState: AugmentState, score: number, bonusActive = false): boolean {
+export function shouldOfferAugmentChoice(
+  augmentState: AugmentState,
+  score: number,
+  bonusActive = false,
+): boolean {
   return !bonusActive && score >= augmentState.nextChoiceScore;
 }
 
-export function chooseAugment(augmentState: AugmentState, augmentId: AugmentId, score: number): AugmentState {
+export function chooseAugment(
+  augmentState: AugmentState,
+  augmentId: AugmentId,
+  score: number,
+): AugmentState {
   const levels = normalizeAugmentLevels(augmentState.levels);
   const nextLevels = {
     ...levels,
-    [augmentId]: Math.min(getAugmentMaxLevel(augmentId), levels[augmentId] + 1)
+    [augmentId]: Math.min(getAugmentMaxLevel(augmentId), levels[augmentId] + 1),
   };
 
   return {
@@ -190,38 +229,44 @@ export function chooseAugment(augmentState: AugmentState, augmentId: AugmentId, 
     levels: nextLevels,
     // The just-chosen discount level applies to the next threshold.
     nextChoiceScore: getNextAugmentScore(score, nextLevels["augment-discount"]),
-    scoreAtLastChoice: score
+    scoreAtLastChoice: score,
   };
 }
 
 // Advance the next-augment target without changing any levels — used when a choice slot is
 // spent on something else (e.g. a special-block pick) instead of leveling an augment.
-export function advanceAugmentSchedule(augmentState: AugmentState, score: number): AugmentState {
+export function advanceAugmentSchedule(
+  augmentState: AugmentState,
+  score: number,
+): AugmentState {
   const levels = normalizeAugmentLevels(augmentState.levels);
   return {
     ...augmentState,
     nextChoiceScore: getNextAugmentScore(score, levels["augment-discount"]),
-    scoreAtLastChoice: score
+    scoreAtLastChoice: score,
   };
 }
 
-export function resetAugmentTrayProgress(augmentState: AugmentState): AugmentState {
+export function resetAugmentTrayProgress(
+  augmentState: AugmentState,
+): AugmentState {
   return {
     ...augmentState,
-    trayClearedLine: false
+    trayClearedLine: false,
   };
 }
 
 export function getNextAugmentStateAfterPlacement(
   augmentState: AugmentState,
-  { cleared, trayCompleted }: { cleared: number; trayCompleted: boolean }
+  { cleared, trayCompleted }: { cleared: number; trayCompleted: boolean },
 ): AugmentState {
   const retainLevel = getAugmentLevel(augmentState, "combo-retain");
   const trayClearedLine = augmentState.trayClearedLine || cleared > 0;
   const nextCombo = augmentState.combo + Math.max(0, cleared);
 
   // combo-retain: top charges back to full on a clear; spend one to survive a break.
-  let comboRetainCharges = cleared > 0 ? retainLevel : augmentState.comboRetainCharges;
+  let comboRetainCharges =
+    cleared > 0 ? retainLevel : augmentState.comboRetainCharges;
   let combo: number;
   if (trayCompleted && !trayClearedLine) {
     if (comboRetainCharges > 0) {
@@ -239,10 +284,11 @@ export function getNextAugmentStateAfterPlacement(
     combo,
     comboRetainCharges,
     // overheat: count placements that did not clear a line.
-    placementsSinceClear: cleared > 0 ? 0 : augmentState.placementsSinceClear + 1,
+    placementsSinceClear:
+      cleared > 0 ? 0 : augmentState.placementsSinceClear + 1,
     // item-chain bonus is consumed by this placement.
     itemChainPending: false,
-    trayClearedLine: trayCompleted ? false : trayClearedLine
+    trayClearedLine: trayCompleted ? false : trayClearedLine,
   };
 }
 
@@ -316,13 +362,19 @@ export function getAugmentEffectText(id: AugmentId, level: number): string {
   }
 
   if (id === "spread-fill") {
-    const chance = Math.min(100, Math.round(level * SPREAD_FILL_CHANCE_PER_LEVEL * 100));
+    const chance = Math.min(
+      100,
+      Math.round(level * SPREAD_FILL_CHANCE_PER_LEVEL * 100),
+    );
     const cells = 1 + Math.floor((level - 1) / 3);
     return `설치 시 ${chance}% 확률로 근처 ${cells}칸 채움`;
   }
 
   if (id === "spread-clear") {
-    const chance = Math.min(100, Math.round(level * SPREAD_CLEAR_CHANCE_PER_LEVEL * 100));
+    const chance = Math.min(
+      100,
+      Math.round(level * SPREAD_CLEAR_CHANCE_PER_LEVEL * 100),
+    );
     const lines = 1 + Math.floor((level - 1) / 3);
     return `줄 제거 시 ${chance}% 확률로 근처 ${lines}줄 제거`;
   }
@@ -348,7 +400,7 @@ export function getAugmentedScore({
   clearedCellCount = 0,
   crackCount = 0,
   scoreMultiplier = 1,
-  comboMultiplier = 1
+  comboMultiplier = 1,
 }: {
   augmentState: AugmentState;
   cleared: number;
@@ -366,7 +418,10 @@ export function getAugmentedScore({
   comboMultiplier?: number;
 }): ScoreBreakdown {
   const placementLevel = getAugmentLevel(augmentState, "placement-score");
-  const cellPlacementLevel = getAugmentLevel(augmentState, "cell-placement-bonus");
+  const cellPlacementLevel = getAugmentLevel(
+    augmentState,
+    "cell-placement-bonus",
+  );
   const clearLevel = getAugmentLevel(augmentState, "clear-score");
   const cellClearLevel = getAugmentLevel(augmentState, "cell-clear-bonus");
   const crackLevel = getAugmentLevel(augmentState, "crack-clear");
@@ -380,22 +435,29 @@ export function getAugmentedScore({
 
   const placedCells = piece.cells.length + extraCells;
   // 배치: 기본 점수(칸 수)에 곱연산. 칸 배치 보너스: 칸마다 합연산.
-  const placementScore = (
-    placedCells * (1 + placementLevel * PLACEMENT_MULT_PER_LEVEL)
-    + cellPlacementLevel * placedCells * CELL_PLACEMENT_BONUS
-  ) * scoreMultiplier;
+  const placementScore =
+    (placedCells * (1 + placementLevel * PLACEMENT_MULT_PER_LEVEL) +
+      cellPlacementLevel * placedCells * CELL_PLACEMENT_BONUS) *
+    scoreMultiplier;
   // 제거: 기본 점수에 곱연산. 칸 제거 보너스/균열 제거/과열: 합연산.
   const overheatBonus =
-    cleared > 0 ? overheatLevel * OVERHEAT_BONUS * augmentState.placementsSinceClear : 0;
+    cleared > 0
+      ? overheatLevel * OVERHEAT_BONUS * augmentState.placementsSinceClear
+      : 0;
   const clearScore =
-    cleared * 20 * (1 + clearLevel * CLEAR_MULT_PER_LEVEL) * scoreMultiplier
-    + cellClearLevel * clearedCellCount * CELL_CLEAR_BONUS
-    + crackLevel * crackCount * CRACK_CLEAR_BONUS
-    + overheatBonus;
+    cleared * 20 * (1 + clearLevel * CLEAR_MULT_PER_LEVEL) * scoreMultiplier +
+    cellClearLevel * clearedCellCount * CELL_CLEAR_BONUS +
+    crackLevel * crackCount * CRACK_CLEAR_BONUS +
+    overheatBonus;
   const multiLineScore =
-    Math.max(0, cleared - 1) * (MULTI_LINE_BASE_BONUS + multiLineLevel * MULTI_LINE_SCORE_BONUS) * scoreMultiplier;
+    Math.max(0, cleared - 1) *
+    (MULTI_LINE_BASE_BONUS + multiLineLevel * MULTI_LINE_SCORE_BONUS) *
+    scoreMultiplier;
   const comboScore =
-    cleared * augmentState.combo * (COMBO_BASE_BONUS + comboLevel * COMBO_CLEAR_SCORE_BONUS) * comboMultiplier;
+    cleared *
+    augmentState.combo *
+    (COMBO_BASE_BONUS + comboLevel * COMBO_CLEAR_SCORE_BONUS) *
+    comboMultiplier;
   const allClearScore = allClear ? allClearLevel * ALL_CLEAR_SCORE_BONUS : 0;
   const boardPressureScore =
     pressureLevel > 0 && boardFillRatio >= BOARD_PRESSURE_THRESHOLD
@@ -403,12 +465,20 @@ export function getAugmentedScore({
       : 0;
 
   const subtotal =
-    placementScore + clearScore + multiLineScore + comboScore + allClearScore + boardPressureScore;
+    placementScore +
+    clearScore +
+    multiLineScore +
+    comboScore +
+    allClearScore +
+    boardPressureScore;
   // 콤보 가속: 콤보가 높을수록 전체 점수 배율 증가.
-  const comboAccelMult = 1 + comboAccelLevel * COMBO_ACCEL_PER_COMBO * augmentState.combo;
+  const comboAccelMult =
+    1 + comboAccelLevel * COMBO_ACCEL_PER_COMBO * augmentState.combo;
   // 아이템 연계: 아이템 사용 직후 배치면 점수 배율 증가.
   const itemChainMult =
-    augmentState.itemChainPending && itemChainLevel > 0 ? 1 + itemChainLevel * ITEM_CHAIN_RATE : 1;
+    augmentState.itemChainPending && itemChainLevel > 0
+      ? 1 + itemChainLevel * ITEM_CHAIN_RATE
+      : 1;
 
   return {
     allClearScore,
@@ -417,6 +487,6 @@ export function getAugmentedScore({
     comboScore,
     multiLineScore,
     placementScore,
-    total: Math.round(subtotal * comboAccelMult * itemChainMult)
+    total: Math.round(subtotal * comboAccelMult * itemChainMult),
   };
 }

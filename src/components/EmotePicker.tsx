@@ -42,7 +42,12 @@ function EmotePicker({ disabled = false, onPick }: EmotePickerProps) {
   return (
     <div className="emote-picker" ref={rootRef}>
       {open && (
-        <div aria-label="감정표현" className="emote-popup" id={popupId} role="group">
+        <div
+          aria-label="감정표현"
+          className="emote-popup"
+          id={popupId}
+          role="group"
+        >
           {EMOTE_IDS.map((emote) => (
             <button
               aria-label={EMOTE_LABELS[emote]}

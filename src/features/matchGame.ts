@@ -8,7 +8,7 @@ export type RoomClosedReason = "ROOM_DELETED" | "LEFT_ROOM";
 
 export const ROOM_CLOSED_MESSAGES: Record<RoomClosedReason, string> = {
   ROOM_DELETED: "방장이 방을 나가서 방이 사라졌어요.",
-  LEFT_ROOM: "방에서 나왔어요."
+  LEFT_ROOM: "방에서 나왔어요.",
 };
 
 export interface MatchPlayerState {
@@ -63,12 +63,21 @@ export interface MatchCursor {
   col: number | null;
 }
 
-export const EMPTY_CURSOR: MatchCursor = { pieceUid: null, row: null, col: null };
+export const EMPTY_CURSOR: MatchCursor = {
+  pieceUid: null,
+  row: null,
+  col: null,
+};
 
 export type MatchServerMessage =
   | ({ type: "STATE" } & MatchGameState)
   // readyUserIds and members are optional: servers without the ready step leave them out.
-  | { type: "WAITING"; connectedUserIds: string[]; readyUserIds?: string[]; members?: { userId: string; nickname: string }[] }
+  | {
+      type: "WAITING";
+      connectedUserIds: string[];
+      readyUserIds?: string[];
+      members?: { userId: string; nickname: string }[];
+    }
   | { type: "EMOTE"; userId: string; emote: EmoteId }
   // The current player's held block, relayed to the rival only.
   | ({ type: "CURSOR"; userId: string } & MatchCursor)
@@ -79,36 +88,63 @@ export type MatchServerMessage =
 export const FINISH_REASON_LABELS: Record<FinishReason, string> = {
   NO_MOVES: "놓을 수 있는 블록이 없어 게임이 끝났어요.",
   TIMEOUT: "시간이 초과되어 게임이 끝났어요.",
-  FORFEIT: "기권으로 게임이 끝났어요."
+  FORFEIT: "기권으로 게임이 끝났어요.",
 };
 
 // Error codes after which reconnecting cannot help.
-export const FATAL_ERROR_CODES = new Set(["UNAUTHENTICATED", "ROOM_NOT_FOUND", "ROOM_MEMBER_ONLY", "ROOM_CLOSED"]);
+export const FATAL_ERROR_CODES = new Set([
+  "UNAUTHENTICATED",
+  "ROOM_NOT_FOUND",
+  "ROOM_MEMBER_ONLY",
+  "ROOM_CLOSED",
+]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
 function isPlayer(value: unknown): boolean {
-  return isRecord(value) && typeof value.userId === "string" && typeof value.nickname === "string"
-    && Array.isArray(value.board) && typeof value.score === "number" && typeof value.turnLimitMs === "number";
+  return (
+    isRecord(value) &&
+    typeof value.userId === "string" &&
+    typeof value.nickname === "string" &&
+    Array.isArray(value.board) &&
+    typeof value.score === "number" &&
+    typeof value.turnLimitMs === "number"
+  );
 }
 
 function isStringList(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === "string");
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
 }
 
 function isMember(value: unknown): boolean {
-  return isRecord(value) && typeof value.userId === "string" && typeof value.nickname === "string";
+  return (
+    isRecord(value) &&
+    typeof value.userId === "string" &&
+    typeof value.nickname === "string"
+  );
 }
 
 function isCursorPosition(value: unknown): boolean {
-  return value === null || (Number.isInteger(value) && (value as number) >= -SIZE && (value as number) < SIZE);
+  return (
+    value === null ||
+    (Number.isInteger(value) &&
+      (value as number) >= -SIZE &&
+      (value as number) < SIZE)
+  );
 }
 
 function isTraySlot(value: unknown): boolean {
-  return value === null || (isRecord(value) && typeof value.uid === "string"
-    && typeof value.color === "string" && Array.isArray(value.cells));
+  return (
+    value === null ||
+    (isRecord(value) &&
+      typeof value.uid === "string" &&
+      typeof value.color === "string" &&
+      Array.isArray(value.cells))
+  );
 }
 
 export function parseServerMessage(raw: string): MatchServerMessage | null {
@@ -119,29 +155,56 @@ export function parseServerMessage(raw: string): MatchServerMessage | null {
     return null;
   }
   if (!isRecord(message)) return null;
-  if (message.type === "WAITING" && isStringList(message.connectedUserIds)
-    && (message.readyUserIds === undefined || isStringList(message.readyUserIds))
-    && (message.members === undefined || (Array.isArray(message.members) && message.members.every(isMember)))) {
+  if (
+    message.type === "WAITING" &&
+    isStringList(message.connectedUserIds) &&
+    (message.readyUserIds === undefined ||
+      isStringList(message.readyUserIds)) &&
+    (message.members === undefined ||
+      (Array.isArray(message.members) && message.members.every(isMember)))
+  ) {
     return message as unknown as MatchServerMessage;
   }
-  if (message.type === "ROOM_CLOSED" && (message.reason === "ROOM_DELETED" || message.reason === "LEFT_ROOM")) {
+  if (
+    message.type === "ROOM_CLOSED" &&
+    (message.reason === "ROOM_DELETED" || message.reason === "LEFT_ROOM")
+  ) {
     return message as unknown as MatchServerMessage;
   }
-  if (message.type === "EMOTE" && typeof message.userId === "string" && isEmoteId(message.emote)) {
+  if (
+    message.type === "EMOTE" &&
+    typeof message.userId === "string" &&
+    isEmoteId(message.emote)
+  ) {
     return message as unknown as MatchServerMessage;
   }
-  if (message.type === "CURSOR" && typeof message.userId === "string"
-    && (message.pieceUid === null || typeof message.pieceUid === "string")
-    && isCursorPosition(message.row) && isCursorPosition(message.col)
-    && (message.row === null) === (message.col === null)) {
+  if (
+    message.type === "CURSOR" &&
+    typeof message.userId === "string" &&
+    (message.pieceUid === null || typeof message.pieceUid === "string") &&
+    isCursorPosition(message.row) &&
+    isCursorPosition(message.col) &&
+    (message.row === null) === (message.col === null)
+  ) {
     return message as unknown as MatchServerMessage;
   }
-  if (message.type === "ERROR" && typeof message.code === "string" && typeof message.message === "string") {
+  if (
+    message.type === "ERROR" &&
+    typeof message.code === "string" &&
+    typeof message.message === "string"
+  ) {
     return message as unknown as MatchServerMessage;
   }
-  if (message.type === "STATE" && Array.isArray(message.players) && message.players.length === 2
-    && message.players.every(isPlayer) && Array.isArray(message.tray) && message.tray.every(isTraySlot)
-    && typeof message.turnUserId === "string" && typeof message.turnRemainingMs === "number") {
+  if (
+    message.type === "STATE" &&
+    Array.isArray(message.players) &&
+    message.players.length === 2 &&
+    message.players.every(isPlayer) &&
+    Array.isArray(message.tray) &&
+    message.tray.every(isTraySlot) &&
+    typeof message.turnUserId === "string" &&
+    typeof message.turnRemainingMs === "number"
+  ) {
     return message as unknown as MatchServerMessage;
   }
   return null;
@@ -152,7 +215,9 @@ export function parseServerMessage(raw: string): MatchServerMessage | null {
  * PLAYING ended while this socket was away, so it is dropped; a finished result stays up until the
  * player goes back to the waiting room, because the server keeps the room after a game.
  */
-export function gameAfterWaiting(game: MatchGameState | null): MatchGameState | null {
+export function gameAfterWaiting(
+  game: MatchGameState | null,
+): MatchGameState | null {
   return game?.status === "PLAYING" ? null : game;
 }
 
@@ -162,19 +227,29 @@ export function gameAfterWaiting(game: MatchGameState | null): MatchGameState | 
  * server could not save it or does not send it, or its values are not sane.
  * The server awards once per game; the client only shows what it was told and never adds on its own.
  */
-export function getTrophyResult(game: MatchGameState | null, userId: string): TrophyResult | null {
+export function getTrophyResult(
+  game: MatchGameState | null,
+  userId: string,
+): TrophyResult | null {
   if (game?.status !== "FINISHED") return null;
   const reward: unknown = game.trophyReward;
   if (!isRecord(reward) || reward.userId !== userId) return null;
   const { gained, trophy } = reward;
   if (typeof gained !== "number" || typeof trophy !== "number") return null;
-  if (!Number.isSafeInteger(gained) || !Number.isSafeInteger(trophy)) return null;
+  if (!Number.isSafeInteger(gained) || !Number.isSafeInteger(trophy))
+    return null;
   if (gained <= 0 || trophy < gained) return null;
   return { delta: gained, trophyCount: trophy };
 }
 
-export function getMatchSocketUrl(baseUrl: string, roomId: number, location: { protocol: string; host: string }): string {
-  const origin = baseUrl ? baseUrl.replace(/\/$/, "") : `${location.protocol}//${location.host}`;
+export function getMatchSocketUrl(
+  baseUrl: string,
+  roomId: number,
+  location: { protocol: string; host: string },
+): string {
+  const origin = baseUrl
+    ? baseUrl.replace(/\/$/, "")
+    : `${location.protocol}//${location.host}`;
   return `${origin.replace(/^http/, "ws")}/ws/match/${roomId}`;
 }
 
@@ -189,7 +264,10 @@ export interface CursorPreview {
 }
 
 /** The rival's held piece from the shared tray, or null when it is not (or no longer) there. */
-export function getCursorPreview(cursor: MatchCursor | null, tray: readonly (PieceInstance | null)[]): CursorPreview | null {
+export function getCursorPreview(
+  cursor: MatchCursor | null,
+  tray: readonly (PieceInstance | null)[],
+): CursorPreview | null {
   if (!cursor?.pieceUid) return null;
   const piece = tray.find((slot) => slot?.uid === cursor.pieceUid);
   if (!piece) return null;
@@ -198,7 +276,8 @@ export function getCursorPreview(cursor: MatchCursor | null, tray: readonly (Pie
     for (const [dr, dc] of piece.cells) {
       const row = cursor.row + dr;
       const col = cursor.col + dc;
-      if (row >= 0 && row < SIZE && col >= 0 && col < SIZE) cells.add(`${row}-${col}`);
+      if (row >= 0 && row < SIZE && col >= 0 && col < SIZE)
+        cells.add(`${row}-${col}`);
     }
   }
   return { piece, cells };

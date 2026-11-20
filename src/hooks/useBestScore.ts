@@ -10,7 +10,9 @@ function getBestKey(gameMode: GameMode): string {
 function readBestScore(gameMode: GameMode): number {
   const saved = localStorage.getItem(getBestKey(gameMode));
   if (saved !== null) return Number(saved) || 0;
-  return gameMode === "normal" ? Number(localStorage.getItem(LEGACY_BEST_KEY) || 0) : 0;
+  return gameMode === "normal"
+    ? Number(localStorage.getItem(LEGACY_BEST_KEY) || 0)
+    : 0;
 }
 
 function useBestScore(score: number, gameMode: GameMode): number {

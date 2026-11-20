@@ -7,12 +7,12 @@ import {
   GRAVITY_FRAME_MS,
   ITEM_GAIN_SCORE,
   ITEM_USE_SCORE,
-  type SavedItemState
+  type SavedItemState,
 } from "../features/items";
 import { cloneBoard, simulateGravity } from "../utils/boardUtils";
 import {
   moveSpecialPieceGroups,
-  normalizeSpecialPieceGroups
+  normalizeSpecialPieceGroups,
 } from "../features/themes/specialAppearance";
 import { rerollOnePiece } from "../utils/tray";
 import type {
@@ -25,7 +25,7 @@ import type {
   SavedGame,
   SpecialPieceGroups,
   Tray,
-  UndoSnapshot
+  UndoSnapshot,
 } from "../types";
 import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 
@@ -86,22 +86,26 @@ export function useItemSystem({
   setGoldenCells,
   setScore,
   setTray,
-  tray
+  tray,
 }: UseItemSystemArgs) {
   const [itemSlots, setItemSlots] = useState<ItemSlots>(
-    () => initialGame?.itemSlots ?? createEmptyItemSlots()
+    () => initialGame?.itemSlots ?? createEmptyItemSlots(),
   );
   const [undoSnapshot, setUndoSnapshot] = useState<UndoSnapshot | null>(
-    () => initialGame?.undoSnapshot ?? null
+    () => initialGame?.undoSnapshot ?? null,
   );
   const [rerollModalSlot, setRerollModalSlot] = useState<number | null>(null);
   const [gravityAnimating, setGravityAnimating] = useState(false);
   const gravityTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const comboMilestoneRef = useRef(augmentState.combo);
 
-  useEffect(() => () => {
-    if (gravityTimerRef.current !== null) clearInterval(gravityTimerRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (gravityTimerRef.current !== null)
+        clearInterval(gravityTimerRef.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!enabled) return;
@@ -119,7 +123,11 @@ export function useItemSystem({
       const nextSlots = [...current] as ItemSlots;
       let itemsToAward = itemsEarned;
 
-      for (let index = 0; index < nextSlots.length && itemsToAward > 0; index += 1) {
+      for (
+        let index = 0;
+        index < nextSlots.length && itemsToAward > 0;
+        index += 1
+      ) {
         if (!nextSlots[index]) {
           nextSlots[index] = getRandomItemType();
           itemsToAward -= 1;
@@ -131,17 +139,22 @@ export function useItemSystem({
     });
 
     const gainLevel = getAugmentLevel(augmentState, "item-gain-score");
-    if (gainLevel > 0 && placed > 0) setScore((current) => current + placed * gainLevel * ITEM_GAIN_SCORE);
+    if (gainLevel > 0 && placed > 0)
+      setScore((current) => current + placed * gainLevel * ITEM_GAIN_SCORE);
   }, [augmentState, enabled, setScore]);
 
   function clearItemSlot(slotIndex: number) {
-    setItemSlots((current) =>
-      current.map((item, index) => (index === slotIndex ? null : item)) as ItemSlots
+    setItemSlots(
+      (current) =>
+        current.map((item, index) =>
+          index === slotIndex ? null : item,
+        ) as ItemSlots,
     );
   }
 
   function resetItems() {
-    if (gravityTimerRef.current !== null) clearInterval(gravityTimerRef.current);
+    if (gravityTimerRef.current !== null)
+      clearInterval(gravityTimerRef.current);
     gravityTimerRef.current = null;
     setGravityAnimating(false);
     comboMilestoneRef.current = 0;
@@ -150,7 +163,9 @@ export function useItemSystem({
     setRerollModalSlot(null);
   }
 
-  function restoreItems(saved: SavedItemState & { augmentState: AugmentState }) {
+  function restoreItems(
+    saved: SavedItemState & { augmentState: AugmentState },
+  ) {
     setItemSlots(saved.itemSlots);
     setUndoSnapshot(saved.undoSnapshot);
     comboMilestoneRef.current = saved.augmentState.combo;
@@ -167,13 +182,14 @@ export function useItemSystem({
       ghostCells: [...ghostCells],
       goldenCells: [...goldenCells],
       score,
-      tray
+      tray,
     });
   }
 
   function onItemUsed() {
     const useLevel = getAugmentLevel(augmentState, "item-use-score");
-    if (useLevel > 0) setScore((current) => current + useLevel * ITEM_USE_SCORE);
+    if (useLevel > 0)
+      setScore((current) => current + useLevel * ITEM_USE_SCORE);
     if (getAugmentLevel(augmentState, "item-chain") > 0) {
       setAugmentState((current) => ({ ...current, itemChainPending: true }));
     }
@@ -185,8 +201,17 @@ export function useItemSystem({
     if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
     setAugmentState(getSavedAugmentState(undoSnapshot as unknown as SavedGame));
     setBoard(cloneBoard(undoSnapshot.board));
-    setTray(undoSnapshot.bonusTime ? restoreBonusTime(undoSnapshot.bonusTime, undoSnapshot.tray) : undoSnapshot.tray);
-    setSpecialPieceGroups(normalizeSpecialPieceGroups(undoSnapshot.board, undoSnapshot.specialPieceGroups));
+    setTray(
+      undoSnapshot.bonusTime
+        ? restoreBonusTime(undoSnapshot.bonusTime, undoSnapshot.tray)
+        : undoSnapshot.tray,
+    );
+    setSpecialPieceGroups(
+      normalizeSpecialPieceGroups(
+        undoSnapshot.board,
+        undoSnapshot.specialPieceGroups,
+      ),
+    );
     setScore(undoSnapshot.score);
     setGhostCells(new Set(undoSnapshot.ghostCells ?? []));
     setGoldenCells(new Set(undoSnapshot.goldenCells ?? []));
@@ -199,7 +224,8 @@ export function useItemSystem({
     onItemUsed();
   }
 
-  const canUndo = !isClearing && undoSnapshot !== null && itemSlots.includes("undo");
+  const canUndo =
+    !isClearing && undoSnapshot !== null && itemSlots.includes("undo");
 
   function autoUndo(): boolean {
     if (!canUndo) return false;
@@ -210,7 +236,8 @@ export function useItemSystem({
   }
 
   function handleReroll(slotIndex: number) {
-    if (isClearing || itemSlots[slotIndex] !== "reroll" || !tray.some(Boolean)) return;
+    if (isClearing || itemSlots[slotIndex] !== "reroll" || !tray.some(Boolean))
+      return;
 
     const rerollLevel = getAugmentLevel(augmentState, "reroll-power");
     if (rerollLevel <= 0) {
@@ -239,7 +266,8 @@ export function useItemSystem({
   }
 
   function handleGravity(slotIndex: number) {
-    if (isClearing || gravityAnimating || itemSlots[slotIndex] !== "gravity") return;
+    if (isClearing || gravityAnimating || itemSlots[slotIndex] !== "gravity")
+      return;
 
     const { frames, frameMoves, finalBoard, moved } = simulateGravity(board);
     if (!frames.length) return;
@@ -250,20 +278,28 @@ export function useItemSystem({
     setGravityAnimating(true);
 
     let frameIndex = 0;
-    if (gravityTimerRef.current !== null) clearInterval(gravityTimerRef.current);
+    if (gravityTimerRef.current !== null)
+      clearInterval(gravityTimerRef.current);
     gravityTimerRef.current = setInterval(() => {
       if (frameIndex < frames.length) {
         setBoard(frames[frameIndex]);
-        setSpecialPieceGroups(moveSpecialPieceGroups(specialPieceGroups, frameMoves[frameIndex]));
+        setSpecialPieceGroups(
+          moveSpecialPieceGroups(specialPieceGroups, frameMoves[frameIndex]),
+        );
         frameIndex += 1;
         return;
       }
 
-      if (gravityTimerRef.current !== null) clearInterval(gravityTimerRef.current);
+      if (gravityTimerRef.current !== null)
+        clearInterval(gravityTimerRef.current);
       gravityTimerRef.current = null;
 
       const remap = (cells: Set<string>) =>
-        new Set([...cells].flatMap((key) => (moved.has(key) ? [moved.get(key)!] : [])));
+        new Set(
+          [...cells].flatMap((key) =>
+            moved.has(key) ? [moved.get(key)!] : [],
+          ),
+        );
       setBoard(finalBoard);
       setSpecialPieceGroups(moveSpecialPieceGroups(specialPieceGroups, moved));
       setGhostCells(remap);
@@ -304,6 +340,6 @@ export function useItemSystem({
     resetItems,
     restoreItems,
     saveUndoSnapshot,
-    undoSnapshot
+    undoSnapshot,
   };
 }

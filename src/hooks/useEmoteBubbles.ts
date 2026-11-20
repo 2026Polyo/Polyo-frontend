@@ -25,15 +25,18 @@ export function useEmoteBubbles() {
     nextKeyRef.current += 1;
     const key = nextKeyRef.current;
     setBubbles((current) => ({ ...current, [userId]: { emote, key } }));
-    timers.set(userId, setTimeout(() => {
-      timers.delete(userId);
-      setBubbles((current) => {
-        if (current[userId]?.key !== key) return current;
-        const rest = { ...current };
-        delete rest[userId];
-        return rest;
-      });
-    }, EMOTE_BUBBLE_MS));
+    timers.set(
+      userId,
+      setTimeout(() => {
+        timers.delete(userId);
+        setBubbles((current) => {
+          if (current[userId]?.key !== key) return current;
+          const rest = { ...current };
+          delete rest[userId];
+          return rest;
+        });
+      }, EMOTE_BUBBLE_MS),
+    );
   }, []);
 
   return { bubbles, show };

@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MAX_SNAP_DISTANCE } from "../constants/config";
-import { getBoardCellFromPoint, getDragPreviewPoint } from "../utils/pointerPlacement";
+import {
+  getBoardCellFromPoint,
+  getDragPreviewPoint,
+} from "../utils/pointerPlacement";
 import {
   getClosestPlacement,
   getPlacementDistanceSquared,
-  getPlacementPreview
+  getPlacementPreview,
 } from "../utils/placement";
 import type {
   AnchorOffset,
@@ -13,7 +16,7 @@ import type {
   CellCoord,
   PieceInstance,
   PlacementPosition,
-  PointerPoint
+  PointerPoint,
 } from "../types";
 
 const NO_CELLS: Set<string> = new Set();
@@ -38,7 +41,7 @@ export interface UsePieceSelectionResult {
   handlePieceSelect: (
     piece: PieceInstance,
     event: React.PointerEvent<HTMLButtonElement>,
-    nextAnchorCell: CellCoord
+    nextAnchorCell: CellCoord,
   ) => void;
   handlePieceActivate: (piece: PieceInstance) => void;
   hoverCell: PlacementPosition | null;
@@ -54,14 +57,17 @@ export function usePieceSelection({
   availablePieces,
   board,
   isPlaying,
-  onPlace
+  onPlace,
 }: UsePieceSelectionParams): UsePieceSelectionResult {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [cursorPiece, setCursorPiece] = useState<PieceInstance | null>(null);
   const [anchorCell, setAnchorCell] = useState<CellCoord | null>(null);
   const [hoverCell, setHoverCell] = useState<PlacementPosition | null>(null);
   const [cursorPoint, setCursorPoint] = useState<PointerPoint | null>(null);
-  const [boardMetrics, setBoardMetrics] = useState<BoardMetrics>({ cellGap: 2, cellSize: 26 });
+  const [boardMetrics, setBoardMetrics] = useState<BoardMetrics>({
+    cellGap: 2,
+    cellSize: 26,
+  });
   const boardRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{
     pointerId: number;
@@ -71,9 +77,12 @@ export function usePieceSelection({
   } | null>(null);
   const placeRef = useRef(onPlace);
 
-  useEffect(() => { placeRef.current = onPlace; }, [onPlace]);
+  useEffect(() => {
+    placeRef.current = onPlace;
+  }, [onPlace]);
 
-  const selectedPiece = availablePieces.find((p) => p.uid === selectedId) ?? null;
+  const selectedPiece =
+    availablePieces.find((p) => p.uid === selectedId) ?? null;
 
   const clearSelection = useCallback(() => {
     dragRef.current = null;
@@ -98,7 +107,9 @@ export function usePieceSelection({
       if (!firstCell) return;
       const firstRect = firstCell.getBoundingClientRect();
       const secondRect = secondCell?.getBoundingClientRect();
-      const cellGap = secondRect ? Math.max(0, secondRect.left - firstRect.right) : 2;
+      const cellGap = secondRect
+        ? Math.max(0, secondRect.left - firstRect.right)
+        : 2;
       setBoardMetrics({ cellGap, cellSize: firstRect.width });
     }
 
@@ -125,7 +136,11 @@ export function usePieceSelection({
       const firstCell = boardRef.current?.querySelector(".board-cell");
       if (!firstCell) return null;
       const rect = firstCell.getBoundingClientRect();
-      return getBoardCellFromPoint(point, { ...boardMetrics, left: rect.left, top: rect.top });
+      return getBoardCellFromPoint(point, {
+        ...boardMetrics,
+        left: rect.left,
+        top: rect.top,
+      });
     }
 
     function handlePointerMove(event: PointerEvent) {
@@ -134,10 +149,13 @@ export function usePieceSelection({
       if (!drag && event.pointerType !== "mouse") return;
       const point = { x: event.clientX, y: event.clientY };
       if (drag) {
-        drag.moved ||= Math.hypot(point.x - drag.start.x, point.y - drag.start.y) >= 6;
+        drag.moved ||=
+          Math.hypot(point.x - drag.start.x, point.y - drag.start.y) >= 6;
         if (!drag.moved && drag.pointerType === "touch") return;
       }
-      const previewPoint = drag ? getDragPreviewPoint(point, drag.pointerType) : point;
+      const previewPoint = drag
+        ? getDragPreviewPoint(point, drag.pointerType)
+        : point;
       setCursorPiece(selectedPiece);
       setCursorPoint(previewPoint);
       setHoverCell(cellAt(previewPoint));
@@ -152,11 +170,22 @@ export function usePieceSelection({
         setHoverCell(null);
       }
       if (!drag.moved || !anchorCell) return;
-      const cell = cellAt(getDragPreviewPoint({ x: event.clientX, y: event.clientY }, drag.pointerType));
+      const cell = cellAt(
+        getDragPreviewPoint(
+          { x: event.clientX, y: event.clientY },
+          drag.pointerType,
+        ),
+      );
       if (!cell) return;
-      const target = { row: cell.row - anchorCell[0], col: cell.col - anchorCell[1] };
+      const target = {
+        row: cell.row - anchorCell[0],
+        col: cell.col - anchorCell[1],
+      };
       const closest = getClosestPlacement(board, selectedPiece, target);
-      if (closest && getPlacementDistanceSquared(target, closest) <= MAX_SNAP_DISTANCE ** 2) {
+      if (
+        closest &&
+        getPlacementDistanceSquared(target, closest) <= MAX_SNAP_DISTANCE ** 2
+      ) {
         placeRef.current(selectedPiece!, closest.row, closest.col);
       }
     }
@@ -187,35 +216,57 @@ export function usePieceSelection({
       window.removeEventListener("pointercancel", handlePointerCancel);
       window.removeEventListener("blur", clearSelection);
     };
-  }, [selectedPiece, anchorCell, board, boardMetrics, augmentChoiceOpen, isPlaying, clearSelection]);
+  }, [
+    selectedPiece,
+    anchorCell,
+    board,
+    boardMetrics,
+    augmentChoiceOpen,
+    isPlaying,
+    clearSelection,
+  ]);
 
   const placementCell = useMemo<PlacementPosition | null>(() => {
     if (!selectedPiece || !hoverCell || !anchorCell) return null;
-    return { row: hoverCell.row - anchorCell[0], col: hoverCell.col - anchorCell[1] };
+    return {
+      row: hoverCell.row - anchorCell[0],
+      col: hoverCell.col - anchorCell[1],
+    };
   }, [selectedPiece, hoverCell, anchorCell]);
 
   const closestPlacementCell = useMemo(
     () => getClosestPlacement(board, selectedPiece, placementCell),
-    [board, selectedPiece, placementCell]
+    [board, selectedPiece, placementCell],
   );
 
   const invalidPreview = Boolean(
     selectedPiece &&
-      placementCell &&
-      (!closestPlacementCell || getPlacementDistanceSquared(placementCell, closestPlacementCell) > MAX_SNAP_DISTANCE ** 2)
+    placementCell &&
+    (!closestPlacementCell ||
+      getPlacementDistanceSquared(placementCell, closestPlacementCell) >
+        MAX_SNAP_DISTANCE ** 2),
   );
 
   const cursorAnchorOffset: AnchorOffset | null = anchorCell
     ? {
-        x: anchorCell[1] * (boardMetrics.cellSize + boardMetrics.cellGap) + boardMetrics.cellSize / 2,
-        y: anchorCell[0] * (boardMetrics.cellSize + boardMetrics.cellGap) + boardMetrics.cellSize / 2
+        x:
+          anchorCell[1] * (boardMetrics.cellSize + boardMetrics.cellGap) +
+          boardMetrics.cellSize / 2,
+        y:
+          anchorCell[0] * (boardMetrics.cellSize + boardMetrics.cellGap) +
+          boardMetrics.cellSize / 2,
       }
     : null;
 
   // Shared with the match's rival preview, so both show the same fill and clear highlights.
   const placementPreview = useMemo(() => {
     if (!selectedPiece || !closestPlacementCell || invalidPreview) return null;
-    return getPlacementPreview(board, selectedPiece, closestPlacementCell.row, closestPlacementCell.col);
+    return getPlacementPreview(
+      board,
+      selectedPiece,
+      closestPlacementCell.row,
+      closestPlacementCell.col,
+    );
   }, [board, closestPlacementCell, invalidPreview, selectedPiece]);
   const previewCells = placementPreview?.cells ?? NO_CELLS;
   const previewClearingCells = placementPreview?.clearingCells ?? NO_CELLS;
@@ -223,9 +274,15 @@ export function usePieceSelection({
   function handlePieceSelect(
     piece: PieceInstance,
     event: React.PointerEvent<HTMLButtonElement>,
-    nextAnchorCell: CellCoord
+    nextAnchorCell: CellCoord,
   ) {
-    if (augmentChoiceOpen || !isPlaying || !event.isPrimary || event.button !== 0) return;
+    if (
+      augmentChoiceOpen ||
+      !isPlaying ||
+      !event.isPrimary ||
+      event.button !== 0
+    )
+      return;
     event.preventDefault();
 
     if (piece.uid === selectedId) {
@@ -239,7 +296,12 @@ export function usePieceSelection({
     setHoverCell(null);
     const point = { x: event.clientX, y: event.clientY };
     setCursorPoint(event.pointerType === "touch" ? null : point);
-    dragRef.current = { pointerId: event.pointerId, start: point, pointerType: event.pointerType, moved: false };
+    dragRef.current = {
+      pointerId: event.pointerId,
+      start: point,
+      pointerType: event.pointerType,
+      moved: false,
+    };
     event.currentTarget.setPointerCapture(event.pointerId);
   }
 
@@ -267,6 +329,6 @@ export function usePieceSelection({
     previewCells,
     previewClearingCells,
     selectedPiece,
-    setHoverCell
+    setHoverCell,
   };
 }

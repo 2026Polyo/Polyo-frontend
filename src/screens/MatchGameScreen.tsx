@@ -12,7 +12,13 @@ import { ThemeScope } from "../components/ThemeScope";
 import TrophyReward from "../components/TrophyReward";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
-import { EMPTY_CURSOR, FINISH_REASON_LABELS, getCursorPreview, getTrophyResult, ROOM_CLOSED_MESSAGES } from "../features/matchGame";
+import {
+  EMPTY_CURSOR,
+  FINISH_REASON_LABELS,
+  getCursorPreview,
+  getTrophyResult,
+  ROOM_CLOSED_MESSAGES,
+} from "../features/matchGame";
 import { MatchRoomApiError, matchRoomApi } from "../features/matchroomApi";
 import type { MatchCursor, MatchGameState } from "../features/matchGame";
 import type { MatchRoomDetails } from "../features/matchroom";
@@ -25,7 +31,12 @@ import { useGameAudio } from "../hooks/useGameAudio";
 import { useMatchGame } from "../hooks/useMatchGame";
 import { usePieceSelection } from "../hooks/usePieceSelection";
 import { usePulseLabel } from "../hooks/usePulseLabel";
-import { canPlace, getClosestPlacement, getPlacementDistanceSquared, getPlacementPreview } from "../utils/placement";
+import {
+  canPlace,
+  getClosestPlacement,
+  getPlacementDistanceSquared,
+  getPlacementPreview,
+} from "../utils/placement";
 import "../styles/GameOver.css";
 // Emote picker and bubble animation styles live with the lobby.
 import "../styles/MatchLobby.css";
@@ -35,7 +46,9 @@ import type { Board as BoardType, PieceInstance } from "../types";
 const NO_CELLS = new Set<string>();
 const PLACE_TIMEOUT_MS = 3000;
 const TURN_START_MS = 1000;
-const EMPTY_BOARD: BoardType = Array.from({ length: 8 }, () => Array<null>(8).fill(null));
+const EMPTY_BOARD: BoardType = Array.from({ length: 8 }, () =>
+  Array<null>(8).fill(null),
+);
 
 interface MatchGameScreenProps {
   onExit: () => void;
@@ -43,10 +56,21 @@ interface MatchGameScreenProps {
   user: AuthUser;
 }
 
-function BoardEmoteBubble({ bubble, nickname }: { bubble?: EmoteBubble; nickname: string }) {
+function BoardEmoteBubble({
+  bubble,
+  nickname,
+}: {
+  bubble?: EmoteBubble;
+  nickname: string;
+}) {
   if (!bubble) return null;
   return (
-    <div aria-label={`${nickname}: ${EMOTE_LABELS[bubble.emote]}`} className="match-emote-bubble" key={bubble.key} role="img">
+    <div
+      aria-label={`${nickname}: ${EMOTE_LABELS[bubble.emote]}`}
+      className="match-emote-bubble"
+      key={bubble.key}
+      role="img"
+    >
       <EmoteIcon emote={bubble.emote} size={44} />
     </div>
   );
@@ -62,11 +86,19 @@ interface PlayerTimerProps {
 
 /** Fighting-game style turn clock over a player's board: it drains only while that player is on turn
     and otherwise sits full, waiting. */
-function PlayerTimer({ isMe, isTurn, nickname, remainingMs, turnLimitMs }: PlayerTimerProps) {
+function PlayerTimer({
+  isMe,
+  isTurn,
+  nickname,
+  remainingMs,
+  turnLimitMs,
+}: PlayerTimerProps) {
   const leftMs = isTurn ? remainingMs : turnLimitMs;
   const ratio = turnLimitMs > 0 ? Math.min(1, leftMs / turnLimitMs) : 0;
   return (
-    <div className={`match-player-timer${isMe ? " is-mine" : " is-rival"}${isTurn ? " is-running" : ""}`}>
+    <div
+      className={`match-player-timer${isMe ? " is-mine" : " is-rival"}${isTurn ? " is-running" : ""}`}
+    >
       <div
         aria-label={`${nickname} 차례 남은 시간`}
         aria-valuemax={turnLimitMs}
@@ -75,16 +107,25 @@ function PlayerTimer({ isMe, isTurn, nickname, remainingMs, turnLimitMs }: Playe
         className="hard-timer match-player-timer-bar"
         role="progressbar"
       >
-        <span className="hard-timer-fill" style={{ width: `${ratio * 100}%` }} />
+        <span
+          className="hard-timer-fill"
+          style={{ width: `${ratio * 100}%` }}
+        />
       </div>
-      <span className="match-player-timer-seconds">{(leftMs / 1000).toFixed(1)}</span>
+      <span className="match-player-timer-seconds">
+        {(leftMs / 1000).toFixed(1)}
+      </span>
     </div>
   );
 }
 
 /** Changes exactly when some board changed, i.e. once per applied move. */
 function moveSignature(game: MatchGameState | null): string {
-  return game ? game.players.map((player) => `${player.score}:${player.board.flat().join(",")}`).join("|") : "";
+  return game
+    ? game.players
+        .map((player) => `${player.score}:${player.board.flat().join(",")}`)
+        .join("|")
+    : "";
 }
 
 // The match plays on the same board, tray, score and effects as solo mode; only the state comes from the server.
@@ -92,14 +133,20 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   const emoteBubbles = useEmoteBubbles();
   const showEmote = emoteBubbles.show;
   // My own emote is shown right away, so a server echo of it is ignored.
-  const onEmote = useCallback((userId: string, emote: EmoteId) => {
-    if (userId !== user.id) showEmote(userId, emote);
-  }, [showEmote, user.id]);
+  const onEmote = useCallback(
+    (userId: string, emote: EmoteId) => {
+      if (userId !== user.id) showEmote(userId, emote);
+    },
+    [showEmote, user.id],
+  );
   // Only the latest relayed cursor matters; it is shown on the rival's board while it is their turn.
   const [rivalCursor, setRivalCursor] = useState<MatchCursor | null>(null);
-  const onCursor = useCallback((userId: string, cursor: MatchCursor) => {
-    if (userId !== user.id) setRivalCursor(cursor);
-  }, [user.id]);
+  const onCursor = useCallback(
+    (userId: string, cursor: MatchCursor) => {
+      if (userId !== user.id) setRivalCursor(cursor);
+    },
+    [user.id],
+  );
   const match = useMatchGame(room.roomId, { onEmote, onCursor });
   const [lastEmoteAt, setLastEmoteAt] = useState<number | null>(null);
   const { game } = match;
@@ -113,7 +160,11 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   const leaveControllerRef = useRef<AbortController | null>(null);
   useEffect(() => () => leaveControllerRef.current?.abort(), []);
   const audio = useGameAudio();
-  const { label: clearLabel, pulseId: clearLabelId, pulse: pulseClearLabel } = usePulseLabel();
+  const {
+    label: clearLabel,
+    pulseId: clearLabelId,
+    pulse: pulseClearLabel,
+  } = usePulseLabel();
 
   const me = game?.players.find((player) => player.userId === user.id);
   const rival = game?.players.find((player) => player.userId !== user.id);
@@ -121,7 +172,11 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   const myTurn = Boolean(playing && game?.turnUserId === user.id);
   // Each time the turn passes to me (the first turn included), "MY TURN" bursts in the middle of
   // the screen for TURN_START_MS; the border glow of the on-turn board stays on for the whole turn.
-  const { label: turnLabel, pulseId: turnLabelId, pulse: pulseTurnLabel } = usePulseLabel(TURN_START_MS);
+  const {
+    label: turnLabel,
+    pulseId: turnLabelId,
+    pulse: pulseTurnLabel,
+  } = usePulseLabel(TURN_START_MS);
   const wasMyTurnRef = useRef(false);
   useEffect(() => {
     if (myTurn && !wasMyTurnRef.current) pulseTurnLabel("MY TURN");
@@ -132,8 +187,11 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   const canMove = myTurn && !placing;
   const myBoard = me?.board ?? EMPTY_BOARD;
   const availablePieces = useMemo(
-    () => (canMove && game ? game.tray.filter((piece): piece is PieceInstance => piece !== null) : []),
-    [game, canMove]
+    () =>
+      canMove && game
+        ? game.tray.filter((piece): piece is PieceInstance => piece !== null)
+        : [],
+    [game, canMove],
   );
 
   useEffect(() => {
@@ -149,32 +207,42 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
 
   // usePieceSelection calls this on drop; the piece leaves the tray when the server's next state arrives.
   const clearSelectionRef = useRef<() => void>(() => undefined);
-  const onPlace = useCallback((piece: PieceInstance, row: number, col: number) => {
-    audio.resume();
-    setPlacing(true);
-    match.place(piece.uid, row, col);
-    clearSelectionRef.current();
-  }, [audio, match]);
+  const onPlace = useCallback(
+    (piece: PieceInstance, row: number, col: number) => {
+      audio.resume();
+      setPlacing(true);
+      match.place(piece.uid, row, col);
+      clearSelectionRef.current();
+    },
+    [audio, match],
+  );
 
   const selection = usePieceSelection({
     augmentChoiceOpen: false,
     availablePieces,
     board: myBoard,
     isPlaying: canMove,
-    onPlace
+    onPlace,
   });
   clearSelectionRef.current = selection.clearSelection;
   const comboEffectValue = useComboEffect(me?.combo ?? 0);
 
   // Tell the rival what I hold and where it would land; the hook throttles and skips repeats.
   const { sendCursor } = match;
-  const heldUid = canMove ? selection.selectedPiece?.uid ?? null : null;
-  const aimed = heldUid && !selection.invalidPreview ? selection.closestPlacementCell : null;
+  const heldUid = canMove ? (selection.selectedPiece?.uid ?? null) : null;
+  const aimed =
+    heldUid && !selection.invalidPreview
+      ? selection.closestPlacementCell
+      : null;
   const aimedRow = aimed?.row ?? null;
   const aimedCol = aimed?.col ?? null;
   useEffect(() => {
     if (!playing) return;
-    sendCursor(heldUid ? { pieceUid: heldUid, row: aimedRow, col: aimedCol } : EMPTY_CURSOR);
+    sendCursor(
+      heldUid
+        ? { pieceUid: heldUid, row: aimedRow, col: aimedCol }
+        : EMPTY_CURSOR,
+    );
   }, [playing, heldUid, aimedRow, aimedCol, sendCursor]);
 
   // A cursor from an earlier turn must not linger into the next one.
@@ -182,10 +250,12 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   useEffect(() => {
     setRivalCursor(null);
   }, [turnUserId]);
-  const rivalTurn = Boolean(playing && rival && game?.turnUserId === rival.userId);
+  const rivalTurn = Boolean(
+    playing && rival && game?.turnUserId === rival.userId,
+  );
   const rivalPreview = useMemo(
     () => (rivalTurn && game ? getCursorPreview(rivalCursor, game.tray) : null),
-    [game, rivalCursor, rivalTurn]
+    [game, rivalCursor, rivalTurn],
   );
   // The same landing preview as my own drag: covered cells (plus what a fill block fills in) and
   // the lines it will clear, worked out on the rival's board.
@@ -193,9 +263,21 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   const rivalAimRow = rivalCursor?.row ?? null;
   const rivalAimCol = rivalCursor?.col ?? null;
   const rivalPlacement = useMemo(() => {
-    if (!rivalPreview || !rivalBoard || rivalAimRow === null || rivalAimCol === null) return null;
-    if (!canPlace(rivalBoard, rivalPreview.piece, rivalAimRow, rivalAimCol)) return null;
-    return getPlacementPreview(rivalBoard, rivalPreview.piece, rivalAimRow, rivalAimCol);
+    if (
+      !rivalPreview ||
+      !rivalBoard ||
+      rivalAimRow === null ||
+      rivalAimCol === null
+    )
+      return null;
+    if (!canPlace(rivalBoard, rivalPreview.piece, rivalAimRow, rivalAimCol))
+      return null;
+    return getPlacementPreview(
+      rivalBoard,
+      rivalPreview.piece,
+      rivalAimRow,
+      rivalAimCol,
+    );
   }, [rivalPreview, rivalBoard, rivalAimRow, rivalAimCol]);
 
   // The server sends time left rather than a clock, so the countdown ignores clock differences.
@@ -225,7 +307,10 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
     }
     setClearingUserId(move.userId);
     setClearingCells(new Set(move.clearingCells));
-    const timer = setTimeout(() => setClearingCells(NO_CELLS), CLEAR_HIGHLIGHT_MS);
+    const timer = setTimeout(
+      () => setClearingCells(NO_CELLS),
+      CLEAR_HIGHLIGHT_MS,
+    );
     return () => clearTimeout(timer);
     // Keyed on the signature alone: only a new move should replay feedback.
   }, [signature]);
@@ -240,9 +325,15 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
     const piece = selection.selectedPiece;
     if (!canMove || !piece) return;
     const anchor = selection.anchorCell;
-    const target = anchor ? { row: row - anchor[0], col: col - anchor[1] } : { row, col };
+    const target = anchor
+      ? { row: row - anchor[0], col: col - anchor[1] }
+      : { row, col };
     const closest = getClosestPlacement(myBoard, piece, target);
-    if (!closest || getPlacementDistanceSquared(target, closest) > MAX_SNAP_DISTANCE ** 2) return;
+    if (
+      !closest ||
+      getPlacementDistanceSquared(target, closest) > MAX_SNAP_DISTANCE ** 2
+    )
+      return;
     onPlace(piece, closest.row, closest.col);
   }
 
@@ -272,7 +363,11 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
         onExit();
         return;
       }
-      setLeaveError(error instanceof Error ? error.message : "방에서 나가지 못했어요. 다시 시도해 주세요.");
+      setLeaveError(
+        error instanceof Error
+          ? error.message
+          : "방에서 나가지 못했어요. 다시 시도해 주세요.",
+      );
       setLeaving(false);
     }
   }
@@ -284,7 +379,9 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
         <section className="match-waiting">
           <h1>방이 닫혔어요.</h1>
           <p role="alert">{ROOM_CLOSED_MESSAGES[match.closedReason]}</p>
-          <button className="primary-action" onClick={onExit} type="button">방 목록으로</button>
+          <button className="primary-action" onClick={onExit} type="button">
+            방 목록으로
+          </button>
         </section>
       </main>
     );
@@ -296,7 +393,9 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
         <section className="match-waiting">
           <h1>대전에 접속하지 못했어요.</h1>
           <p role="alert">{match.fatalError}</p>
-          <button className="primary-action" onClick={onExit} type="button">방 목록으로</button>
+          <button className="primary-action" onClick={onExit} type="button">
+            방 목록으로
+          </button>
         </section>
       </main>
     );
@@ -331,25 +430,55 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   const trophyResult = won ? getTrophyResult(game, user.id) : null;
   const selectedPiece = selection.selectedPiece;
   // Seconds left are shown on each board's own timer, so the top bar only says whose turn it is.
-  const turnText = !playing ? "게임 종료" : myTurn ? "내 차례" : `${rival.nickname}님의 차례`;
+  const turnText = !playing
+    ? "게임 종료"
+    : myTurn
+      ? "내 차례"
+      : `${rival.nickname}님의 차례`;
 
   return (
-    <main className={`app-shell play-shell match-shell${selection.cursorPoint ? " has-cursor-piece" : ""}`}>
+    <main
+      className={`app-shell play-shell match-shell${selection.cursorPoint ? " has-cursor-piece" : ""}`}
+    >
       {playing && (
         <div className="match-corner-actions">
           <EmotePicker disabled={!match.connected} onPick={pickEmote} />
-          <button className="secondary-action match-forfeit" onClick={match.forfeit} type="button">
-            <Flag aria-hidden="true" size={18} />기권
+          <button
+            className="secondary-action match-forfeit"
+            onClick={match.forfeit}
+            type="button"
+          >
+            <Flag aria-hidden="true" size={18} />
+            기권
           </button>
         </div>
       )}
-      {turnLabel && <div className="combo-burst match-turn-burst" key={turnLabelId} aria-hidden="true">{turnLabel}</div>}
+      {turnLabel && (
+        <div
+          className="combo-burst match-turn-burst"
+          key={turnLabelId}
+          aria-hidden="true"
+        >
+          {turnLabel}
+        </div>
+      )}
       <section className="game-area match-area">
         <header className="match-topbar">
-          <div className={`bonus-status hard-status match-turn-status${myTurn ? " is-active" : ""}`}>
-            <span><Swords aria-hidden="true" size={16} /> 1:1 대전</span>
-            <strong aria-live="polite" role="status">{turnText}</strong>
-            {!match.connected && playing && <span className="match-reconnecting"><WifiOff aria-hidden="true" size={14} />재연결 중…</span>}
+          <div
+            className={`bonus-status hard-status match-turn-status${myTurn ? " is-active" : ""}`}
+          >
+            <span>
+              <Swords aria-hidden="true" size={16} /> 1:1 대전
+            </span>
+            <strong aria-live="polite" role="status">
+              {turnText}
+            </strong>
+            {!match.connected && playing && (
+              <span className="match-reconnecting">
+                <WifiOff aria-hidden="true" size={14} />
+                재연결 중…
+              </span>
+            )}
           </div>
         </header>
         {/* Both boards share one size and sit side by side in the server's player order, so both
@@ -369,18 +498,26 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
               />
             );
             return isMe ? (
-              <section aria-label="내 보드" className={`match-player is-me ${seat}${isTurn ? " is-turn" : ""}`} key={player.userId}>
+              <section
+                aria-label="내 보드"
+                className={`match-player is-me ${seat}${isTurn ? " is-turn" : ""}`}
+                key={player.userId}
+              >
                 {timer}
                 <div className="match-player-heading">
                   <strong>{me.nickname}</strong>
                   <span className="match-player-tag">나</span>
-                  <span className="match-player-score">{me.score.toLocaleString()}점</span>
+                  <span className="match-player-score">
+                    {me.score.toLocaleString()}점
+                  </span>
                 </div>
                 <div className="board-combo-stage">
                   <Board
                     board={me.board}
                     boardRef={selection.boardRef}
-                    clearingCells={clearingUserId === me.userId ? clearingCells : NO_CELLS}
+                    clearingCells={
+                      clearingUserId === me.userId ? clearingCells : NO_CELLS
+                    }
                     hoverCell={selection.hoverCell}
                     onCellClick={handleCellClick}
                     onCellEnter={selection.setHoverCell}
@@ -389,19 +526,47 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
                     previewClearingCells={selection.previewClearingCells}
                     selectedPiece={selectedPiece}
                   />
-                  {comboEffectValue !== null && <div className="combo-burst" aria-live="polite">combo {comboEffectValue}</div>}
-                  {clearLabel && <div className="clear-burst" key={clearLabelId} aria-live="polite">{clearLabel}</div>}
-                  <BoardEmoteBubble bubble={emoteBubbles.bubbles[user.id]} nickname={me.nickname} />
+                  {comboEffectValue !== null && (
+                    <div className="combo-burst" aria-live="polite">
+                      combo {comboEffectValue}
+                    </div>
+                  )}
+                  {clearLabel && (
+                    <div
+                      className="clear-burst"
+                      key={clearLabelId}
+                      aria-live="polite"
+                    >
+                      {clearLabel}
+                    </div>
+                  )}
+                  <BoardEmoteBubble
+                    bubble={emoteBubbles.bubbles[user.id]}
+                    nickname={me.nickname}
+                  />
                 </div>
               </section>
             ) : (
-              <section aria-label="상대 보드" className={`match-player is-rival ${seat}${isTurn ? " is-turn" : ""}`} key={player.userId}>
+              <section
+                aria-label="상대 보드"
+                className={`match-player is-rival ${seat}${isTurn ? " is-turn" : ""}`}
+                key={player.userId}
+              >
                 {timer}
                 <div className="match-player-heading">
                   <strong>{rival.nickname}</strong>
-                  <span className="match-player-score">{rival.score.toLocaleString()}점</span>
-                  {!rival.connected && <span className="match-disconnected"><WifiOff aria-hidden="true" size={14} />연결 끊김</span>}
-                  {rivalPreview && <span className="match-rival-holding">블록 고르는 중…</span>}
+                  <span className="match-player-score">
+                    {rival.score.toLocaleString()}점
+                  </span>
+                  {!rival.connected && (
+                    <span className="match-disconnected">
+                      <WifiOff aria-hidden="true" size={14} />
+                      연결 끊김
+                    </span>
+                  )}
+                  {rivalPreview && (
+                    <span className="match-rival-holding">블록 고르는 중…</span>
+                  )}
                 </div>
                 <div className="board-combo-stage">
                   {/* My equipped theme is mine alone; the rival's board is always drawn in the classic theme. */}
@@ -409,17 +574,26 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
                     <Board
                       board={rival.board}
                       boardRef={rivalBoardRef}
-                      clearingCells={clearingUserId === rival.userId ? clearingCells : NO_CELLS}
+                      clearingCells={
+                        clearingUserId === rival.userId
+                          ? clearingCells
+                          : NO_CELLS
+                      }
                       hoverCell={null}
                       onCellClick={() => undefined}
                       onCellEnter={() => undefined}
                       onCellLeave={() => undefined}
                       previewCells={rivalPlacement?.cells ?? NO_CELLS}
-                      previewClearingCells={rivalPlacement?.clearingCells ?? NO_CELLS}
+                      previewClearingCells={
+                        rivalPlacement?.clearingCells ?? NO_CELLS
+                      }
                       selectedPiece={rivalPreview?.piece ?? null}
                     />
                   </ThemeScope>
-                  <BoardEmoteBubble bubble={emoteBubbles.bubbles[rival.userId]} nickname={rival.nickname} />
+                  <BoardEmoteBubble
+                    bubble={emoteBubbles.bubbles[rival.userId]}
+                    nickname={rival.nickname}
+                  />
                 </div>
               </section>
             );
@@ -430,7 +604,11 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
             onPieceActivate={selection.handlePieceActivate}
             onPieceSelect={selection.handlePieceSelect}
             // On the rival's turn my tray is disabled, so its highlight shows the block they hold.
-            selectedId={myTurn ? selectedPiece?.uid ?? null : rivalPreview?.piece.uid ?? null}
+            selectedId={
+              myTurn
+                ? (selectedPiece?.uid ?? null)
+                : (rivalPreview?.piece.uid ?? null)
+            }
             tray={game.tray}
           />
           {rivalPreview && rivalCursor && (
@@ -442,54 +620,92 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
                 // A new piece starts over from its own slot.
                 key={rivalPreview.piece.uid}
                 piece={rivalPreview.piece}
-                slotIndex={game.tray.findIndex((slot) => slot?.uid === rivalPreview.piece.uid)}
-                target={rivalCursor.row !== null && rivalCursor.col !== null ? { row: rivalCursor.row, col: rivalCursor.col } : null}
+                slotIndex={game.tray.findIndex(
+                  (slot) => slot?.uid === rivalPreview.piece.uid,
+                )}
+                target={
+                  rivalCursor.row !== null && rivalCursor.col !== null
+                    ? { row: rivalCursor.row, col: rivalCursor.col }
+                    : null
+                }
               />
             </ThemeScope>
           )}
         </div>
-        {match.message && <p className="match-error" role="alert">{match.message}</p>}
-        <p className="placement-hint" aria-live="polite">
-          {!myTurn ? "상대 차례에는 블록을 놓을 수 없어요"
-            : selectedPiece ? "놓을 칸을 누르세요 · 블록을 다시 누르면 선택 취소" : "블록을 끌어 놓거나, 블록과 놓을 칸을 차례로 누르세요"}
-        </p>
-        {selection.cursorPiece && selection.cursorPoint && selection.cursorAnchorOffset && (
-          <div
-            className={`cursor-piece ${selection.invalidPreview ? "invalid" : ""}`}
-            style={{
-              left: selection.cursorPoint.x,
-              top: selection.cursorPoint.y,
-              transform: `translate(-${selection.cursorAnchorOffset.x}px, -${selection.cursorAnchorOffset.y}px)`
-            }}
-          >
-            <PieceShape
-              cellGap={selection.boardMetrics.cellGap}
-              cellSize={selection.boardMetrics.cellSize}
-              className="cursor-piece-grid"
-              piece={selection.cursorPiece}
-            />
-          </div>
+        {match.message && (
+          <p className="match-error" role="alert">
+            {match.message}
+          </p>
         )}
+        <p className="placement-hint" aria-live="polite">
+          {!myTurn
+            ? "상대 차례에는 블록을 놓을 수 없어요"
+            : selectedPiece
+              ? "놓을 칸을 누르세요 · 블록을 다시 누르면 선택 취소"
+              : "블록을 끌어 놓거나, 블록과 놓을 칸을 차례로 누르세요"}
+        </p>
+        {selection.cursorPiece &&
+          selection.cursorPoint &&
+          selection.cursorAnchorOffset && (
+            <div
+              className={`cursor-piece ${selection.invalidPreview ? "invalid" : ""}`}
+              style={{
+                left: selection.cursorPoint.x,
+                top: selection.cursorPoint.y,
+                transform: `translate(-${selection.cursorAnchorOffset.x}px, -${selection.cursorAnchorOffset.y}px)`,
+              }}
+            >
+              <PieceShape
+                cellGap={selection.boardMetrics.cellGap}
+                cellSize={selection.boardMetrics.cellSize}
+                className="cursor-piece-grid"
+                piece={selection.cursorPiece}
+              />
+            </div>
+          )}
       </section>
 
       {!playing && (
-        <div className="game-over" role="dialog" aria-modal="true" aria-labelledby="match-result-title">
+        <div
+          className="game-over"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="match-result-title"
+        >
           <div className="game-over-score" aria-label="내 점수">
             <span>{me.nickname}</span>
             <strong>{me.score}</strong>
           </div>
           <h2 id="match-result-title">{won ? "승리!" : "패배"}</h2>
-          <p className="match-result-reason">{game.finishReason ? FINISH_REASON_LABELS[game.finishReason] : ""}</p>
+          <p className="match-result-reason">
+            {game.finishReason ? FINISH_REASON_LABELS[game.finishReason] : ""}
+          </p>
           {trophyResult && <TrophyReward result={trophyResult} />}
           <div className="game-over-best" aria-label="상대 점수">
             <span>{rival.nickname}</span>
             <strong>{rival.score}</strong>
           </div>
-          {leaveError && <p className="match-result-error" role="alert">{leaveError}</p>}
+          {leaveError && (
+            <p className="match-result-error" role="alert">
+              {leaveError}
+            </p>
+          )}
           <div className="game-over-actions">
             {/* The room stays after a game: both go back to the waiting room to ready and start again. */}
-            <button className="primary-action" disabled={leaving} onClick={match.backToLobby} type="button">한 판 더</button>
-            <button className="secondary-action" disabled={leaving} onClick={() => void leaveRoom()} type="button">
+            <button
+              className="primary-action"
+              disabled={leaving}
+              onClick={match.backToLobby}
+              type="button"
+            >
+              한 판 더
+            </button>
+            <button
+              className="secondary-action"
+              disabled={leaving}
+              onClick={() => void leaveRoom()}
+              type="button"
+            >
               {leaving ? "나가는 중…" : "방 나가기"}
             </button>
           </div>

@@ -18,7 +18,8 @@ export default function ShopThemeCard({
 }: ShopThemeCardProps) {
   const { description } = getThemePresentation(theme.themeId);
   const equipped = wallet.account?.equippedThemeId === theme.themeId;
-  const owned = equipped || wallet.account?.ownedThemeIds.includes(theme.themeId);
+  const owned =
+    equipped || wallet.account?.ownedThemeIds.includes(theme.themeId);
 
   function openDetails(event: MouseEvent<HTMLButtonElement>) {
     onOpenDetails(theme, event.currentTarget);
@@ -51,7 +52,9 @@ export default function ShopThemeCard({
               type="button"
               disabled={wallet.pending}
               aria-pressed={equipped}
-              onClick={() => void wallet.equip(equipped ? "theme_classic" : theme.themeId)}
+              onClick={() =>
+                void wallet.equip(equipped ? "theme_classic" : theme.themeId)
+              }
             >
               {equipped ? "장착 완료" : "보유 테마 장착"}
             </button>
@@ -60,7 +63,9 @@ export default function ShopThemeCard({
               <strong>
                 <Coins size={17} /> {theme.price.toLocaleString("ko-KR")} 코인
               </strong>
-              <button type="button" onClick={openDetails}>자세히 보기</button>
+              <button type="button" onClick={openDetails}>
+                자세히 보기
+              </button>
             </>
           )}
         </div>

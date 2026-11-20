@@ -4,19 +4,28 @@ import {
   getAugmentEffectText,
   getAugmentLevel,
   getAugmentMaxLevel,
-  getNextAugmentScore
+  getNextAugmentScore,
 } from "../features/augments";
-import { AUGMENT_CHOICE_COUNT, AUGMENT_TYPE_LABEL, augmentDetails } from "../features/augmentData";
+import {
+  AUGMENT_CHOICE_COUNT,
+  AUGMENT_TYPE_LABEL,
+  augmentDetails,
+} from "../features/augmentData";
 import { shuffleInPlace } from "../utils/shuffle";
 import type { AugmentDetail, AugmentId, AugmentState } from "../types";
 
 // Pick `count` distinct augments at random, excluding any augment that has
 // already reached its max level.
-function pickRandomAugments(count: number, augmentState: AugmentState): AugmentDetail[] {
+function pickRandomAugments(
+  count: number,
+  augmentState: AugmentState,
+): AugmentDetail[] {
   const pool = shuffleInPlace(
     augmentDetails.filter(
-      (augment) => getAugmentLevel(augmentState, augment.id) < getAugmentMaxLevel(augment.id)
-    )
+      (augment) =>
+        getAugmentLevel(augmentState, augment.id) <
+        getAugmentMaxLevel(augment.id),
+    ),
   );
   return pool.slice(0, Math.min(count, pool.length));
 }
@@ -27,12 +36,23 @@ interface AugmentChoiceModalProps {
   score: number;
 }
 
-export function AugmentChoiceModal({ augmentState, onChoose, score }: AugmentChoiceModalProps) {
+export function AugmentChoiceModal({
+  augmentState,
+  onChoose,
+  score,
+}: AugmentChoiceModalProps) {
   // Roll the offered augments once per modal mount so they stay stable while open.
-  const [choices] = useState<AugmentDetail[]>(() => pickRandomAugments(AUGMENT_CHOICE_COUNT, augmentState));
+  const [choices] = useState<AugmentDetail[]>(() =>
+    pickRandomAugments(AUGMENT_CHOICE_COUNT, augmentState),
+  );
 
   return (
-    <div className="augment-choice-backdrop" role="dialog" aria-modal="true" aria-labelledby="augment-choice-title">
+    <div
+      className="augment-choice-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="augment-choice-title"
+    >
       <section className="augment-choice-panel">
         <div className="augment-choice-heading">
           <strong id="augment-choice-title">증강 선택</strong>
@@ -51,8 +71,12 @@ export function AugmentChoiceModal({ augmentState, onChoose, score }: AugmentCho
                 onClick={() => onChoose(id)}
                 type="button"
               >
-                {isNewAugment && <span className="augment-choice-new">신규</span>}
-                <span className={`augment-choice-type type-${type}`}>{AUGMENT_TYPE_LABEL[type]}</span>
+                {isNewAugment && (
+                  <span className="augment-choice-new">신규</span>
+                )}
+                <span className={`augment-choice-type type-${type}`}>
+                  {AUGMENT_TYPE_LABEL[type]}
+                </span>
                 <span className="augment-choice-icon">
                   <Icon size={48} aria-hidden="true" />
                 </span>
@@ -60,13 +84,19 @@ export function AugmentChoiceModal({ augmentState, onChoose, score }: AugmentCho
                   {label} {nextLevel > 1 ? `${nextLevel}레벨` : ""}
                 </span>
                 <span className="augment-choice-summary">{summary}</span>
-                <span className="augment-choice-effect">{getAugmentEffectText(id, nextLevel)}</span>
+                <span className="augment-choice-effect">
+                  {getAugmentEffectText(id, nextLevel)}
+                </span>
               </button>
             );
           })}
         </div>
         <p className="augment-choice-progress">
-          다음 증강까지 목표 점수: {getNextAugmentScore(score, getAugmentLevel(augmentState, "augment-discount"))}
+          다음 증강까지 목표 점수:{" "}
+          {getNextAugmentScore(
+            score,
+            getAugmentLevel(augmentState, "augment-discount"),
+          )}
         </p>
       </section>
     </div>

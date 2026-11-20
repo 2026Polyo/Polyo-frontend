@@ -19,7 +19,8 @@ export function useShopCatalog() {
     let active = true;
     setCatalog({ status: "loading" });
 
-    creditApi.getShopThemes(page, sort)
+    creditApi
+      .getShopThemes(page, sort)
       .then((data) => {
         if (active) setCatalog({ status: "ready", data });
       })

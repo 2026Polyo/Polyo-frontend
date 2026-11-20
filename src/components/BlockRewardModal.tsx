@@ -14,7 +14,12 @@ function BlockRewardModal({ piece, onConfirm }: BlockRewardModalProps) {
   const name = piece.special ? SPECIAL_LABELS[piece.special] : "새 블록";
 
   return (
-    <div className="block-reward-backdrop" role="dialog" aria-modal="true" aria-labelledby="block-reward-title">
+    <div
+      className="block-reward-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="block-reward-title"
+    >
       <section className="block-reward-panel">
         <div className="block-reward-heading">
           <span>New Block</span>
@@ -26,7 +31,11 @@ function BlockRewardModal({ piece, onConfirm }: BlockRewardModalProps) {
         <p className="block-reward-text">
           <strong>{name}</strong>을(를) 덱에 추가했습니다.
         </p>
-        <button className="block-reward-confirm" onClick={onConfirm} type="button">
+        <button
+          className="block-reward-confirm"
+          onClick={onConfirm}
+          type="button"
+        >
           확인
         </button>
       </section>

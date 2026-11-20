@@ -12,12 +12,21 @@ interface SpecialChoiceModalProps {
 
 function SpecialChoiceModal({ choices, onChoose }: SpecialChoiceModalProps) {
   const previews = useMemo(
-    () => choices.map((template) => ({ template, preview: createPieceInstance(template) })),
-    [choices]
+    () =>
+      choices.map((template) => ({
+        template,
+        preview: createPieceInstance(template),
+      })),
+    [choices],
   );
 
   return (
-    <div className="augment-choice-backdrop" role="dialog" aria-modal="true" aria-labelledby="special-choice-title">
+    <div
+      className="augment-choice-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="special-choice-title"
+    >
       <section className="augment-choice-panel">
         <div className="augment-choice-heading">
           <strong id="special-choice-title">블록 해금</strong>
@@ -27,7 +36,10 @@ function SpecialChoiceModal({ choices, onChoose }: SpecialChoiceModalProps) {
             const special = template.special as SpecialType | undefined;
             const bounds = pieceBounds(preview);
             const longestSide = Math.max(bounds.rows, bounds.cols);
-            const cellSize = Math.min(20, Math.floor((60 - (longestSide - 1) * 2) / longestSide));
+            const cellSize = Math.min(
+              20,
+              Math.floor((60 - (longestSide - 1) * 2) / longestSide),
+            );
             const label = special ? SPECIAL_LABELS[special] : "기본 블록";
             return (
               <button
@@ -43,7 +55,9 @@ function SpecialChoiceModal({ choices, onChoose }: SpecialChoiceModalProps) {
                 </span>
                 <span className="augment-choice-title">{label}</span>
                 <span className="augment-choice-summary">
-                  {special ? SPECIAL_SUMMARIES[special] : "이 블록을 덱에 해금합니다."}
+                  {special
+                    ? SPECIAL_SUMMARIES[special]
+                    : "이 블록을 덱에 해금합니다."}
                 </span>
               </button>
             );

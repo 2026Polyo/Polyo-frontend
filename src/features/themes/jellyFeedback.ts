@@ -63,7 +63,8 @@ export function createJellyParticles(
   const count = kind === "drop" ? JELLY_DROPLET_COUNT : JELLY_SHARD_COUNT;
   const rotation = random() * Math.PI * 2;
   const radiusPercent = () => Math.round(between(30, 76));
-  const fourRadii = () => `${radiusPercent()}% ${radiusPercent()}% ${radiusPercent()}% ${radiusPercent()}%`;
+  const fourRadii = () =>
+    `${radiusPercent()}% ${radiusPercent()}% ${radiusPercent()}% ${radiusPercent()}%`;
   const organicRadius = () => `${fourRadii()} / ${fourRadii()}`;
   return Array.from({ length: count }, (_, index) => {
     // 회전시킨 부채꼴마다 하나씩 배분하고 각도를 흔들어 사방으로 퍼뜨린다.
@@ -145,7 +146,8 @@ function slashesForUniqueCells(cells: readonly FeedbackCell[]): JellySlash[] {
   const slashes: JellySlash[] = [];
   let coveredCols = 0;
   for (let row = 0; row < SIZE; row++) {
-    if (rows[row] === fullLine) slashes.push({ axis: "row", index: row, start: 0, length: SIZE });
+    if (rows[row] === fullLine)
+      slashes.push({ axis: "row", index: row, start: 0, length: SIZE });
   }
   for (let col = 0; col < SIZE; col++) {
     if (cols[col] !== fullLine) continue;

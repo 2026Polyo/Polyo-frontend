@@ -17,7 +17,7 @@ export function createEchoTemplate(): EchoTemplate {
     id: `echo-${base.id}`,
     cells: base.cells.map(([row, col]) => [row, col]),
     color: "echo",
-    special: "echo"
+    special: "echo",
   };
 }
 
@@ -25,7 +25,10 @@ export function isEchoPiece(piece: PieceTemplate | null | undefined): boolean {
   return piece?.special === "echo";
 }
 
-export const isValidEchoPiece = makeSpecialValidator<EchoTemplate>("echo", cellsAreCoordPairs);
+export const isValidEchoPiece = makeSpecialValidator<EchoTemplate>(
+  "echo",
+  cellsAreCoordPairs,
+);
 
 // Count filled cells on the board before the echo piece lands.
 export function getEchoScore(board: Board): number {

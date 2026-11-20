@@ -1,7 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AUTH_TOKEN_KEY } from "../api/auth";
-import { EMPTY_CURSOR, FATAL_ERROR_CODES, gameAfterWaiting, getMatchSocketUrl, parseServerMessage, sameCursor } from "../features/matchGame";
-import type { MatchCursor, MatchGameState, MatchServerMessage, RoomClosedReason } from "../features/matchGame";
+import {
+  EMPTY_CURSOR,
+  FATAL_ERROR_CODES,
+  gameAfterWaiting,
+  getMatchSocketUrl,
+  parseServerMessage,
+  sameCursor,
+} from "../features/matchGame";
+import type {
+  MatchCursor,
+  MatchGameState,
+  MatchServerMessage,
+  RoomClosedReason,
+} from "../features/matchGame";
 import type { EmoteId } from "../features/matchLobby";
 
 type WaitingMessage = Extract<MatchServerMessage, { type: "WAITING" }>;
@@ -28,7 +40,10 @@ interface CursorSendState {
 }
 
 // Keeps a game socket open for one room; the server pushes the whole state after every change.
-export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOptions = {}) {
+export function useMatchGame(
+  roomId: number,
+  { onEmote, onCursor }: MatchGameOptions = {},
+) {
   const [game, setGame] = useState<MatchGameState | null>(null);
   const [connectedUserIds, setConnectedUserIds] = useState<string[]>([]);
   // null until the server reports who is ready; older servers never do.
@@ -38,12 +53,20 @@ export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOpt
   const [message, setMessage] = useState("");
   const [messageCode, setMessageCode] = useState("");
   const [fatalError, setFatalError] = useState("");
-  const [closedReason, setClosedReason] = useState<RoomClosedReason | null>(null);
+  const [closedReason, setClosedReason] = useState<RoomClosedReason | null>(
+    null,
+  );
   const socketRef = useRef<WebSocket | null>(null);
   const stoppedRef = useRef(false);
   const onEmoteRef = useRef(onEmote);
   const onCursorRef = useRef(onCursor);
-  const cursorRef = useRef<CursorSendState>({ last: EMPTY_CURSOR, pending: null, timer: undefined, sent: false, unsupported: false });
+  const cursorRef = useRef<CursorSendState>({
+    last: EMPTY_CURSOR,
+    pending: null,
+    timer: undefined,
+    sent: false,
+    unsupported: false,
+  });
   useEffect(() => {
     onEmoteRef.current = onEmote;
     onCursorRef.current = onCursor;
@@ -54,7 +77,11 @@ export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOpt
     stoppedRef.current = false;
 
     function connect() {
-      const url = getMatchSocketUrl(import.meta.env.VITE_API_BASE_URL ?? "", roomId, window.location);
+      const url = getMatchSocketUrl(
+        import.meta.env.VITE_API_BASE_URL ?? "",
+        roomId,
+        window.location,
+      );
       const socket = new WebSocket(url);
       socketRef.current = socket;
 
@@ -62,7 +89,12 @@ export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOpt
         setConnected(true);
         // A new socket knows nothing of what the old one sent.
         cursorRef.current.last = EMPTY_CURSOR;
-        socket.send(JSON.stringify({ type: "AUTH", token: localStorage.getItem(AUTH_TOKEN_KEY) ?? "" }));
+        socket.send(
+          JSON.stringify({
+            type: "AUTH",
+            token: localStorage.getItem(AUTH_TOKEN_KEY) ?? "",
+          }),
+        );
       };
       socket.onmessage = (event) => {
         const received = parseServerMessage(String(event.data));
@@ -106,7 +138,8 @@ export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOpt
       socket.onclose = () => {
         if (socketRef.current !== socket) return;
         setConnected(false);
-        if (!stoppedRef.current) reconnectTimer = setTimeout(connect, RECONNECT_DELAY_MS);
+        if (!stoppedRef.current)
+          reconnectTimer = setTimeout(connect, RECONNECT_DELAY_MS);
       };
     }
 
@@ -142,12 +175,15 @@ export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOpt
     state.timer = setTimeout(flushCursor, CURSOR_INTERVAL_MS);
   }, [send]);
 
-  const sendCursor = useCallback((cursor: MatchCursor) => {
-    const state = cursorRef.current;
-    if (state.unsupported) return;
-    state.pending = cursor;
-    if (!state.timer) flushCursor();
-  }, [flushCursor]);
+  const sendCursor = useCallback(
+    (cursor: MatchCursor) => {
+      const state = cursorRef.current;
+      if (state.unsupported) return;
+      state.pending = cursor;
+      if (!state.timer) flushCursor();
+    },
+    [flushCursor],
+  );
 
   return {
     closedReason,
@@ -159,13 +195,29 @@ export function useMatchGame(roomId: number, { onEmote, onCursor }: MatchGameOpt
     message,
     messageCode,
     readyUserIds,
-    place: useCallback((pieceUid: string, row: number, col: number) => send({ type: "PLACE", pieceUid, row, col }), [send]),
+    place: useCallback(
+      (pieceUid: string, row: number, col: number) =>
+        send({ type: "PLACE", pieceUid, row, col }),
+      [send],
+    ),
     forfeit: useCallback(() => send({ type: "FORFEIT" }), [send]),
     /** Leaves a finished game's result for the waiting room, where the next game is readied and started. */
-    backToLobby: useCallback(() => setGame((current) => (current?.status === "FINISHED" ? null : current)), []),
-    setReady: useCallback((ready: boolean) => send({ type: "READY", ready }), [send]),
+    backToLobby: useCallback(
+      () =>
+        setGame((current) => (current?.status === "FINISHED" ? null : current)),
+      [],
+    ),
+    setReady: useCallback(
+      (ready: boolean) => send({ type: "READY", ready }),
+      [send],
+    ),
     start: useCallback(() => send({ type: "START" }), [send]),
     sendCursor,
-    sendEmote: useCallback((emote: EmoteId) => { send({ type: "EMOTE", emote }); }, [send])
+    sendEmote: useCallback(
+      (emote: EmoteId) => {
+        send({ type: "EMOTE", emote });
+      },
+      [send],
+    ),
   };
 }

@@ -14,9 +14,19 @@ export type GameThemeId =
 export type ThemeSoundEvent = "placement" | "clear";
 
 export type ThemeSoundCue =
-  | { kind: "file"; src: string; volume: number; playbackRates?: readonly number[] }
+  | {
+      kind: "file";
+      src: string;
+      volume: number;
+      playbackRates?: readonly number[];
+    }
   | { kind: "files"; sources: readonly string[]; volume: number; rate?: number }
-  | { kind: "synth"; preset: ThemeSynthPreset; volume: number; variants?: number }
+  | {
+      kind: "synth";
+      preset: ThemeSynthPreset;
+      volume: number;
+      variants?: number;
+    }
   | { kind: "minecraft"; volume: number };
 
 export interface GameTheme {
@@ -112,7 +122,12 @@ export const JELLY_THEME: GameTheme = {
   effects: "jelly",
   soundMode: "custom",
   sounds: {
-    placement: { kind: "synth", preset: "jelly-placement", volume: 0.52, variants: 3 },
+    placement: {
+      kind: "synth",
+      preset: "jelly-placement",
+      volume: 0.52,
+      variants: 3,
+    },
     clear: { kind: "synth", preset: "jelly-clear", volume: 0.48, variants: 2 },
   },
   background: null,
@@ -130,7 +145,10 @@ export const MINECRAFT_THEME: GameTheme = {
   ),
   effects: "minecraft",
   soundMode: "custom",
-  sounds: { placement: { kind: "minecraft", volume: 0.46 }, clear: { kind: "minecraft", volume: 0.4 } },
+  sounds: {
+    placement: { kind: "minecraft", volume: 0.46 },
+    clear: { kind: "minecraft", volume: 0.4 },
+  },
   background: null,
 };
 
@@ -148,7 +166,9 @@ export const CAT_THEME: GameTheme = {
       kind: "file",
       src: catMeow,
       volume: 0.5,
-      playbackRates: [-3, -1.5, 0, 1.5, 3].map(semitones => 2 ** (semitones / 12)),
+      playbackRates: [-3, -1.5, 0, 1.5, 3].map(
+        (semitones) => 2 ** (semitones / 12),
+      ),
     },
     clear: { kind: "synth", preset: "cat-clear", volume: 0.35, variants: 3 },
   },

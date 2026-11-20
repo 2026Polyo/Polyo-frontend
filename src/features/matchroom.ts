@@ -27,7 +27,10 @@ export interface CreatedMatchRoom extends MatchRoomDetails {
   status: "WAITING";
 }
 
-export interface MatchRoomSummary extends Omit<MatchRoomDetails, "entryCode" | "members" | "status"> {
+export interface MatchRoomSummary extends Omit<
+  MatchRoomDetails,
+  "entryCode" | "members" | "status"
+> {
   hostNickname: string;
   status: "WAITING" | "FULL";
 }
@@ -44,7 +47,10 @@ export interface MatchRoomApi {
   create: CreateRoomHandler;
   list: (page: number, signal: AbortSignal) => Promise<MatchRoomPage>;
   joinById: (roomId: number, signal: AbortSignal) => Promise<MatchRoomDetails>;
-  joinByCode: (entryCode: string, signal: AbortSignal) => Promise<MatchRoomDetails>;
+  joinByCode: (
+    entryCode: string,
+    signal: AbortSignal,
+  ) => Promise<MatchRoomDetails>;
   /** Leaves before the game starts; the server deletes the room when the host leaves. */
   leave: (roomId: number, signal: AbortSignal) => Promise<void>;
 }
@@ -55,7 +61,10 @@ export function normalizeEntryCode(value: string): string {
   return value.trim().toUpperCase();
 }
 
-export type CreateRoomHandler = (input: CreateRoomInput, signal: AbortSignal) => Promise<CreatedMatchRoom>;
+export type CreateRoomHandler = (
+  input: CreateRoomInput,
+  signal: AbortSignal,
+) => Promise<CreatedMatchRoom>;
 
 export function getRoomNameLength(name: string): number {
   return Array.from(name).length;
@@ -67,12 +76,16 @@ export function createInitialRoomValues(): RoomFormValues {
 
 export function validateRoomForm(values: RoomFormValues): RoomFormErrors {
   const errors: RoomFormErrors = {};
-  const nameLength = typeof values.roomName === "string" ? getRoomNameLength(values.roomName.trim()) : 0;
+  const nameLength =
+    typeof values.roomName === "string"
+      ? getRoomNameLength(values.roomName.trim())
+      : 0;
 
   if (nameLength < ROOM_NAME_MIN_LENGTH || nameLength > ROOM_NAME_MAX_LENGTH) {
     errors.roomName = "방 이름은 1~30자로 입력해 주세요.";
   }
-  if (typeof values.isPrivate !== "boolean") errors.isPrivate = "공개 설정을 선택해 주세요.";
+  if (typeof values.isPrivate !== "boolean")
+    errors.isPrivate = "공개 설정을 선택해 주세요.";
 
   return errors;
 }

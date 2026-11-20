@@ -12,7 +12,9 @@ export function useComboEffect(combo: number): number | null {
 
     previousComboRef.current = combo;
     setComboEffectValue(null);
-    const frameId = window.requestAnimationFrame(() => setComboEffectValue(combo));
+    const frameId = window.requestAnimationFrame(() =>
+      setComboEffectValue(combo),
+    );
     const timerId = window.setTimeout(() => setComboEffectValue(null), 980);
 
     return () => {

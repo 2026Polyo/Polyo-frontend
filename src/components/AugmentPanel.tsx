@@ -12,8 +12,12 @@ interface AugmentPanelProps {
 
 export function AugmentPanel({ augmentState }: AugmentPanelProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [activeAugmentId, setActiveAugmentId] = useState<AugmentId | null>(null);
-  const [previewAugmentId, setPreviewAugmentId] = useState<AugmentId | null>(null);
+  const [activeAugmentId, setActiveAugmentId] = useState<AugmentId | null>(
+    null,
+  );
+  const [previewAugmentId, setPreviewAugmentId] = useState<AugmentId | null>(
+    null,
+  );
   const contentId = useId();
   const detailId = useId();
   const sheetId = useId();
@@ -21,10 +25,12 @@ export function AugmentPanel({ augmentState }: AugmentPanelProps) {
   const ownedAugments: AugmentDetailWithLevel[] = augmentDetails
     .map((augment) => ({
       ...augment,
-      level: getAugmentLevel(augmentState, augment.id)
+      level: getAugmentLevel(augmentState, augment.id),
     }))
     .filter(({ level }) => level > 0);
-  const activeAugment = ownedAugments.find(({ id }) => id === (previewAugmentId ?? activeAugmentId));
+  const activeAugment = ownedAugments.find(
+    ({ id }) => id === (previewAugmentId ?? activeAugmentId),
+  );
   const ActiveIcon = activeAugment?.Icon;
 
   return (
@@ -39,7 +45,9 @@ export function AugmentPanel({ augmentState }: AugmentPanelProps) {
       }}
     >
       <header className="augment-panel-head">
-        <strong className="augment-panel-desktop-heading">증강 <span>{ownedAugments.length}개</span></strong>
+        <strong className="augment-panel-desktop-heading">
+          증강 <span>{ownedAugments.length}개</span>
+        </strong>
         <button
           aria-controls={sheetOpen ? sheetId : undefined}
           aria-expanded={sheetOpen}
@@ -61,7 +69,9 @@ export function AugmentPanel({ augmentState }: AugmentPanelProps) {
             {ownedAugments.map(({ Icon, id, label, level }) => (
               <li className="augment-list-entry" key={id}>
                 <button
-                  aria-controls={activeAugment?.id === id ? detailId : undefined}
+                  aria-controls={
+                    activeAugment?.id === id ? detailId : undefined
+                  }
                   aria-expanded={activeAugment?.id === id}
                   aria-label={`${label} ${level}레벨 설명`}
                   className={`augment-card${activeAugment?.id === id ? " active" : ""}`}
@@ -73,7 +83,9 @@ export function AugmentPanel({ augmentState }: AugmentPanelProps) {
                   onPointerLeave={() => setPreviewAugmentId(null)}
                   onClick={() => {
                     setPreviewAugmentId(null);
-                    setActiveAugmentId((current) => current === id ? null : id);
+                    setActiveAugmentId((current) =>
+                      current === id ? null : id,
+                    );
                   }}
                   type="button"
                 >
@@ -85,9 +97,15 @@ export function AugmentPanel({ augmentState }: AugmentPanelProps) {
               </li>
             ))}
           </ul>
-        ) : <p className="augment-empty">획득한 증강이 여기에 표시돼요.</p>}
+        ) : (
+          <p className="augment-empty">획득한 증강이 여기에 표시돼요.</p>
+        )}
         {activeAugment && ActiveIcon && (
-          <aside className="augment-detail-panel" id={detailId} aria-live="polite">
+          <aside
+            className="augment-detail-panel"
+            id={detailId}
+            aria-live="polite"
+          >
             <span className="augment-detail-icon">
               <ActiveIcon size={54} aria-hidden="true" />
             </span>
@@ -132,7 +150,8 @@ function AugmentSheet({ augments, id, onClose }: AugmentSheetProps) {
   useEffect(() => {
     const list = listRef.current;
     if (!list) return undefined;
-    const updateMoreBelow = () => setMoreBelow(list.scrollTop + list.clientHeight < list.scrollHeight - 1);
+    const updateMoreBelow = () =>
+      setMoreBelow(list.scrollTop + list.clientHeight < list.scrollHeight - 1);
     updateMoreBelow();
     list.addEventListener("scroll", updateMoreBelow, { passive: true });
     const observer = new ResizeObserver(updateMoreBelow);
@@ -165,31 +184,48 @@ function AugmentSheet({ augments, id, onClose }: AugmentSheetProps) {
       >
         <span className="augment-sheet-grabber" aria-hidden="true" />
         <header className="augment-sheet-head">
-          <h2 id={titleId}>보유 증강 <span>{augments.length}개</span></h2>
-          <button aria-label="증강 목록 닫기" className="augment-sheet-close" onClick={onClose} ref={closeButtonRef} type="button">
+          <h2 id={titleId}>
+            보유 증강 <span>{augments.length}개</span>
+          </h2>
+          <button
+            aria-label="증강 목록 닫기"
+            className="augment-sheet-close"
+            onClick={onClose}
+            ref={closeButtonRef}
+            type="button"
+          >
             <X size={20} aria-hidden="true" />
           </button>
         </header>
         {augments.length > 0 ? (
-          <div className={`augment-sheet-scroll${moreBelow ? " has-more-below" : ""}`}>
-          <ul className="augment-sheet-list" ref={listRef}>
-            {augments.map(({ Icon, id: augmentId, label, level, summary }) => (
-              <li className="augment-sheet-item" key={augmentId}>
-                <span className="augment-sheet-icon">
-                  <Icon size={24} aria-hidden="true" />
-                </span>
-                <div className="augment-sheet-copy">
-                  <strong>{label} <span className="augment-sheet-level">Lv.{level}</span></strong>
-                  <p>{summary}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div
+            className={`augment-sheet-scroll${moreBelow ? " has-more-below" : ""}`}
+          >
+            <ul className="augment-sheet-list" ref={listRef}>
+              {augments.map(
+                ({ Icon, id: augmentId, label, level, summary }) => (
+                  <li className="augment-sheet-item" key={augmentId}>
+                    <span className="augment-sheet-icon">
+                      <Icon size={24} aria-hidden="true" />
+                    </span>
+                    <div className="augment-sheet-copy">
+                      <strong>
+                        {label}{" "}
+                        <span className="augment-sheet-level">Lv.{level}</span>
+                      </strong>
+                      <p>{summary}</p>
+                    </div>
+                  </li>
+                ),
+              )}
+            </ul>
           </div>
-        ) : <p className="augment-sheet-empty">아직 획득한 증강이 없어요.</p>}
+        ) : (
+          <p className="augment-sheet-empty">아직 획득한 증강이 없어요.</p>
+        )}
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 

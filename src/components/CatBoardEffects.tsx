@@ -175,7 +175,13 @@ const CatSlamEffect = memo(function CatSlamEffect({
       height: `${cellHeight}px`,
     });
 
-    const pose = (x: number, y: number, angle: number, size: number, tilt = 0) =>
+    const pose = (
+      x: number,
+      y: number,
+      angle: number,
+      size: number,
+      tilt = 0,
+    ) =>
       `perspective(650px) translate(${x}px, ${y}px) rotateY(${tilt}deg) rotate(${angle}deg) scale(${size})`;
     const flightSide = fromX > 0 ? 1 : -1;
     const animations = [

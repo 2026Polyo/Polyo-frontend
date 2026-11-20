@@ -4,7 +4,11 @@ import { Check, Shuffle, X } from "lucide-react";
 import PieceShape from "./PieceShape";
 import { PIECES } from "../constants/gameData";
 import { SPECIAL_LABELS } from "../features/specials";
-import { blockName, createPieceInstance, pieceBounds } from "../utils/pieceUtils";
+import {
+  blockName,
+  createPieceInstance,
+  pieceBounds,
+} from "../utils/pieceUtils";
 import type { PieceInstance, PieceTemplate, SpecialType } from "../types";
 
 interface StartDeckModalProps {
@@ -36,10 +40,19 @@ interface BlockTileProps {
   onClick: () => void;
 }
 
-function BlockTile({ piece, label, selected, disabled, onClick }: BlockTileProps) {
+function BlockTile({
+  piece,
+  label,
+  selected,
+  disabled,
+  onClick,
+}: BlockTileProps) {
   const bounds = pieceBounds(piece);
   const longestSide = Math.max(bounds.rows, bounds.cols);
-  const cellSize = Math.min(18, Math.floor((58 - (longestSide - 1) * 2) / longestSide));
+  const cellSize = Math.min(
+    18,
+    Math.floor((58 - (longestSide - 1) * 2) / longestSide),
+  );
 
   return (
     <button
@@ -73,41 +86,66 @@ function StartDeckModal({
   onAddSpecial,
   onRemoveSpecial,
   onRandomize,
-  onClose
+  onClose,
 }: StartDeckModalProps) {
   // Stable instances (colors don't reshuffle while editing).
   const ownedBase = useMemo(() => {
     const available = new Set(availableBaseIds);
-    return PIECES.filter((piece) => available.has(piece.id)).map(createPieceInstance);
+    return PIECES.filter((piece) => available.has(piece.id)).map(
+      createPieceInstance,
+    );
   }, [availableBaseIds]);
   const ownedSpecials = useMemo(() => stash.map(createPieceInstance), [stash]);
   const templateById = useMemo(() => {
     const map = new Map<string, PieceInstance>();
-    [...ownedBase, ...ownedSpecials].forEach((piece) => map.set(piece.id, piece));
+    [...ownedBase, ...ownedSpecials].forEach((piece) =>
+      map.set(piece.id, piece),
+    );
     return map;
   }, [ownedBase, ownedSpecials]);
 
   const baseCounts = useMemo(() => countsOf(baseLoadout), [baseLoadout]);
   const specialCounts = useMemo(() => countsOf(loadoutIds), [loadoutIds]);
 
-  const availableSet = useMemo(() => new Set(availableBaseIds), [availableBaseIds]);
+  const availableSet = useMemo(
+    () => new Set(availableBaseIds),
+    [availableBaseIds],
+  );
   const baseTotal = baseLoadout.filter((id) => availableSet.has(id)).length;
   const specialTotal = loadoutIds.length;
 
   // Unique blocks currently in the deck, in catalog order.
-  const deckBaseIds = ownedBase.map((p) => p.id).filter((id) => (baseCounts.get(id) ?? 0) > 0);
-  const deckSpecialIds = ownedSpecials.map((p) => p.id).filter((id) => (specialCounts.get(id) ?? 0) > 0);
+  const deckBaseIds = ownedBase
+    .map((p) => p.id)
+    .filter((id) => (baseCounts.get(id) ?? 0) > 0);
+  const deckSpecialIds = ownedSpecials
+    .map((p) => p.id)
+    .filter((id) => (specialCounts.get(id) ?? 0) > 0);
 
   return (
-    <div className="deck-backdrop" role="dialog" aria-modal="true" aria-labelledby="start-deck-title" onClick={onClose}>
-      <section className="deck-panel deck-builder" onClick={(event) => event.stopPropagation()}>
+    <div
+      className="deck-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="start-deck-title"
+      onClick={onClose}
+    >
+      <section
+        className="deck-panel deck-builder"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="deck-builder-header">
           <div className="deck-heading">
             <div>
               <span>Deck</span>
               <strong id="start-deck-title">덱 구성</strong>
             </div>
-            <button aria-label="닫기" className="deck-close" onClick={onClose} type="button">
+            <button
+              aria-label="닫기"
+              className="deck-close"
+              onClick={onClose}
+              type="button"
+            >
               <X size={20} aria-hidden="true" />
             </button>
           </div>
@@ -117,9 +155,13 @@ function StartDeckModal({
         <div className="deck-columns">
           {/* 현재 덱 */}
           <div className="deck-column deck-current-column">
-            <p className="deck-section-title">현재 덱 · 기본 ({baseTotal}/{maxBase})</p>
+            <p className="deck-section-title">
+              현재 덱 · 기본 ({baseTotal}/{maxBase})
+            </p>
             <div className="deck-grid mini">
-              {deckBaseIds.length === 0 && <p className="deck-empty">비어 있음</p>}
+              {deckBaseIds.length === 0 && (
+                <p className="deck-empty">비어 있음</p>
+              )}
               {deckBaseIds.map((id) => (
                 <BlockTile
                   key={id}
@@ -130,9 +172,13 @@ function StartDeckModal({
                 />
               ))}
             </div>
-            <p className="deck-section-title">현재 덱 · 특수 ({specialTotal}/{maxSpecial})</p>
+            <p className="deck-section-title">
+              현재 덱 · 특수 ({specialTotal}/{maxSpecial})
+            </p>
             <div className="deck-grid mini">
-              {deckSpecialIds.length === 0 && <p className="deck-empty">비어 있음</p>}
+              {deckSpecialIds.length === 0 && (
+                <p className="deck-empty">비어 있음</p>
+              )}
               {deckSpecialIds.map((id) => {
                 const piece = templateById.get(id);
                 return piece ? (
@@ -140,7 +186,9 @@ function StartDeckModal({
                     key={id}
                     piece={piece}
                     selected
-                    label={SPECIAL_LABELS[piece.special as SpecialType] ?? "특수"}
+                    label={
+                      SPECIAL_LABELS[piece.special as SpecialType] ?? "특수"
+                    }
                     onClick={() => onRemoveSpecial(id)}
                   />
                 ) : null;
@@ -160,24 +208,34 @@ function StartDeckModal({
                     piece={piece}
                     selected={inDeck}
                     disabled={inDeck ? baseTotal <= 1 : baseTotal >= maxBase}
-                    onClick={() => inDeck ? onRemoveBase(piece.id) : onAddBase(piece.id)}
+                    onClick={() =>
+                      inDeck ? onRemoveBase(piece.id) : onAddBase(piece.id)
+                    }
                   />
                 );
               })}
             </div>
             <p className="deck-section-title">가진 블록 · 특수</p>
             <div className="deck-grid mini">
-              {ownedSpecials.length === 0 && <p className="deck-empty">아직 해금한 특수 블록이 없습니다.</p>}
+              {ownedSpecials.length === 0 && (
+                <p className="deck-empty">아직 해금한 특수 블록이 없습니다.</p>
+              )}
               {ownedSpecials.map((piece) => {
                 const inDeck = (specialCounts.get(piece.id) ?? 0) > 0;
                 return (
                   <BlockTile
                     key={piece.id}
                     piece={piece}
-                    label={SPECIAL_LABELS[piece.special as SpecialType] ?? "특수"}
+                    label={
+                      SPECIAL_LABELS[piece.special as SpecialType] ?? "특수"
+                    }
                     selected={inDeck}
                     disabled={!inDeck && specialTotal >= maxSpecial}
-                    onClick={() => inDeck ? onRemoveSpecial(piece.id) : onAddSpecial(piece.id)}
+                    onClick={() =>
+                      inDeck
+                        ? onRemoveSpecial(piece.id)
+                        : onAddSpecial(piece.id)
+                    }
                   />
                 );
               })}
@@ -191,7 +249,11 @@ function StartDeckModal({
               : `완료하려면 기본 블록 ${maxBase}개를 선택해야 해요. (현재 ${baseTotal}/${maxBase})`}
           </p>
           <div className="deck-builder-actions">
-            <button className="deck-done deck-randomize" onClick={onRandomize} type="button">
+            <button
+              className="deck-done deck-randomize"
+              onClick={onRandomize}
+              type="button"
+            >
               <Shuffle size={17} aria-hidden="true" />
               랜덤 덱 구성
             </button>

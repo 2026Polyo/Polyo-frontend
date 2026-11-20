@@ -44,7 +44,10 @@ interface BoardProps {
   selectedPiece: PieceInstance | null;
 }
 
-type CellHandlers = Pick<BoardProps, "onCellClick" | "onCellEnter" | "onCellLeave">;
+type CellHandlers = Pick<
+  BoardProps,
+  "onCellClick" | "onCellEnter" | "onCellLeave"
+>;
 
 interface BoardCellProps {
   row: number;
@@ -114,7 +117,11 @@ const BoardCell = memo(function BoardCell({
           key={placedId ?? "rest"}
           className={`jelly-tile-face ${isPlaced ? "jelly-tile-reveal" : ""}`}
           data-special={special}
-          style={isPlaced ? { animationDuration: `${JELLY_LANDING_MS}ms` } : undefined}
+          style={
+            isPlaced
+              ? { animationDuration: `${JELLY_LANDING_MS}ms` }
+              : undefined
+          }
           aria-hidden="true"
         />
       )}
@@ -197,7 +204,9 @@ function Board({
             const key = `${rowIndex}-${colIndex}`;
             const isPreview = previewCells.has(key);
             const isClearing = clearingCells.has(key);
-            const previewColor = isPreview ? selectedPiece?.color ?? null : null;
+            const previewColor = isPreview
+              ? (selectedPiece?.color ?? null)
+              : null;
             let catConnections: string | undefined;
             if (theme.tileStyle === "cat") {
               const connectionGroup = catConnectionGroup(
@@ -211,7 +220,8 @@ function Board({
                   ? (r, c) => previewCells.has(`${r}-${c}`)
                   : (r, c) =>
                       (isClearing ? isCatFilled(r, c) : isCatRemaining(r, c)) &&
-                      connectionGroup === catConnectionGroup(board, specialPieceGroups, r, c),
+                      connectionGroup ===
+                        catConnectionGroup(board, specialPieceGroups, r, c),
                 rowIndex,
                 colIndex,
               );
@@ -227,7 +237,9 @@ function Board({
                 isPreview={isPreview}
                 isClearing={isClearing}
                 isPreviewClearing={previewClearingCells.has(key)}
-                placedId={cell && placedCells?.has(key) ? feedback?.id : undefined}
+                placedId={
+                  cell && placedCells?.has(key) ? feedback?.id : undefined
+                }
                 catConnections={catConnections}
                 handlers={handlers}
               />

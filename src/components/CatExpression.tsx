@@ -103,7 +103,11 @@ export default function CatExpression({
         {expression === "grin" && (
           <>
             <path d="M17 42q33 14 66 0q-4 27-33 27q-29 0-33-27z" fill="#fff" />
-            <path d="M31 47v16M44 51v17M57 51v17M70 47v16" fill="none" stroke="#39323f" />
+            <path
+              d="M31 47v16M44 51v17M57 51v17M70 47v16"
+              fill="none"
+              stroke="#39323f"
+            />
           </>
         )}
       </g>

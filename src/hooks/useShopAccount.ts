@@ -8,13 +8,19 @@ const SHOP_ERRORS: Record<string, string> = {
 };
 
 export function useShopAccount(userId: string | undefined) {
-  const [loaded, setLoaded] = useState<{ userId: string; data: ShopAccount } | null>(null);
+  const [loaded, setLoaded] = useState<{
+    userId: string;
+    data: ShopAccount;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const request = useRef(0);
   const busy = useRef(false);
 
-  async function load(action: () => Promise<ShopAccount>, fallbackMessage: string) {
+  async function load(
+    action: () => Promise<ShopAccount>,
+    fallbackMessage: string,
+  ) {
     if (!userId || busy.current) return false;
     busy.current = true;
     const current = ++request.current;
@@ -27,7 +33,10 @@ export function useShopAccount(userId: string | undefined) {
       return true;
     } catch (failure) {
       if (request.current === current) {
-        const message = failure instanceof CreditApiError ? SHOP_ERRORS[failure.code] : undefined;
+        const message =
+          failure instanceof CreditApiError
+            ? SHOP_ERRORS[failure.code]
+            : undefined;
         setError(message ?? fallbackMessage);
       }
       return false;
@@ -40,7 +49,10 @@ export function useShopAccount(userId: string | undefined) {
   }
 
   function refresh() {
-    return load(creditApi.getShopAccount, "보유 코인과 테마를 불러오지 못했습니다.");
+    return load(
+      creditApi.getShopAccount,
+      "보유 코인과 테마를 불러오지 못했습니다.",
+    );
   }
 
   useEffect(() => {
@@ -55,12 +67,20 @@ export function useShopAccount(userId: string | undefined) {
   }, [userId]);
 
   return {
-    account: loaded?.userId === userId ? loaded?.data ?? null : null,
+    account: loaded?.userId === userId ? (loaded?.data ?? null) : null,
     pending,
     error,
     refresh,
-    purchase: (themeId: string) => load(() => creditApi.purchaseTheme(themeId), "구매 결과를 확인하지 못했습니다. 다시 시도해 주세요."),
-    equip: (themeId: string) => load(() => creditApi.equipTheme(themeId), "테마를 장착하지 못했습니다. 다시 시도해 주세요."),
+    purchase: (themeId: string) =>
+      load(
+        () => creditApi.purchaseTheme(themeId),
+        "구매 결과를 확인하지 못했습니다. 다시 시도해 주세요.",
+      ),
+    equip: (themeId: string) =>
+      load(
+        () => creditApi.equipTheme(themeId),
+        "테마를 장착하지 못했습니다. 다시 시도해 주세요.",
+      ),
   };
 }
 

@@ -16,7 +16,7 @@ export function createFillTemplate(): FillTemplate {
     id: `fill-${base.id}`,
     cells: base.cells.map(([row, col]) => [row, col]),
     color: "fill",
-    special: "fill"
+    special: "fill",
   };
 }
 
@@ -24,4 +24,7 @@ export function isFillPiece(piece: PieceTemplate | null | undefined): boolean {
   return piece?.special === "fill";
 }
 
-export const isValidFillPiece = makeSpecialValidator<FillTemplate>("fill", cellsAreCoordPairs);
+export const isValidFillPiece = makeSpecialValidator<FillTemplate>(
+  "fill",
+  cellsAreCoordPairs,
+);

@@ -6,7 +6,11 @@ import type { PieceInstance, CellCoord } from "../types";
 interface PieceTrayProps {
   disabled: boolean;
   onEmptySlotClick: () => void;
-  onPieceSelect: (piece: PieceInstance, event: React.PointerEvent<HTMLButtonElement>, anchorCell: CellCoord) => void;
+  onPieceSelect: (
+    piece: PieceInstance,
+    event: React.PointerEvent<HTMLButtonElement>,
+    anchorCell: CellCoord,
+  ) => void;
   onPieceActivate: (piece: PieceInstance) => void;
   selectedId: string | null;
   /** Three slots in solo play; the match shares six. */
@@ -19,17 +23,23 @@ function PieceTray({
   onPieceSelect,
   onPieceActivate,
   selectedId,
-  tray
+  tray,
 }: PieceTrayProps) {
   const theme = useGameTheme();
   return (
-    <div className="tray" aria-label="사용 가능한 블록" data-game-theme={theme.id}>
+    <div
+      className="tray"
+      aria-label="사용 가능한 블록"
+      data-game-theme={theme.id}
+    >
       {tray.map((piece, index) =>
         piece ? (
           <PiecePreview
             disabled={disabled}
             key={piece.uid}
-            onPointerDown={(event, anchorCell) => onPieceSelect(piece, event, anchorCell)}
+            onPointerDown={(event, anchorCell) =>
+              onPieceSelect(piece, event, anchorCell)
+            }
             onActivate={() => onPieceActivate(piece)}
             piece={piece}
             selected={selectedId === piece.uid}
@@ -40,7 +50,7 @@ function PieceTray({
             key={`empty-${index}`}
             onPointerDown={selectedId ? onEmptySlotClick : undefined}
           />
-        )
+        ),
       )}
     </div>
   );

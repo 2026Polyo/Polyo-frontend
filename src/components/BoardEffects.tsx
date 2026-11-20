@@ -86,14 +86,26 @@ const PixelCell = memo(function PixelCell({
   );
 });
 
-const PixelEffectBatch = memo(function PixelEffectBatch({ batch }: { batch: EffectBatch }) {
+const PixelEffectBatch = memo(function PixelEffectBatch({
+  batch,
+}: {
+  batch: EffectBatch;
+}) {
   return (
     <div className="pixel-effect-batch" data-effect-id={batch.id}>
       {batch.placed.map((cell) => (
-        <PixelCell key={`place-${cell.row}-${cell.col}`} cell={cell} kind="place" />
+        <PixelCell
+          key={`place-${cell.row}-${cell.col}`}
+          cell={cell}
+          kind="place"
+        />
       ))}
       {batch.cleared.map((cell) => (
-        <PixelCell key={`clear-${cell.row}-${cell.col}`} cell={cell} kind="clear" />
+        <PixelCell
+          key={`clear-${cell.row}-${cell.col}`}
+          cell={cell}
+          kind="clear"
+        />
       ))}
       {batch.holeCells.length > 0 && <NeonBlackHole cells={batch.holeCells} />}
     </div>
@@ -166,9 +178,11 @@ export default memo(function BoardEffects({
         );
         setBatches(active.current.map((entry) => entry.feedback));
       },
-      blackHole ? NEON_HOLE_LIFETIME_MS : feedback.cleared.length > 0
-        ? PIXEL_EFFECT_LIFETIME_MS
-        : PLACEMENT_EFFECT_LIFETIME_MS,
+      blackHole
+        ? NEON_HOLE_LIFETIME_MS
+        : feedback.cleared.length > 0
+          ? PIXEL_EFFECT_LIFETIME_MS
+          : PLACEMENT_EFFECT_LIFETIME_MS,
     );
     active.current = [...retained, { feedback: batch, particleCount, timer }];
     setBatches(active.current.map((entry) => entry.feedback));

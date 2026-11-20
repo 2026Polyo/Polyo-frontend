@@ -20,7 +20,7 @@ export function createBombTemplate(): BombTemplate {
     id: `bomb-${base.id}`,
     cells: base.cells.map(([row, col]) => [row, col]),
     color: "bomb",
-    special: "bomb"
+    special: "bomb",
   };
 }
 
@@ -28,7 +28,10 @@ export function isBombPiece(piece: PieceTemplate | null | undefined): boolean {
   return piece?.special === "bomb";
 }
 
-export const isValidBombPiece = makeSpecialValidator<BombTemplate>("bomb", cellsAreCoordPairs);
+export const isValidBombPiece = makeSpecialValidator<BombTemplate>(
+  "bomb",
+  cellsAreCoordPairs,
+);
 
 export interface BombResolution {
   board: Board;
@@ -44,7 +47,7 @@ export interface BombResolution {
 export function resolveBombClears(
   bombCells: Set<string>,
   clearedCells: Set<string>,
-  board: Board
+  board: Board,
 ): BombResolution {
   // Bombs detonate only when their own cell is among the cells cleared this turn.
   const triggered: string[] = [];
@@ -68,7 +71,10 @@ export function resolveBombClears(
   while (queue.length) {
     const [row, col] = queue.shift()!.split("-").map(Number);
     for (let i = 0; i < SIZE; i += 1) {
-      for (const [r, c] of [[row, i], [i, col]] as const) {
+      for (const [r, c] of [
+        [row, i],
+        [i, col],
+      ] as const) {
         const key = `${r}-${c}`;
         const hadBlock = nextBoard[r][c] !== null;
         nextBoard[r][c] = null;
@@ -89,6 +95,6 @@ export function resolveBombClears(
     board: nextBoard,
     bombCells: remaining,
     clearedCells: extraCleared,
-    bonus: extraCleared.length * BOMB_CLEAR_BONUS
+    bonus: extraCleared.length * BOMB_CLEAR_BONUS,
   };
 }

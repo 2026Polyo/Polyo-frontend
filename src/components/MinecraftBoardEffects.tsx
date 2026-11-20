@@ -68,7 +68,11 @@ const MinecraftCellEffect = memo(function MinecraftCellEffect({
   );
 });
 
-const MinecraftClearEffect = memo(function MinecraftClearEffect({ batch }: { batch: MinecraftEffectBatch }) {
+const MinecraftClearEffect = memo(function MinecraftClearEffect({
+  batch,
+}: {
+  batch: MinecraftEffectBatch;
+}) {
   return (
     <div className="mc-effect-batch" data-effect-id={batch.id}>
       {batch.cleared.map((cell) => (

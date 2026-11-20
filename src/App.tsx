@@ -40,7 +40,9 @@ const PRACTICE_DISCOVERY_KEY = "polyo.practice.discovered";
 
 function App() {
   const [shopOpen, setShopOpen] = useState(false);
-  const [practice, setPractice] = useState<{ firstVisit: boolean } | null>(null);
+  const [practice, setPractice] = useState<{ firstVisit: boolean } | null>(
+    null,
+  );
   const discoveredPractice = useRef(false);
   const [rankingOpen, setRankingOpen] = useState(false);
   const [rankingProfileId, setRankingProfileId] = useState<string | null>(null);
@@ -227,10 +229,21 @@ function App() {
           <RankingScreen
             currentUserId={user.id}
             themeId={activeThemeId}
-            onBack={() => { setRankingOpen(false); setRankingProfileId(null); }}
+            onBack={() => {
+              setRankingOpen(false);
+              setRankingProfileId(null);
+            }}
             onSelectProfile={setRankingProfileId}
           />
-          {rankingProfileId && <ProfileModal user={{ id: rankingProfileId, loginId: "", nickname: "" }} profileUserId={rankingProfileId} readOnly={rankingProfileId !== user.id} onClose={() => setRankingProfileId(null)} onUserChange={rankingProfileId === user.id ? setUser : undefined} />}
+          {rankingProfileId && (
+            <ProfileModal
+              user={{ id: rankingProfileId, loginId: "", nickname: "" }}
+              profileUserId={rankingProfileId}
+              readOnly={rankingProfileId !== user.id}
+              onClose={() => setRankingProfileId(null)}
+              onUserChange={rankingProfileId === user.id ? setUser : undefined}
+            />
+          )}
         </ThemeScope>
       );
     }
@@ -250,8 +263,10 @@ function App() {
           onOpenPractice={() => {
             let firstVisit = !discoveredPractice.current;
             try {
-              firstVisit &&= localStorage.getItem(PRACTICE_DISCOVERY_KEY) !== "true";
-              if (firstVisit) localStorage.setItem(PRACTICE_DISCOVERY_KEY, "true");
+              firstVisit &&=
+                localStorage.getItem(PRACTICE_DISCOVERY_KEY) !== "true";
+              if (firstVisit)
+                localStorage.setItem(PRACTICE_DISCOVERY_KEY, "true");
             } catch {
               // The current session still remembers the discovery if browser storage is unavailable.
             }

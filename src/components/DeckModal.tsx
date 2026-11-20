@@ -13,7 +13,9 @@ function DeckTile({ piece }: DeckTileProps) {
     <div className={`deck-tile ${piece.special ? "special" : ""}`}>
       <PieceShape cellSize={16} cellGap={2} piece={piece} />
       {piece.special && (
-        <span className="deck-tile-label">{SPECIAL_LABELS[piece.special] ?? "특수"}</span>
+        <span className="deck-tile-label">
+          {SPECIAL_LABELS[piece.special] ?? "특수"}
+        </span>
       )}
     </div>
   );
@@ -36,13 +38,21 @@ function DeckModal({ deckPieces, onClose }: DeckModalProps) {
       aria-labelledby="deck-title"
       onClick={onClose}
     >
-      <section className="deck-panel" onClick={(event) => event.stopPropagation()}>
+      <section
+        className="deck-panel"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="deck-heading">
           <div>
             <span>Deck</span>
             <strong id="deck-title">현재 덱 ({deckPieces.length})</strong>
           </div>
-          <button aria-label="닫기" className="deck-close" onClick={onClose} type="button">
+          <button
+            aria-label="닫기"
+            className="deck-close"
+            onClick={onClose}
+            type="button"
+          >
             <X size={20} aria-hidden="true" />
           </button>
         </div>

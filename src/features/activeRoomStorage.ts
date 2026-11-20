@@ -16,13 +16,19 @@ function defaultStorage(): StorageLike | null {
   }
 }
 
-export function loadActiveRoom(userId: string, storage: StorageLike | null = defaultStorage()): MatchRoomDetails | null {
+export function loadActiveRoom(
+  userId: string,
+  storage: StorageLike | null = defaultStorage(),
+): MatchRoomDetails | null {
   try {
     const raw = storage?.getItem(ACTIVE_ROOM_KEY);
     if (!raw) return null;
     const saved: unknown = JSON.parse(raw);
     if (typeof saved !== "object" || saved === null) return null;
-    const { userId: savedUserId, room } = saved as { userId?: unknown; room?: unknown };
+    const { userId: savedUserId, room } = saved as {
+      userId?: unknown;
+      room?: unknown;
+    };
     // Another account signed in on this tab must not land in the previous account's room.
     if (savedUserId !== userId || !isRoomDetails(room)) return null;
     return room;
@@ -31,7 +37,11 @@ export function loadActiveRoom(userId: string, storage: StorageLike | null = def
   }
 }
 
-export function saveActiveRoom(userId: string, room: MatchRoomDetails, storage: StorageLike | null = defaultStorage()) {
+export function saveActiveRoom(
+  userId: string,
+  room: MatchRoomDetails,
+  storage: StorageLike | null = defaultStorage(),
+) {
   try {
     storage?.setItem(ACTIVE_ROOM_KEY, JSON.stringify({ userId, room }));
   } catch {
@@ -39,7 +49,9 @@ export function saveActiveRoom(userId: string, room: MatchRoomDetails, storage: 
   }
 }
 
-export function clearActiveRoom(storage: StorageLike | null = defaultStorage()) {
+export function clearActiveRoom(
+  storage: StorageLike | null = defaultStorage(),
+) {
   try {
     storage?.removeItem(ACTIVE_ROOM_KEY);
   } catch {

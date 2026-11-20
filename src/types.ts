@@ -21,7 +21,14 @@ export type CellCoord = [number, number];
 
 // ─── Specials ─────────────────────────────────────────────────────────────────
 
-export type SpecialType = "ghost" | "line" | "echo" | "golden" | "bomb" | "fill" | "boost";
+export type SpecialType =
+  | "ghost"
+  | "line"
+  | "echo"
+  | "golden"
+  | "bomb"
+  | "fill"
+  | "boost";
 
 export interface SpecialMarks {
   bomb: Set<string>;
@@ -49,7 +56,11 @@ export interface PieceInstance extends PieceTemplate {
 }
 
 /** Tray always has exactly 3 slots; each slot is occupied or empty. */
-export type Tray = [PieceInstance | null, PieceInstance | null, PieceInstance | null];
+export type Tray = [
+  PieceInstance | null,
+  PieceInstance | null,
+  PieceInstance | null,
+];
 
 // ─── Augments ─────────────────────────────────────────────────────────────────
 
@@ -77,7 +88,13 @@ export type AugmentId =
   | "item-chain";
 
 // Every augment belongs to a category, shown in the choice UI.
-export type AugmentType = "combo" | "item" | "clear" | "multiline" | "placement" | "etc";
+export type AugmentType =
+  | "combo"
+  | "item"
+  | "clear"
+  | "multiline"
+  | "placement"
+  | "etc";
 
 export type AugmentLevels = Record<AugmentId, number>;
 
