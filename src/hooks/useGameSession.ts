@@ -338,7 +338,8 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     && !(gameMode === "hard" && (hardRequest.state.pending || hardRequest.state.retry) && !hardGame.current?.finished);
 
   const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
-  const bonusPaused = !isPlaying || gameOver || isClearing || gravityAnimating || selectionBlocked || settingsOpen || deckModalOpen || rerollModalSlot !== null;
+  // Bonus time keeps running while cleared lines animate; only gameplay pauses stop its clock.
+  const bonusPaused = !isPlaying || gameOver || gravityAnimating || selectionBlocked || settingsOpen || deckModalOpen || rerollModalSlot !== null;
 
   useEffect(() => {
     if (!isPlaying || gameMode !== "hard" || gameOver || settingsOpen) {
@@ -721,7 +722,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     });
     const feedback = createBoardFeedback(
       ++feedbackSequence.current, piece, row, col,
-      outcome.displayBoard, outcome.clearingCells
+      outcome.displayBoard, outcome.clearingCells, outcome.cleared
     );
     audio.playClearFeedback(outcome.cleared, outcome.clearingCells.size, feedback.cleared);
     setBoardFeedback(feedback);

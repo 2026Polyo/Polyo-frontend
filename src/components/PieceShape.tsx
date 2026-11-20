@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { colorClass } from "../constants/gameData";
 import "../styles/PieceShape.css";
 import { pieceBounds } from "../utils/pieceUtils";
@@ -43,6 +44,7 @@ function PieceShape({
           gridTemplateRows: `repeat(${bounds.rows}, var(--mini-cell-size))`,
           "--mini-cell-gap": `${cellGap}px`,
           "--mini-cell-size": `${cellSize}px`,
+          "--piece-span": Math.max(bounds.cols, bounds.rows),
         } as React.CSSProperties
       }
     >
@@ -101,4 +103,4 @@ function PieceShape({
   );
 }
 
-export default PieceShape;
+export default memo(PieceShape);

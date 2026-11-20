@@ -9,10 +9,10 @@ import PieceShape from "../components/PieceShape";
 import PieceTray from "../components/PieceTray";
 import RivalHeldPiece from "../components/RivalHeldPiece";
 import { ThemeScope } from "../components/ThemeScope";
+import TrophyReward from "../components/TrophyReward";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
-import { clearActiveRoom } from "../features/activeRoomStorage";
-import { EMPTY_CURSOR, FINISH_REASON_LABELS, getCursorPreview, ROOM_CLOSED_MESSAGES } from "../features/matchGame";
+import { EMPTY_CURSOR, FINISH_REASON_LABELS, getCursorPreview, getTrophyResult, ROOM_CLOSED_MESSAGES } from "../features/matchGame";
 import { MatchRoomApiError, matchRoomApi } from "../features/matchroomApi";
 import type { MatchCursor, MatchGameState } from "../features/matchGame";
 import type { MatchRoomDetails } from "../features/matchroom";
@@ -230,11 +230,10 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
     // Keyed on the signature alone: only a new move should replay feedback.
   }, [signature]);
 
+  // The server keeps the room after a game, so the active room stays saved: a refresh returns to it.
   useEffect(() => {
     if (game?.status !== "FINISHED") return;
     audio.playGameOver();
-    // The server deletes a finished room, so a refresh from here should not try to rejoin it.
-    clearActiveRoom();
   }, [game?.status]);
 
   function handleCellClick(row: number, col: number) {
@@ -328,6 +327,8 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   }
 
   const won = game.winnerUserId === user.id;
+  // Only what the server confirmed is shown; a win on a server without trophies shows none.
+  const trophyResult = won ? getTrophyResult(game, user.id) : null;
   const selectedPiece = selection.selectedPiece;
   // Seconds left are shown on each board's own timer, so the top bar only says whose turn it is.
   const turnText = !playing ? "게임 종료" : myTurn ? "내 차례" : `${rival.nickname}님의 차례`;
@@ -479,12 +480,18 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
           </div>
           <h2 id="match-result-title">{won ? "승리!" : "패배"}</h2>
           <p className="match-result-reason">{game.finishReason ? FINISH_REASON_LABELS[game.finishReason] : ""}</p>
+          {trophyResult && <TrophyReward result={trophyResult} />}
           <div className="game-over-best" aria-label="상대 점수">
             <span>{rival.nickname}</span>
             <strong>{rival.score}</strong>
           </div>
+          {leaveError && <p className="match-result-error" role="alert">{leaveError}</p>}
           <div className="game-over-actions">
-            <button className="primary-action" onClick={onExit} type="button">방 목록으로</button>
+            {/* The room stays after a game: both go back to the waiting room to ready and start again. */}
+            <button className="primary-action" disabled={leaving} onClick={match.backToLobby} type="button">한 판 더</button>
+            <button className="secondary-action" disabled={leaving} onClick={() => void leaveRoom()} type="button">
+              {leaving ? "나가는 중…" : "방 나가기"}
+            </button>
           </div>
         </div>
       )}

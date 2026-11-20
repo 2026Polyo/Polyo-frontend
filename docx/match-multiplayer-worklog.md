@@ -52,3 +52,24 @@
 - 내 차례 시작 시(`TURN_START_MS` = 1000ms) 내 보드에 `is-turn-start` → 테두리 금색 3px + 바깥 빛 애니메이션. 동작 줄이기 설정이면 애니메이션 없이 테두리만.
 - MY TURN: 보드 안 → 화면 중앙(`position: fixed`), 글자 clamp(2.6rem, 9vw, 6rem), 1000ms 표시.
 - 검증: tsc, vitest 326개 통과. 모의 DOM(가로·세로 5칸 블록 포함)으로 1280×800, 844×390, 667×375, 390×844, 360×640에서 모든 블록이 슬롯 안에 들어가고 스크롤 없음, MY TURN 중심이 화면 중앙임을 확인.
+
+# 대전 승리 시 트로피 증가 (프론트)
+
+## 범위
+- 결과 화면에 서버가 확정한 트로피 증가만 표시. 지급은 Polyo-backend `fbe362b`(승리 시 +30, 패배 변동 없음, NO_MOVES/TIMEOUT/FORFEIT 모두).
+
+## 서버 형식
+- 끝난 `STATE` 최상위에 `trophyReward: { userId, gained, trophy }`(승자 것 하나). PLAYING이거나 저장 실패 시 `null`.
+- 서버는 FINISHED를 보낸 직후 게임을 지우고 WAITING을 보낸다. 프론트는 `gameAfterWaiting`으로 결과 화면을 유지하고, 재연결 시 FINISHED가 다시 오지 않으므로 중복 표시가 없다.
+
+## 변경
+- `features/matchGame.ts`: `MatchTrophyReward`, `MatchGameState.trophyReward`(선택). `getTrophyResult(game, userId)`는 FINISHED이고 reward의 userId가 나이며 `gained`/`trophy`가 안전한 정수, `gained > 0`, `trophy >= gained`일 때만 결과를 돌려준다. 그 외(패배, 저장 실패, 구버전 서버, 잘못된 값)는 null. 잘못된 reward가 STATE 파싱을 막지 않는다.
+- `components/TrophyReward.tsx` + `styles/TrophyReward.css`: 트로피 아이콘 + `+N`, 아래 "보유 트로피 N개". 등장 애니메이션(동작 줄이기면 없음), `role="status"`.
+- `screens/MatchGameScreen.tsx`: 승리했을 때만 결과 사유 아래에 표시.
+
+## 문제와 해결
+- 처음엔 백엔드 코드를 보지 않고 플레이어별 `trophyDelta`/`trophyCount`를 가정함 → 백엔드 확인 후 최상위 `trophyReward`로 수정, 가정으로 쓴 백엔드 요청 문서는 삭제.
+
+## 검증
+- `tsc --noEmit`, 새 테스트(`getTrophyResult` 5개, `TrophyReward` 2개) 통과. 전체 실행에서 `themeAudio.test.ts`가 가끔 5초 타임아웃(무관, 단독 실행 시 통과).
+- 임시 페이지로 결과 화면 렌더 확인 후 삭제. 실제 두 명 대전은 미확인.

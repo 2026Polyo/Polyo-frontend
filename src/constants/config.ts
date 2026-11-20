@@ -5,6 +5,8 @@ export const MAX_SNAP_DISTANCE = 1;
 
 /** How long cleared cells stay highlighted before the board updates (ms). */
 export const CLEAR_HIGHLIGHT_MS = 260;
+// The game-over panel opens this long after the game ends, so the final board stays visible briefly.
+export const GAME_OVER_PANEL_DELAY_MS = 300;
 
 /** Initial time allowed to place the next block in hard mode (ms). */
 export const HARD_INITIAL_PLACEMENT_MS = 10000;

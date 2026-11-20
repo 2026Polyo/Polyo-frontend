@@ -1,4 +1,4 @@
-.auth-shell { overflow: hidden; padding: 32px 24px; }
+.auth-shell { background: var(--surface-page-mid); overflow: hidden; padding: 32px 24px; }
 .auth-layout { align-items: center; display: grid; gap: clamp(32px, 8vw, 110px); grid-template-columns: minmax(220px, .8fr) minmax(320px, 430px); max-width: 980px; width: 100%; }
 .auth-intro { color: white; }
 .auth-block-logo { display: grid; gap: 5px; grid-template-columns: repeat(3, 24px); margin-bottom: 24px; width: max-content; }

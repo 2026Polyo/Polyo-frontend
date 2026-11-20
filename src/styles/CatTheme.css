@@ -179,6 +179,90 @@
 .cat-clear-batch {
   display: contents;
 }
+.cat-slam-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 22;
+  overflow: clip;
+  pointer-events: none;
+  contain: paint;
+}
+.cat-slam-grid {
+  inset: auto;
+  container-type: inline-size;
+}
+.cat-slam-paw,
+.cat-slam-shadow,
+.cat-slam-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 74%;
+  height: 74%;
+  translate: -50% -50%;
+}
+.cat-slam-shadow {
+  z-index: 1;
+  --cat-paw-fill: #392450;
+  --cat-paw-stroke: #392450;
+  --cat-paw-highlight: transparent;
+  filter: blur(7px);
+  animation: cat-slam-shadow 410ms ease-out both;
+}
+.cat-slam-paw {
+  z-index: 2;
+  overflow: visible;
+  --cat-paw-fill: #f5b4d1;
+  --cat-paw-stroke: #b777a8;
+  filter: drop-shadow(0 7px 9px #59357055);
+  animation: cat-slam-paw 820ms both;
+}
+.cat-slam-ripple {
+  z-index: 1;
+  border: 4px solid #fff2fa;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #c393e9;
+  animation: cat-slam-ripple 400ms ease-out var(--cat-impact-delay) both;
+}
+.cat-slam-cell {
+  position: relative;
+}
+.cat-slam-sticker {
+  z-index: 3;
+  position: absolute;
+}
+.cat-slam-sticker > .cat-tile-face {
+  box-shadow: 0 4px 9px #43275f50;
+}
+.cat-slam-sticker > .cat-decoration-layer {
+  inset: 0;
+  animation: cat-sticker-face-reveal 1ms step-end calc(var(--cat-impact-delay) + 29ms) both;
+}
+.cat-slam-sticker :is(.cat-expression, .cat-ear) {
+  animation: none;
+}
+@keyframes cat-slam-shadow {
+  0% { opacity: 0; transform: translateY(7%) scale(0.5, 0.44); }
+  65% { opacity: 0.48; transform: translateY(5%) scale(1.15, 0.84); }
+  86% { opacity: 0.38; transform: translateY(5%) scale(1.23, 0.88); }
+  100% { opacity: 0; transform: translateY(5%) scale(1.23, 0.88); }
+}
+@keyframes cat-slam-paw {
+  0%, 24% { opacity: 0; transform: translateY(-88%) scale(1.24, 1.38) rotate(-10deg); }
+  35% { opacity: 1; transform: translateY(-48%) scale(1.18, 1.26) rotate(-6deg); }
+  42% { opacity: 1; transform: translateY(5%) scale(1.14, 0.65); }
+  57% { transform: translateY(-8%) scale(0.97, 1.04) rotate(3deg); }
+  72% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-46%) scale(0.87) rotate(8deg); }
+}
+@keyframes cat-sticker-face-reveal {
+  from { visibility: hidden; }
+  to { visibility: visible; }
+}
+@keyframes cat-slam-ripple {
+  from { opacity: 0.9; transform: scale(0.25); }
+  to { opacity: 0; transform: scale(1.42); }
+}
 .cat-paw-cell {
   position: relative;
   min-width: 0;

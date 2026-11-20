@@ -24,7 +24,8 @@
 .play-shell[data-game-theme="theme_minecraft"] .undo-item,
 .play-shell[data-game-theme="theme_minecraft"] .undo-item-label,
 .play-shell[data-game-theme="theme_minecraft"] .undo-items-head strong,
-.play-shell[data-game-theme="theme_minecraft"] .deck-view-button {
+.play-shell[data-game-theme="theme_minecraft"] .deck-view-button,
+.play-shell[data-game-theme="theme_minecraft"] .augment-hud-button {
   color: var(--text-body);
 }
 .play-shell[data-game-theme="theme_minecraft"] .tray {

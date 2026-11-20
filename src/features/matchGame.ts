@@ -21,6 +21,19 @@ export interface MatchPlayerState {
   connected: boolean;
 }
 
+/** What the server gave the winner of a finished game: the trophies gained and the total after it. */
+export interface MatchTrophyReward {
+  userId: string;
+  gained: number;
+  trophy: number;
+}
+
+/** Trophies the server confirmed for one finished game. */
+export interface TrophyResult {
+  delta: number;
+  trophyCount: number;
+}
+
 export interface MatchLastMove {
   userId: string;
   scoreGain: number;
@@ -37,6 +50,8 @@ export interface MatchGameState {
   winnerUserId: string | null;
   finishReason: FinishReason | null;
   lastMove: MatchLastMove | null;
+  /** Set only on a FINISHED state whose winner's trophies were saved; null (or absent on older servers) otherwise. */
+  trophyReward?: MatchTrophyReward | null;
 }
 
 /** What a player is holding and where it would land; relayed to the rival as-is. */
@@ -130,6 +145,32 @@ export function parseServerMessage(raw: string): MatchServerMessage | null {
     return message as unknown as MatchServerMessage;
   }
   return null;
+}
+
+/**
+ * The game to keep showing once a WAITING arrives, which means no game is running. One still shown as
+ * PLAYING ended while this socket was away, so it is dropped; a finished result stays up until the
+ * player goes back to the waiting room, because the server keeps the room after a game.
+ */
+export function gameAfterWaiting(game: MatchGameState | null): MatchGameState | null {
+  return game?.status === "PLAYING" ? null : game;
+}
+
+/**
+ * The trophies a finished game gave this player, or null when there is nothing to show: the game is
+ * still running, the reward is someone else's (only the winner gets one; a loss costs nothing), the
+ * server could not save it or does not send it, or its values are not sane.
+ * The server awards once per game; the client only shows what it was told and never adds on its own.
+ */
+export function getTrophyResult(game: MatchGameState | null, userId: string): TrophyResult | null {
+  if (game?.status !== "FINISHED") return null;
+  const reward: unknown = game.trophyReward;
+  if (!isRecord(reward) || reward.userId !== userId) return null;
+  const { gained, trophy } = reward;
+  if (typeof gained !== "number" || typeof trophy !== "number") return null;
+  if (!Number.isSafeInteger(gained) || !Number.isSafeInteger(trophy)) return null;
+  if (gained <= 0 || trophy < gained) return null;
+  return { delta: gained, trophyCount: trophy };
 }
 
 export function getMatchSocketUrl(baseUrl: string, roomId: number, location: { protocol: string; host: string }): string {
