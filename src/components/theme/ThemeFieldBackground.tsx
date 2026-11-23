@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
-import type { GameTheme } from "../../features/themes/gameThemes";
-import "../../styles/NeonTheme.css";
+import type { GameTheme } from "../../features/themes";
 
 export default function ThemeFieldBackground({
   background,

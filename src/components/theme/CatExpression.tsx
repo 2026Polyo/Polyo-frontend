@@ -1,4 +1,4 @@
-import type { CatExpression } from "../../features/themes/catRegions";
+import type { CatExpression } from "../../features/themes";
 
 /** Original vector expressions inspired by the reference moods, without embedding the supplied drawings. */
 export default function CatExpression({

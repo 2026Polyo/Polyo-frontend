@@ -39,27 +39,57 @@
 }
 
 @keyframes auto-undo-overlay {
-  0% { opacity: 0; }
-  12% { opacity: 1; }
-  78% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes auto-undo-pop {
-  0% { opacity: 0; transform: scale(0.8); }
-  16% { opacity: 1; transform: scale(1.04); }
-  26% { transform: scale(1); }
-  80% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.96); }
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  16% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  26% {
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
 }
 
 @keyframes auto-undo-glow {
-  from { filter: drop-shadow(0 0 8px hsl(190 95% 60% / 0.7)); transform: scale(1); }
-  to { filter: drop-shadow(0 0 22px hsl(190 95% 70% / 1)); transform: scale(1.12); }
+  from {
+    filter: drop-shadow(0 0 8px hsl(190 95% 60% / 0.7));
+    transform: scale(1);
+  }
+  to {
+    filter: drop-shadow(0 0 22px hsl(190 95% 70% / 1));
+    transform: scale(1.12);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .auto-undo-flash,
   .auto-undo-flash-card,
-  .auto-undo-flash-icon { animation-iteration-count: 1; }
+  .auto-undo-flash-icon {
+    animation-iteration-count: 1;
+  }
 }

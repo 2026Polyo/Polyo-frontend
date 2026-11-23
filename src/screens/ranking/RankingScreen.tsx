@@ -5,7 +5,7 @@ import { fetchRanking, type RankingEntry, type RankingType } from "../../api";
 import medalBronze from "../../asset/medal-bronze.svg";
 import medalGold from "../../asset/medal-gold.svg";
 import medalSilver from "../../asset/medal-silver.svg";
-import type { GameThemeId } from "../../features/themes/gameThemes";
+import type { GameThemeId } from "../../features/themes";
 
 interface RankingScreenProps {
   onBack: () => void;

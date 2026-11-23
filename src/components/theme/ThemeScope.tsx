@@ -1,11 +1,10 @@
 import { createContext, useContext, useEffect } from "react";
 import type { ReactNode } from "react";
-import { CLASSIC_THEME, getGameTheme } from "../../features/themes/gameThemes";
-import "../../styles/NeonTheme.css";
-import "../../styles/JellyTheme.css";
-import "../../styles/MinecraftTheme.css";
-import "../../styles/CatTheme.css";
-import { preloadMinecraftTextures } from "../../features/themes/minecraftMaterials";
+import {
+  CLASSIC_THEME,
+  getGameTheme,
+  preloadMinecraftTextures,
+} from "../../features/themes";
 
 const GameThemeContext = createContext(CLASSIC_THEME);
 

@@ -1,5 +1,5 @@
 import ShopScreen from "../screens/ShopScreen";
-import type { GameThemeId } from "../features/themes/gameThemes";
+import type { GameThemeId } from "../features/themes";
 import type { ShopAccountState } from "../hooks/shop";
 
 export interface ShopRouterProps {

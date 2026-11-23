@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
-import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
+import { getGameTheme, type GameThemeId } from "../features/themes";
 import {
   createThemeAudioPlayer,
   type ThemeAudioPlayer,
-} from "../features/themes/themeAudio";
-import { preloadMinecraftOriginalAudio } from "../features/themes/minecraftOriginalAudio";
-import { preloadThemeFiles } from "../features/themes/themeFileAudio";
+} from "../features/themes";
+import { preloadMinecraftOriginalAudio } from "../features/themes";
+import { preloadThemeFiles } from "../features/themes";
 import { useGameAudio, type GameAudio } from "./useGameAudio";
 
 /** UI, game-over, clear voice and combo cues are shared; only field cues are replaced. */

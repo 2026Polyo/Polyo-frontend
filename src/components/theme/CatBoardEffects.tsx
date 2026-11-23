@@ -3,10 +3,7 @@ import type { CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import type { Board } from "../../types";
 import type { SpecialPieceGroups } from "../../types";
-import {
-  MAX_EFFECT_BATCHES,
-  type BoardFeedback,
-} from "../../features/themes/boardFeedback";
+import { MAX_EFFECT_BATCHES, type BoardFeedback } from "../../features/themes";
 import {
   CAT_PAW_LIFETIME_MS,
   CAT_PAW_PRESS_MS,
@@ -17,7 +14,7 @@ import {
   createCatSlamMotion,
   getCatFlightKeyframes,
   type CatClearBatch,
-} from "../../features/themes/catFeedback";
+} from "../../features/themes";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import CatTile from "./CatTile";
 import CatDecorations from "./CatDecorations";
