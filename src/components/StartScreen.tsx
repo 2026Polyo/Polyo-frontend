@@ -1,7 +1,13 @@
 import { useRef, useState } from "react";
 import StartDeckModal from "./StartDeckModal";
 import MenuBlock from "./MenuBlock";
-import { Copy, LogOut, ShoppingCart, Trophy, UserRound } from "lucide-react";
+import {
+  Copy,
+  LogOut,
+  ShoppingCart,
+  Trophy,
+  UserRound,
+} from "lucide-react";
 import type { GameMode, PieceTemplate } from "../types";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
 import type { GameThemeId } from "../features/themes/gameThemes";
@@ -297,7 +303,7 @@ function StartScreen({
                     일반모드
                   </button>
                   <button
-                    className="secondary-action"
+                    className="secondary-action hard-mode-action"
                     type="button"
                     onClick={() => onModeSelect("hard")}
                   >
