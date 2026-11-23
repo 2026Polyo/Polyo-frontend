@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import BoardView from "../../components/Board";
-import PieceShape from "../../components/PieceShape";
+import { PieceShape } from "../../components/piece";
 import { ThemeScope } from "../../components/theme";
 import { getCatConnections } from "../themes/catConnections";
 import { getGameTheme } from "../themes/gameThemes";

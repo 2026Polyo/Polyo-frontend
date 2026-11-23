@@ -1,5 +1,5 @@
 import PieceShape from "./PieceShape";
-import type { PieceInstance, CellCoord } from "../types";
+import type { PieceInstance, CellCoord } from "../../types";
 
 interface PiecePreviewProps {
   piece: PieceInstance;

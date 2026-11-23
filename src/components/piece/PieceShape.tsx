@@ -1,13 +1,13 @@
 import { memo } from "react";
-import { colorClass } from "../constants/gameData";
-import "../styles/PieceShape.css";
-import { pieceBounds } from "../utils/pieceUtils";
-import type { PieceInstance } from "../types";
-import { useGameTheme, MinecraftTile, CatTile, CatDecorations } from "./theme";
-import { getThemeTileStyle } from "../features/themes/gameThemes";
-import { getCatConnections } from "../features/themes/catConnections";
-import { getSpecialAppearance } from "../features/themes/specialAppearance";
-import { SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../features/specials";
+import { colorClass } from "../../constants/gameData";
+import "../../styles/PieceShape.css";
+import { pieceBounds } from "../../utils/pieceUtils";
+import type { PieceInstance } from "../../types";
+import { useGameTheme, MinecraftTile, CatTile, CatDecorations } from "../theme";
+import { getThemeTileStyle } from "../../features/themes/gameThemes";
+import { getCatConnections } from "../../features/themes/catConnections";
+import { getSpecialAppearance } from "../../features/themes/specialAppearance";
+import { SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../../features/specials";
 
 interface PieceShapeProps {
   piece: PieceInstance;
