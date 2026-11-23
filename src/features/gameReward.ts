@@ -1,4 +1,4 @@
-import { CreditApiError, isGameReward, type GameReward } from "../api/credit";
+import { CreditApiError, isGameReward, type GameReward } from "../api";
 
 export type GameRewardState =
   | { status: "idle" | "pending" | "ineligible" }

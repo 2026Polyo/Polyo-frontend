@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import "../styles/RerollModal.css";
-import PieceShape from "./PieceShape";
+import { PieceShape } from "./piece";
 import { getRerollCount, getRerollReplacementMode } from "../features/augments";
 import {
   deckPieceInstances,

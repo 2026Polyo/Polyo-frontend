@@ -9,7 +9,6 @@ import type {
   MatchRoomDetails,
 } from "../features/matchroom";
 import { useCreateRoom } from "../hooks/useCreateRoom";
-import "../styles/PieceShape.css";
 import "../styles/CreateRoomScreen.css";
 
 const BRAND_BLOCKS = [

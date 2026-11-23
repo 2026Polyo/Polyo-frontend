@@ -1,14 +1,13 @@
 import { Flag, Swords, WifiOff } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { AuthUser } from "../api/auth";
+import type { AuthUser } from "../api";
 import Board from "../components/Board";
 import EmoteIcon from "../components/EmoteIcon";
 import EmotePicker from "../components/EmotePicker";
 import MatchLobby from "../components/MatchLobby";
-import PieceShape from "../components/PieceShape";
-import PieceTray from "../components/PieceTray";
+import { PieceShape, PieceTray } from "../components/piece";
 import RivalHeldPiece from "../components/RivalHeldPiece";
-import { ThemeScope } from "../components/ThemeScope";
+import { ThemeScope } from "../components/theme";
 import TrophyReward from "../components/TrophyReward";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";

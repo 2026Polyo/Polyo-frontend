@@ -1,6 +1,6 @@
 import "../styles/AugmentChoiceModal.css";
 import { useMemo } from "react";
-import PieceShape from "./PieceShape";
+import { PieceShape } from "./piece";
 import { SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../features/specials";
 import { createPieceInstance, pieceBounds } from "../utils/pieceUtils";
 import type { PieceTemplate, SpecialType } from "../types";

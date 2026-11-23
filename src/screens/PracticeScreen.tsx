@@ -2,14 +2,11 @@ import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Trophy } from "lucide-react";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import Board from "../components/Board";
-import PieceShape from "../components/PieceShape";
-import { ThemeScope } from "../components/ThemeScope";
+import { PieceShape } from "../components/piece";
+import { ThemeScope } from "../components/theme";
 import { CLEAR_HIGHLIGHT_MS } from "../constants/config";
 import { EMPTY_BOARD, PIECES, SIZE } from "../constants/gameData";
-import {
-  createBoardFeedback,
-  type BoardFeedback,
-} from "../features/themes/boardFeedback";
+import { createBoardFeedback, type BoardFeedback } from "../features/themes";
 import {
   CAT_THEME,
   CLASSIC_THEME,
@@ -17,7 +14,7 @@ import {
   MINECRAFT_THEME,
   NEON_THEME,
   type GameThemeId,
-} from "../features/themes/gameThemes";
+} from "../features/themes";
 import { useThemeAudio } from "../hooks/useThemeAudio";
 import type { Board as BoardState, PlacementPosition } from "../types";
 import { cloneBoard } from "../utils/boardUtils";

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createCreditApi } from "../credit";
+import { createCreditApi } from "..";
 
 const reward = {
   rewardId: "reward_1",

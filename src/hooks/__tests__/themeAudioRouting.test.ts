@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { routeThemeAudio } from "../useThemeAudio";
 import type { GameAudio } from "../useGameAudio";
-import { getGameTheme } from "../../features/themes/gameThemes";
+import { getGameTheme } from "../../features/themes";
 
 function sharedAudio() {
   return { resume: vi.fn(), playPop: vi.fn(), playPlacement: vi.fn(), playClearFeedback: vi.fn(),

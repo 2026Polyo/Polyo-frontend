@@ -11,8 +11,7 @@ import Board from "../components/Board";
 import DeckModal from "../components/DeckModal";
 import GameSettingsMenu from "../components/GameSettingsMenu";
 import GameOver from "../components/GameOver";
-import PieceShape from "../components/PieceShape";
-import PieceTray from "../components/PieceTray";
+import { PieceShape, PieceTray } from "../components/piece";
 import RerollModal from "../components/RerollModal";
 import ScoreBoard from "../components/ScoreBoard";
 import SpecialChoiceModal from "../components/SpecialChoiceModal";
@@ -41,9 +40,8 @@ import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
 import type { GameRewardSession } from "../features/gameReward";
 import GameRewardStatus from "../components/GameRewardStatus";
-import { ThemeScope } from "../components/ThemeScope";
-import type { GameThemeId } from "../features/themes/gameThemes";
-import type { BoardFeedback } from "../features/themes/boardFeedback";
+import { ThemeScope } from "../components/theme";
+import type { BoardFeedback, GameThemeId } from "../features/themes";
 import type { SpecialPieceGroups } from "../types";
 
 interface PlayScreenProps {
