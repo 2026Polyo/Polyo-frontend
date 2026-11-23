@@ -1043,10 +1043,13 @@ export function useGameSession(
     setAugmentState((current) => advanceAugmentSchedule(current, score));
   }
 
-  const best =
+  const databaseBest =
     gameMode === "hard"
       ? databaseBestScores.hardBestScore
       : databaseBestScores.normalBestScore;
+  // 플레이 중 현재 점수가 DB 최고 기록을 넘으면 즉시 화면에 반영한다.
+  // DB 값은 게임 종료 시 저장 응답으로 갱신된다.
+  const best = isPlaying ? Math.max(databaseBest, score) : databaseBest;
   const normalBest = databaseBestScores.normalBestScore;
 
   function buildPlayScreenProps() {
