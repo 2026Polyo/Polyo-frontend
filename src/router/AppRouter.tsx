@@ -1,7 +1,10 @@
-import type { ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import { Route, Routes } from "react-router-dom";
-import RankingRouter, { type RankingRouterProps } from "./RankingRouter";
-import ShopRouter, { type ShopRouterProps } from "./ShopRouter";
+import type { RankingRouterProps } from "./RankingRouter";
+import type { ShopRouterProps } from "./ShopRouter";
+
+const RankingRouter = lazy(() => import("./RankingRouter"));
+const ShopRouter = lazy(() => import("./ShopRouter"));
 
 interface AppRouterProps {
   ranking: RankingRouterProps;
@@ -11,10 +14,12 @@ interface AppRouterProps {
 
 export default function AppRouter({ ranking, shop, home }: AppRouterProps) {
   return (
-    <Routes>
-      <Route path="/ranking" element={<RankingRouter {...ranking} />} />
-      <Route path="/shop" element={<ShopRouter {...shop} />} />
-      <Route path="*" element={home} />
-    </Routes>
+    <Suspense fallback={null}>
+      <Routes>
+        <Route path="/ranking" element={<RankingRouter {...ranking} />} />
+        <Route path="/shop" element={<ShopRouter {...shop} />} />
+        <Route path="*" element={home} />
+      </Routes>
+    </Suspense>
   );
 }
