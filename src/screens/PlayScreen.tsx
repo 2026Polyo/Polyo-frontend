@@ -41,7 +41,7 @@ import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
 import type { GameRewardSession } from "../features/gameReward";
 import GameRewardStatus from "../components/GameRewardStatus";
-import { ThemeScope } from "../components/ThemeScope";
+import { ThemeScope } from "../components/theme";
 import type { GameThemeId } from "../features/themes/gameThemes";
 import type { BoardFeedback } from "../features/themes/boardFeedback";
 import type { SpecialPieceGroups } from "../types";

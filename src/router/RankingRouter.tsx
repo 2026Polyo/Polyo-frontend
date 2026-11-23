@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import type { AuthUser } from "../api";
 import ProfileModal from "../components/ProfileModal";
 import { RankingScreen } from "../screens/ranking";
-import { ThemeScope } from "../components/ThemeScope";
+import { ThemeScope } from "../components/theme";
 import type { GameThemeId } from "../features/themes/gameThemes";
 
 export interface RankingRouterProps {

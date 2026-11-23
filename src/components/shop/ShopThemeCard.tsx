@@ -2,7 +2,7 @@ import { Coins } from "lucide-react";
 import type { MouseEvent } from "react";
 import type { ShopTheme } from "../../features/shop";
 import { getThemePresentation } from "../../features/themePresentation";
-import ThemePreview from "../ThemePreview";
+import { ThemePreview } from "../theme";
 import type { ShopAccountState } from "../../hooks/shop";
 
 interface ShopThemeCardProps {

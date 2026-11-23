@@ -10,18 +10,21 @@ import type {
 } from "../types";
 import type { BoardFeedback } from "../features/themes/boardFeedback";
 import { getThemeTileStyle } from "../features/themes/gameThemes";
-import { useGameTheme } from "./ThemeScope";
-import BoardEffects from "./BoardEffects";
-import ThemeFieldBackground from "./ThemeFieldBackground";
-import JellyBoardEffects from "./JellyBoardEffects";
+import {
+  useGameTheme,
+  BoardEffects,
+  ThemeFieldBackground,
+  JellyBoardEffects,
+  MinecraftTile,
+  MinecraftBoardEffects,
+  CatTile,
+  CatDecorations,
+  CatBoardEffects,
+  CatPawDefinition,
+} from "./theme";
 import { JELLY_LANDING_MS } from "../features/themes/jellyFeedback";
-import MinecraftTile from "./MinecraftTile";
-import MinecraftBoardEffects from "./MinecraftBoardEffects";
-import CatTile from "./CatTile";
 import { getCatConnections } from "../features/themes/catConnections";
-import CatDecorations from "./CatDecorations";
 import type { CatCell } from "../features/themes/catRegions";
-import CatBoardEffects, { CatPawDefinition } from "./CatBoardEffects";
 import {
   catConnectionGroup,
   getSpecialAppearance,

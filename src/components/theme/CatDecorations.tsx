@@ -7,15 +7,15 @@ import {
   type CatCell,
   type CatRegion,
   type CatExpression as Expression,
-} from "../features/themes/catRegions";
+} from "../../features/themes/catRegions";
 import CatExpression from "./CatExpression";
-import "../styles/CatTheme.css";
-import { useReducedMotion } from "../hooks/useReducedMotion";
+import "../../styles/CatTheme.css";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 import {
   catConnectionGroup,
   getCatCoatStyle,
-} from "../features/themes/specialAppearance";
-import type { Board, SpecialPieceGroups } from "../types";
+} from "../../features/themes/specialAppearance";
+import type { Board, SpecialPieceGroups } from "../../types";
 
 interface Decoration {
   color?: string | null;

@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { getThemeTileColor } from "../features/themes/gameThemes";
+import { getThemeTileColor } from "../../features/themes/gameThemes";
 import {
   createPixelParticles,
   MAX_ACTIVE_PARTICLES,
@@ -11,12 +11,12 @@ import {
   type BoardFeedback,
   type FeedbackCell,
   type PixelParticle,
-} from "../features/themes/boardFeedback";
-import { useReducedMotion } from "../hooks/useReducedMotion";
+} from "../../features/themes/boardFeedback";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useGameTheme } from "./ThemeScope";
-import { getSpecialAppearance } from "../features/themes/specialAppearance";
+import { getSpecialAppearance } from "../../features/themes/specialAppearance";
 import NeonBlackHole from "./NeonBlackHole";
-import { NEON_HOLE_LIFETIME_MS } from "../features/themes/neonBlackHole";
+import { NEON_HOLE_LIFETIME_MS } from "../../features/themes/neonBlackHole";
 
 interface EffectCell extends FeedbackCell {
   particles: PixelParticle[];

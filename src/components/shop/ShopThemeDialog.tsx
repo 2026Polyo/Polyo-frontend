@@ -7,7 +7,7 @@ import {
   getGameTheme,
   type GameThemeId,
 } from "../../features/themes/gameThemes";
-import ThemePreview from "../ThemePreview";
+import { ThemePreview } from "../theme";
 import type { ShopAccountState } from "../../hooks/shop";
 
 interface ShopThemeDialogProps {

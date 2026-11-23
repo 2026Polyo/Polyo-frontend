@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import {
   MAX_EFFECT_BATCHES,
   type BoardFeedback,
-} from "../features/themes/boardFeedback";
+} from "../../features/themes/boardFeedback";
 import {
   createMinecraftEffectBatch,
   MINECRAFT_EFFECT_LIFETIME_MS,
@@ -14,9 +14,9 @@ import {
   MINECRAFT_POOF_START_MS,
   type MinecraftClearCell,
   type MinecraftEffectBatch,
-} from "../features/themes/minecraftFeedback";
-import { getMinecraftAnimationStyle } from "../features/themes/minecraftMaterials";
-import { useReducedMotion } from "../hooks/useReducedMotion";
+} from "../../features/themes/minecraftFeedback";
+import { getMinecraftAnimationStyle } from "../../features/themes/minecraftMaterials";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 import MinecraftItemCube from "./MinecraftItemCube";
 import MinecraftTile from "./MinecraftTile";
 

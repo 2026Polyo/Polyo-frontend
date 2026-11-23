@@ -3,12 +3,9 @@ import { colorClass } from "../constants/gameData";
 import "../styles/PieceShape.css";
 import { pieceBounds } from "../utils/pieceUtils";
 import type { PieceInstance } from "../types";
-import { useGameTheme } from "./ThemeScope";
+import { useGameTheme, MinecraftTile, CatTile, CatDecorations } from "./theme";
 import { getThemeTileStyle } from "../features/themes/gameThemes";
-import MinecraftTile from "./MinecraftTile";
-import CatTile from "./CatTile";
 import { getCatConnections } from "../features/themes/catConnections";
-import CatDecorations from "./CatDecorations";
 import { getSpecialAppearance } from "../features/themes/specialAppearance";
 import { SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../features/specials";
 

@@ -15,7 +15,7 @@ import {
   PLACEMENT_PARTICLE_COUNT,
   uniqueFeedbackCells,
 } from "../themes/boardFeedback";
-import { ThemeScope } from "../../components/ThemeScope";
+import { ThemeScope } from "../../components/theme";
 import PieceShape from "../../components/PieceShape";
 import type { Board, PieceInstance } from "../../types";
 

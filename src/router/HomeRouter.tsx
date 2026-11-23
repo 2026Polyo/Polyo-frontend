@@ -8,7 +8,7 @@ import CreateRoomScreen from "../screens/CreateRoomScreen";
 import type { MatchRoomApi, MatchRoomDetails } from "../features/matchroom";
 import MultiplayerScreen from "../screens/MultiplayerScreen";
 import PracticeScreen from "../screens/PracticeScreen";
-import { ThemeScope } from "../components/ThemeScope";
+import { ThemeScope } from "../components/theme";
 import type { GameThemeId } from "../features/themes/gameThemes";
 
 type MultiplayerView = "home" | "lobby" | "create";
