@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { creditApi } from "../api/credit";
-import type { ThemePage } from "../features/shop";
+import { creditApi } from "../../api/credit";
+import type { ThemePage } from "../../features/shop";
 
 export type ShopCatalogState =
   | { status: "loading" }

@@ -1,12 +1,14 @@
 import { useRef, useState } from "react";
 import { ArrowLeft, ChevronLeft, ChevronRight, Coins } from "lucide-react";
 import MenuBlock from "../components/MenuBlock";
-import ShopThemeCard from "../components/ShopThemeCard";
-import ShopThemeDialog from "../components/ShopThemeDialog";
+import { ShopThemeCard, ShopThemeDialog } from "../components/shop";
 import type { ShopTheme } from "../features/shop";
 import type { GameThemeId } from "../features/themes/gameThemes";
-import { useShopCatalog, type ShopCatalogState } from "../hooks/useShopCatalog";
-import type { ShopAccountState } from "../hooks/useShopAccount";
+import {
+  useShopCatalog,
+  type ShopAccountState,
+  type ShopCatalogState,
+} from "../hooks/shop";
 import "../styles/ShopScreen.css";
 
 interface ShopCatalogProps {

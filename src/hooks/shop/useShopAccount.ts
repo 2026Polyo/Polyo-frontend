@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { creditApi, CreditApiError, type ShopAccount } from "../api/credit";
+import { creditApi, CreditApiError, type ShopAccount } from "../../api/credit";
 
 const SHOP_ERRORS: Record<string, string> = {
   SHOP_INSUFFICIENT_COIN: "코인이 부족합니다.",
