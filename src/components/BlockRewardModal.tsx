@@ -1,5 +1,5 @@
 import "../styles/BlockRewardModal.css";
-import PieceShape from "./PieceShape";
+import { PieceShape } from "./piece";
 import { SPECIAL_LABELS } from "../features/specials";
 import type { PieceInstance } from "../types";
 

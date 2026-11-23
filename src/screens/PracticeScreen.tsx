@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Trophy } from "lucide-react";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import Board from "../components/Board";
-import PieceShape from "../components/PieceShape";
+import { PieceShape } from "../components/piece";
 import { ThemeScope } from "../components/theme";
 import { CLEAR_HIGHLIGHT_MS } from "../constants/config";
 import { EMPTY_BOARD, PIECES, SIZE } from "../constants/gameData";

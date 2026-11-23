@@ -1,7 +1,7 @@
 import PiecePreview from "./PiecePreview";
-import { useGameTheme } from "./theme";
-import "../styles/PieceTray.css";
-import type { PieceInstance, CellCoord } from "../types";
+import { useGameTheme } from "../theme";
+import "../../styles/PieceTray.css";
+import type { PieceInstance, CellCoord } from "../../types";
 
 interface PieceTrayProps {
   disabled: boolean;

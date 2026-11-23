@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Pencil, Save, X } from "lucide-react";
 import { PIECE_COLORS, PIECES, getPieceTemplate } from "../constants/gameData";
 import { profileApi, type AuthUser, type Profile } from "../api";
-import PieceShape from "./PieceShape";
+import { PieceShape } from "./piece";
 import { createPieceInstance } from "../utils/pieceUtils";
 import "../styles/ProfileModal.css";
 

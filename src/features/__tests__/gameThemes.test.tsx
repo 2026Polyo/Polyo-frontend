@@ -16,7 +16,7 @@ import {
   uniqueFeedbackCells,
 } from "../themes/boardFeedback";
 import { ThemeScope } from "../../components/theme";
-import PieceShape from "../../components/PieceShape";
+import { PieceShape } from "../../components/piece";
 import type { Board, PieceInstance } from "../../types";
 
 const piece: PieceInstance = {
