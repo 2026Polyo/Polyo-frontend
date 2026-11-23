@@ -6,7 +6,7 @@ import {
   login,
   signup,
   type AuthUser,
-} from "../api/auth";
+} from "../api";
 
 interface AuthScreenProps {
   onAuthenticated: (user: AuthUser) => void;

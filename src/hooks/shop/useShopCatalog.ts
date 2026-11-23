@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { creditApi } from "../../api/credit";
+import { creditApi } from "../../api";
 import type { ThemePage } from "../../features/shop";
 
 export type ShopCatalogState =
