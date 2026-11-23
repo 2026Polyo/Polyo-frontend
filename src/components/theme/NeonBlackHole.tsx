@@ -9,14 +9,14 @@ import { createPortal } from "react-dom";
 import {
   createVisualRandom,
   type FeedbackCell,
-} from "../features/themes/boardFeedback";
+} from "../../features/themes/boardFeedback";
 import {
   createNeonFractures,
   createNeonOrbit,
-} from "../features/themes/neonBlackHole";
-import { getThemeTileStyle, NEON_THEME } from "../features/themes/gameThemes";
-import { getSpecialAppearance } from "../features/themes/specialAppearance";
-import "../styles/NeonBlackHole.css";
+} from "../../features/themes/neonBlackHole";
+import { getThemeTileStyle, NEON_THEME } from "../../features/themes/gameThemes";
+import { getSpecialAppearance } from "../../features/themes/specialAppearance";
+import "../../styles/NeonBlackHole.css";
 
 export default memo(function NeonBlackHole({
   cells,

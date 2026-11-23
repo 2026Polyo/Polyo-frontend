@@ -1,13 +1,13 @@
-import { getThemePresentation } from "../features/themePresentation";
-import { getGameTheme } from "../features/themes/gameThemes";
+import { getThemePresentation } from "../../features/themePresentation";
+import { getGameTheme } from "../../features/themes/gameThemes";
 import ThemeFieldBackground from "./ThemeFieldBackground";
-import "../styles/JellyTheme.css";
+import "../../styles/JellyTheme.css";
 import type { CSSProperties } from "react";
 import MinecraftTile from "./MinecraftTile";
 import CatTile from "./CatTile";
-import { getCatConnections } from "../features/themes/catConnections";
+import { getCatConnections } from "../../features/themes/catConnections";
 import CatDecorations from "./CatDecorations";
-import type { CatCell } from "../features/themes/catRegions";
+import type { CatCell } from "../../features/themes/catRegions";
 
 // All shop thumbnails and dialogs share the game's 8×8 field layout.
 const PREVIEW_CELLS = [

@@ -1,8 +1,8 @@
-import "../styles/CatTheme.css";
+import "../../styles/CatTheme.css";
 import {
   getCatCoatStyle,
   getSpecialAppearance,
-} from "../features/themes/specialAppearance";
+} from "../../features/themes/specialAppearance";
 import type { CSSProperties } from "react";
 
 /** Keep mounted on empty board cells so filling, joining and reopening edges can transition. */

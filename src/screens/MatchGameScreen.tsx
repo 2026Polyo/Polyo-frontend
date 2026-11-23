@@ -8,7 +8,7 @@ import MatchLobby from "../components/MatchLobby";
 import PieceShape from "../components/PieceShape";
 import PieceTray from "../components/PieceTray";
 import RivalHeldPiece from "../components/RivalHeldPiece";
-import { ThemeScope } from "../components/ThemeScope";
+import { ThemeScope } from "../components/theme";
 import TrophyReward from "../components/TrophyReward";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";

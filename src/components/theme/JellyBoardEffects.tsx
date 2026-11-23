@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import {
   MAX_EFFECT_BATCHES,
   type BoardFeedback,
-} from "../features/themes/boardFeedback";
+} from "../../features/themes/boardFeedback";
 import {
   createJellyEffectBatch,
   JELLY_BREAK_MS,
@@ -12,11 +12,11 @@ import {
   JELLY_EFFECT_LIFETIME_MS,
   type JellyEffectBatch,
   type JellyEffectCell,
-} from "../features/themes/jellyFeedback";
-import { getThemeTileStyle } from "../features/themes/gameThemes";
-import { useReducedMotion } from "../hooks/useReducedMotion";
+} from "../../features/themes/jellyFeedback";
+import { getThemeTileStyle } from "../../features/themes/gameThemes";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useGameTheme } from "./ThemeScope";
-import { getSpecialAppearance } from "../features/themes/specialAppearance";
+import { getSpecialAppearance } from "../../features/themes/specialAppearance";
 
 const JellyParticles = memo(function JellyParticles({
   cell,

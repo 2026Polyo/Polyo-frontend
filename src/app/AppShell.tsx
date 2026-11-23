@@ -8,7 +8,7 @@ import {
 } from "../features/activeRoomStorage";
 import { matchRoomApi } from "../features/matchroomApi";
 import type { MatchRoomDetails } from "../features/matchroom";
-import { ThemeScope } from "../components/ThemeScope";
+import { ThemeScope } from "../components/theme";
 import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
 import { useShopAccount } from "../hooks/shop";
 import { AppRouter } from "../router";
