@@ -1,11 +1,14 @@
 import { useEffect, useRef } from "react";
 import { Coins, X } from "lucide-react";
 import type { KeyboardEvent, MouseEvent } from "react";
-import type { ShopTheme } from "../features/shop";
-import { getThemePresentation } from "../features/themePresentation";
-import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
-import ThemePreview from "./ThemePreview";
-import type { ShopAccountState } from "../hooks/useShopAccount";
+import type { ShopTheme } from "../../features/shop";
+import { getThemePresentation } from "../../features/themePresentation";
+import {
+  getGameTheme,
+  type GameThemeId,
+} from "../../features/themes/gameThemes";
+import ThemePreview from "../ThemePreview";
+import type { ShopAccountState } from "../../hooks/shop";
 
 interface ShopThemeDialogProps {
   theme: ShopTheme | null;

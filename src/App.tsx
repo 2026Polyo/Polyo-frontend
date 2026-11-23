@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import "./styles/App.css";
 import "./styles/AuthScreen.css";
 import "./styles/MenuChrome.css";
@@ -29,17 +30,17 @@ import {
   getCurrentUser,
   type AuthUser,
 } from "./api/auth";
-import ShopScreen from "./screens/ShopScreen";
 import PracticeScreen from "./screens/PracticeScreen";
 import { ThemeScope } from "./components/ThemeScope";
 import { getGameTheme, type GameThemeId } from "./features/themes/gameThemes";
-import { useShopAccount } from "./hooks/useShopAccount";
+import { useShopAccount } from "./hooks/shop";
 import ProfileModal from "./components/ProfileModal";
+import { ShopRouter } from "./router";
 
 const PRACTICE_DISCOVERY_KEY = "polyo.practice.discovered";
 
-function App() {
-  const [shopOpen, setShopOpen] = useState(false);
+function AppContent() {
+  const navigate = useNavigate();
   const [practice, setPractice] = useState<{ firstVisit: boolean } | null>(
     null,
   );
@@ -104,7 +105,7 @@ function App() {
 
     function handleAuthExpired() {
       setUser(null);
-      setShopOpen(false);
+      navigate("/");
       setPractice(null);
       setRankingOpen(false);
     }
@@ -168,87 +169,59 @@ function App() {
     );
   }
 
-  if (shopOpen)
-    return (
-      <ShopScreen
-        themeId={equippedThemeId}
-        wallet={shopAccount}
-        onGoHome={() => setShopOpen(false)}
-        onDevPreview={
-          import.meta.env.DEV
-            ? (themeId) => {
-                setDevPreviewThemeId(themeId);
-                setShopOpen(false);
-              }
-            : undefined
-        }
+  const homeRoute =
+    gamePhase !== "start" ? (
+      <PlayScreen {...playScreenProps} />
+    ) : practice ? (
+      <PracticeScreen
+        initialTheme={activeThemeId}
+        firstVisit={practice.firstVisit}
+        onClose={() => {
+          restoreRoomFocus.current = "start-logo-button";
+          setPractice(null);
+        }}
       />
-    );
-
-  if (gamePhase === "start") {
-    if (practice) {
-      return (
-        <PracticeScreen
-          initialTheme={activeThemeId}
-          firstVisit={practice.firstVisit}
-          onClose={() => {
-            restoreRoomFocus.current = "start-logo-button";
-            setPractice(null);
-          }}
-        />
-      );
-    }
-    if (multiplayerView === "create") {
-      return (
-        <CreateRoomScreen
-          onClose={() => {
-            restoreRoomFocus.current = "lobby-create-room";
-            setMultiplayerView("lobby");
-          }}
-          onCreateRoom={matchRoomApi.create}
-          onEnterRoom={enterRoom}
-        />
-      );
-    }
-    if (multiplayerView === "lobby") {
-      return (
-        <MultiplayerScreen
-          api={matchRoomApi}
+    ) : multiplayerView === "create" ? (
+      <CreateRoomScreen
+        onClose={() => {
+          restoreRoomFocus.current = "lobby-create-room";
+          setMultiplayerView("lobby");
+        }}
+        onCreateRoom={matchRoomApi.create}
+        onEnterRoom={enterRoom}
+      />
+    ) : multiplayerView === "lobby" ? (
+      <MultiplayerScreen
+        api={matchRoomApi}
+        onBack={() => {
+          restoreRoomFocus.current = "start-multiplayer";
+          setMultiplayerView("home");
+        }}
+        onCreateRoom={() => setMultiplayerView("create")}
+        onEnterRoom={enterRoom}
+      />
+    ) : rankingOpen ? (
+      <ThemeScope themeId={activeThemeId}>
+        <RankingScreen
+          currentUserId={user.id}
+          themeId={activeThemeId}
           onBack={() => {
-            restoreRoomFocus.current = "start-multiplayer";
-            setMultiplayerView("home");
+            setRankingOpen(false);
+            setRankingProfileId(null);
           }}
-          onCreateRoom={() => setMultiplayerView("create")}
-          onEnterRoom={enterRoom}
+          onSelectProfile={setRankingProfileId}
         />
-      );
-    }
-    if (rankingOpen) {
-      return (
-        <ThemeScope themeId={activeThemeId}>
-          <RankingScreen
-            currentUserId={user.id}
-            themeId={activeThemeId}
-            onBack={() => {
-              setRankingOpen(false);
-              setRankingProfileId(null);
-            }}
-            onSelectProfile={setRankingProfileId}
+        {rankingProfileId && (
+          <ProfileModal
+            user={{ id: rankingProfileId, loginId: "", nickname: "" }}
+            profileUserId={rankingProfileId}
+            readOnly={rankingProfileId !== user.id}
+            onClose={() => setRankingProfileId(null)}
+            onUserChange={rankingProfileId === user.id ? setUser : undefined}
           />
-          {rankingProfileId && (
-            <ProfileModal
-              user={{ id: rankingProfileId, loginId: "", nickname: "" }}
-              profileUserId={rankingProfileId}
-              readOnly={rankingProfileId !== user.id}
-              onClose={() => setRankingProfileId(null)}
-              onUserChange={rankingProfileId === user.id ? setUser : undefined}
-            />
-          )}
-        </ThemeScope>
-      );
-    }
-
-    return (
+        )}
+      </ThemeScope>
+    ) : (
       <ThemeScope themeId={activeThemeId}>
         <StartScreen
           {...startScreenProps}
@@ -258,7 +231,7 @@ function App() {
           onOpenProfile={() => setProfileOpen(true)}
           onOpenShop={() => {
             void shopAccount.refresh();
-            setShopOpen(true);
+            navigate("/shop");
           }}
           onOpenPractice={() => {
             let firstVisit = !discoveredPractice.current;
@@ -291,9 +264,38 @@ function App() {
         )}
       </ThemeScope>
     );
-  }
 
-  return <PlayScreen {...playScreenProps} />;
+  return (
+    <Routes>
+      <Route
+        path="/shop"
+        element={
+          <ShopRouter
+            themeId={equippedThemeId}
+            wallet={shopAccount}
+            onGoHome={() => navigate("/")}
+            onDevPreview={
+              import.meta.env.DEV
+                ? (themeId) => {
+                    setDevPreviewThemeId(themeId);
+                    navigate("/");
+                  }
+                : undefined
+            }
+          />
+        }
+      />
+      <Route path="*" element={homeRoute} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
 }
 
 export default App;
