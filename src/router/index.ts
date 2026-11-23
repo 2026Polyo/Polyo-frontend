@@ -1,4 +1,4 @@
 export { default as AppRouter } from "./AppRouter";
-export { default as HomeRouter } from "./HomeRouter";
-export { default as RankingRouter } from "./RankingRouter";
-export { default as ShopRouter } from "./ShopRouter";
+export type { HomeRouterProps } from "./HomeRouter";
+export type { RankingRouterProps } from "./RankingRouter";
+export type { ShopRouterProps } from "./ShopRouter";

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameSession } from "../hooks/useGameSession";
 import {
@@ -8,14 +8,15 @@ import {
 } from "../features/activeRoomStorage";
 import { matchRoomApi } from "../features/matchroomApi";
 import type { MatchRoomDetails } from "../features/matchroom";
-import MatchGameScreen from "../screens/MatchGameScreen";
 import { ThemeScope } from "../components/ThemeScope";
 import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
 import { useShopAccount } from "../hooks/shop";
-import { AppRouter, HomeRouter } from "../router";
+import { AppRouter } from "../router";
 import { clearAuth, type AuthUser } from "../api";
 
 const PRACTICE_DISCOVERY_KEY = "polyo.practice.discovered";
+const HomeRouter = lazy(() => import("../router/HomeRouter"));
+const MatchGameScreen = lazy(() => import("../screens/MatchGameScreen"));
 
 interface AppShellProps {
   user: AuthUser;
@@ -65,17 +66,19 @@ export default function AppShell({ user, onUserChange }: AppShellProps) {
 
   if (activeRoom) {
     return (
-      <ThemeScope themeId={equippedThemeId}>
-        <MatchGameScreen
-          onExit={() => {
-            clearActiveRoom();
-            setActiveRoom(null);
-            setMultiplayerView("lobby");
-          }}
-          room={activeRoom}
-          user={user}
-        />
-      </ThemeScope>
+      <Suspense fallback={null}>
+        <ThemeScope themeId={equippedThemeId}>
+          <MatchGameScreen
+            onExit={() => {
+              clearActiveRoom();
+              setActiveRoom(null);
+              setMultiplayerView("lobby");
+            }}
+            room={activeRoom}
+            user={user}
+          />
+        </ThemeScope>
+      </Suspense>
     );
   }
 
