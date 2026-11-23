@@ -1,4 +1,4 @@
-import { AUTH_TOKEN_KEY } from "../api/auth";
+import { AUTH_TOKEN_KEY } from "../api";
 import {
   ENTRY_CODE_PATTERN,
   normalizeEntryCode,

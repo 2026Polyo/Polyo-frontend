@@ -8,7 +8,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { AuthUser } from "../api/auth";
+import type { AuthUser } from "../api";
 import {
   canSendEmote,
   EMOTE_LABELS,

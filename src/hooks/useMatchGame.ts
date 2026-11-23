@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AUTH_TOKEN_KEY } from "../api/auth";
+import { AUTH_TOKEN_KEY } from "../api";
 import {
   EMPTY_CURSOR,
   FATAL_ERROR_CODES,

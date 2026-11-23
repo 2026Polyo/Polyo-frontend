@@ -1,15 +1,11 @@
 import { ArrowLeft, RefreshCw, Trophy } from "lucide-react";
 import styled from "@emotion/styled";
 import { useCallback, useEffect, useState } from "react";
-import {
-  fetchRanking,
-  type RankingEntry,
-  type RankingType,
-} from "../api/ranking";
-import medalBronze from "../asset/medal-bronze.svg";
-import medalGold from "../asset/medal-gold.svg";
-import medalSilver from "../asset/medal-silver.svg";
-import type { GameThemeId } from "../features/themes/gameThemes";
+import { fetchRanking, type RankingEntry, type RankingType } from "../../api";
+import medalBronze from "../../asset/medal-bronze.svg";
+import medalGold from "../../asset/medal-gold.svg";
+import medalSilver from "../../asset/medal-silver.svg";
+import type { GameThemeId } from "../../features/themes/gameThemes";
 
 interface RankingScreenProps {
   onBack: () => void;

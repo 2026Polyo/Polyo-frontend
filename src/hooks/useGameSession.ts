@@ -47,8 +47,13 @@ import {
   hasMove,
 } from "../utils/placement";
 import { nextTray } from "../utils/tray";
-import { getMyBestScores, saveGameScore } from "../api/scores";
-import { creditApi, CreditApiError, type HardGame } from "../api/credit";
+import {
+  getMyBestScores,
+  saveGameScore,
+  creditApi,
+  CreditApiError,
+  type HardGame,
+} from "../api";
 import {
   createGameRewardSession,
   type GameRewardSession,
@@ -1193,3 +1198,5 @@ export function useGameSession(
     startScreenProps: buildStartScreenProps(),
   };
 }
+
+export type GameSessionResult = ReturnType<typeof useGameSession>;
