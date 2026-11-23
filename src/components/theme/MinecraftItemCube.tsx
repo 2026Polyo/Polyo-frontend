@@ -1,7 +1,7 @@
 import {
   getMinecraftMaterial,
   getMinecraftMaterialStyle,
-} from "../../features/themes/minecraftMaterials";
+} from "../../features/themes";
 
 /** 여섯 텍스처 면을 가진 CSS 3D 큐브. 평면 아이콘을 회전시키지 않는다. */
 export default function MinecraftItemCube({ color }: { color: string }) {

@@ -9,7 +9,7 @@ import type { MatchRoomApi, MatchRoomDetails } from "../features/matchroom";
 import MultiplayerScreen from "../screens/MultiplayerScreen";
 import PracticeScreen from "../screens/PracticeScreen";
 import { ThemeScope } from "../components/theme";
-import type { GameThemeId } from "../features/themes/gameThemes";
+import type { GameThemeId } from "../features/themes";
 
 type MultiplayerView = "home" | "lobby" | "create";
 

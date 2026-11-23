@@ -4,7 +4,7 @@ import type { AuthUser } from "../api";
 import ProfileModal from "../components/ProfileModal";
 import { RankingScreen } from "../screens/ranking";
 import { ThemeScope } from "../components/theme";
-import type { GameThemeId } from "../features/themes/gameThemes";
+import type { GameThemeId } from "../features/themes";
 
 export interface RankingRouterProps {
   currentUserId: string;

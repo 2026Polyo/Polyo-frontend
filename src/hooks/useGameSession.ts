@@ -65,15 +65,12 @@ import { useThemeAudio } from "./useThemeAudio";
 import { useItemSystem } from "./useItemSystem";
 import { usePieceSelection } from "./usePieceSelection";
 import { usePulseLabel } from "./usePulseLabel";
-import type { GameThemeId } from "../features/themes/gameThemes";
-import {
-  createBoardFeedback,
-  type BoardFeedback,
-} from "../features/themes/boardFeedback";
+import type { GameThemeId } from "../features/themes";
+import { createBoardFeedback, type BoardFeedback } from "../features/themes";
 import {
   normalizeSpecialPieceGroups,
   placeSpecialPieceGroups,
-} from "../features/themes/specialAppearance";
+} from "../features/themes";
 import type {
   AugmentId,
   AugmentState,

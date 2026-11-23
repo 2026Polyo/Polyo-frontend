@@ -13,7 +13,7 @@ import { cloneBoard, simulateGravity } from "../utils/boardUtils";
 import {
   moveSpecialPieceGroups,
   normalizeSpecialPieceGroups,
-} from "../features/themes/specialAppearance";
+} from "../features/themes";
 import { rerollOnePiece } from "../utils/tray";
 import type {
   AugmentState,

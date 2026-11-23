@@ -6,7 +6,7 @@ import { getThemePresentation } from "../../features/themePresentation";
 import {
   getGameTheme,
   type GameThemeId,
-} from "../../features/themes/gameThemes";
+} from "../../features/themes";
 import { ThemePreview } from "../theme";
 import type { ShopAccountState } from "../../hooks/shop";
 

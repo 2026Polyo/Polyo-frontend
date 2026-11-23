@@ -6,17 +6,10 @@ import {
   type CSSProperties,
 } from "react";
 import { createPortal } from "react-dom";
-import {
-  createVisualRandom,
-  type FeedbackCell,
-} from "../../features/themes/boardFeedback";
-import {
-  createNeonFractures,
-  createNeonOrbit,
-} from "../../features/themes/neonBlackHole";
-import { getThemeTileStyle, NEON_THEME } from "../../features/themes/gameThemes";
-import { getSpecialAppearance } from "../../features/themes/specialAppearance";
-import "../../styles/NeonBlackHole.css";
+import { createVisualRandom, type FeedbackCell } from "../../features/themes";
+import { createNeonFractures, createNeonOrbit } from "../../features/themes";
+import { getThemeTileStyle, NEON_THEME } from "../../features/themes";
+import { getSpecialAppearance } from "../../features/themes";
 
 export default memo(function NeonBlackHole({
   cells,

@@ -1,16 +1,10 @@
 import { useRef, useState } from "react";
 import StartDeckModal from "./StartDeckModal";
 import MenuBlock from "./MenuBlock";
-import {
-  Copy,
-  LogOut,
-  ShoppingCart,
-  Trophy,
-  UserRound,
-} from "lucide-react";
+import { Copy, LogOut, ShoppingCart, Trophy, UserRound } from "lucide-react";
 import type { GameMode, PieceTemplate } from "../types";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
-import type { GameThemeId } from "../features/themes/gameThemes";
+import type { GameThemeId } from "../features/themes";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 
 type LogoMotion = { angle: number; velocity: number };

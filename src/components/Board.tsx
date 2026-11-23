@@ -8,8 +8,7 @@ import type {
   PlacementPosition,
   SpecialPieceGroups,
 } from "../types";
-import type { BoardFeedback } from "../features/themes/boardFeedback";
-import { getThemeTileStyle } from "../features/themes/gameThemes";
+import { getThemeTileStyle, type BoardFeedback } from "../features/themes";
 import {
   useGameTheme,
   BoardEffects,
@@ -22,13 +21,12 @@ import {
   CatBoardEffects,
   CatPawDefinition,
 } from "./theme";
-import { JELLY_LANDING_MS } from "../features/themes/jellyFeedback";
-import { getCatConnections } from "../features/themes/catConnections";
-import type { CatCell } from "../features/themes/catRegions";
 import {
-  catConnectionGroup,
-  getSpecialAppearance,
-} from "../features/themes/specialAppearance";
+  JELLY_LANDING_MS,
+  getCatConnections,
+  type CatCell,
+} from "../features/themes";
+import { catConnectionGroup, getSpecialAppearance } from "../features/themes";
 import { SPECIAL_LABELS } from "../features/specials";
 const EMPTY_SPECIAL_GROUPS: SpecialPieceGroups = {};
 

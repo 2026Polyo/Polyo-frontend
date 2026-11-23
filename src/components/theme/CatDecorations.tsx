@@ -7,14 +7,10 @@ import {
   type CatCell,
   type CatRegion,
   type CatExpression as Expression,
-} from "../../features/themes/catRegions";
+} from "../../features/themes";
 import CatExpression from "./CatExpression";
-import "../../styles/CatTheme.css";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
-import {
-  catConnectionGroup,
-  getCatCoatStyle,
-} from "../../features/themes/specialAppearance";
+import { catConnectionGroup, getCatCoatStyle } from "../../features/themes";
 import type { Board, SpecialPieceGroups } from "../../types";
 
 interface Decoration {

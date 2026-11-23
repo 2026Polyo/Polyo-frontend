@@ -1,8 +1,7 @@
 import {
   getMinecraftMaterial,
   getMinecraftMaterialStyle,
-} from "../../features/themes/minecraftMaterials";
-import "../../styles/MinecraftTheme.css";
+} from "../../features/themes";
 
 export default function MinecraftTile({
   color,

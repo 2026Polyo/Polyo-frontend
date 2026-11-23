@@ -244,8 +244,23 @@
   width: 9.5cqw;
 }
 
-.start-profile { background: #ffffff36; border: 0.3cqw solid #ffffff79; border-radius: 2.4cqw; color: white; gap: 1.2cqw; height: 7.2cqw; left: 2.8%; padding: 0 2.2cqw; position: absolute; top: 3.3%; font-size: 2.8cqw; }
-.start-profile svg { width: 4cqw; height: 4cqw; }
+.start-profile {
+  background: #ffffff36;
+  border: 0.3cqw solid #ffffff79;
+  border-radius: 2.4cqw;
+  color: white;
+  gap: 1.2cqw;
+  height: 7.2cqw;
+  left: 2.8%;
+  padding: 0 2.2cqw;
+  position: absolute;
+  top: 3.3%;
+  font-size: 2.8cqw;
+}
+.start-profile svg {
+  width: 4cqw;
+  height: 4cqw;
+}
 
 .start-logout svg {
   width: 4cqw;
@@ -450,7 +465,14 @@
 
 .start-dialog-actions .hard-mode-action {
   background:
-    linear-gradient(135deg, transparent 0 11%, #ffffff0d 11% 13%, transparent 13% 26%, #ffffff0d 26% 28%, transparent 28%),
+    linear-gradient(
+      135deg,
+      transparent 0 11%,
+      #ffffff0d 11% 13%,
+      transparent 13% 26%,
+      #ffffff0d 26% 28%,
+      transparent 28%
+    ),
     linear-gradient(155deg, #241016 0%, #4a111c 54%, #8d202c 100%);
   border: 2px solid #e0525d;
   box-shadow:
@@ -477,7 +499,14 @@
 
 .start-dialog-actions .hard-mode-action:hover {
   background:
-    linear-gradient(135deg, transparent 0 11%, #ffffff16 11% 13%, transparent 13% 26%, #ffffff16 26% 28%, transparent 28%),
+    linear-gradient(
+      135deg,
+      transparent 0 11%,
+      #ffffff16 11% 13%,
+      transparent 13% 26%,
+      #ffffff16 26% 28%,
+      transparent 28%
+    ),
     linear-gradient(155deg, #32131b 0%, #681420 54%, #b52d38 100%);
   box-shadow:
     inset 0 0 0 1px #ffd0c3,

@@ -9,7 +9,7 @@ import {
 import { matchRoomApi } from "../features/matchroomApi";
 import type { MatchRoomDetails } from "../features/matchroom";
 import { ThemeScope } from "../components/theme";
-import { getGameTheme, type GameThemeId } from "../features/themes/gameThemes";
+import { getGameTheme, type GameThemeId } from "../features/themes";
 import { useShopAccount } from "../hooks/shop";
 import { AppRouter } from "../router";
 import { clearAuth, type AuthUser } from "../api";

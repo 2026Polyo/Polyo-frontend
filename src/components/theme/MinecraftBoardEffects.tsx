@@ -1,9 +1,6 @@
 import { memo, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import {
-  MAX_EFFECT_BATCHES,
-  type BoardFeedback,
-} from "../../features/themes/boardFeedback";
+import { MAX_EFFECT_BATCHES, type BoardFeedback } from "../../features/themes";
 import {
   createMinecraftEffectBatch,
   MINECRAFT_EFFECT_LIFETIME_MS,
@@ -14,8 +11,8 @@ import {
   MINECRAFT_POOF_START_MS,
   type MinecraftClearCell,
   type MinecraftEffectBatch,
-} from "../../features/themes/minecraftFeedback";
-import { getMinecraftAnimationStyle } from "../../features/themes/minecraftMaterials";
+} from "../../features/themes";
+import { getMinecraftAnimationStyle } from "../../features/themes";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import MinecraftItemCube from "./MinecraftItemCube";
 import MinecraftTile from "./MinecraftTile";

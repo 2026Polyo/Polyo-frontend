@@ -1,9 +1,6 @@
 import { memo, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import {
-  MAX_EFFECT_BATCHES,
-  type BoardFeedback,
-} from "../../features/themes/boardFeedback";
+import { MAX_EFFECT_BATCHES, type BoardFeedback } from "../../features/themes";
 import {
   createJellyEffectBatch,
   JELLY_BREAK_MS,
@@ -12,11 +9,10 @@ import {
   JELLY_EFFECT_LIFETIME_MS,
   type JellyEffectBatch,
   type JellyEffectCell,
-} from "../../features/themes/jellyFeedback";
-import { getThemeTileStyle } from "../../features/themes/gameThemes";
+} from "../../features/themes";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useGameTheme } from "./ThemeScope";
-import { getSpecialAppearance } from "../../features/themes/specialAppearance";
+import { getSpecialAppearance, getThemeTileStyle } from "../../features/themes";
 
 const JellyParticles = memo(function JellyParticles({
   cell,
