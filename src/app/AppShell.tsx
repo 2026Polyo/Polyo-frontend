@@ -139,6 +139,7 @@ export default function AppShell({ user, onUserChange }: AppShellProps) {
         onUserChange,
       }}
       multi={{
+        themeId: activeThemeId,
         view: multiplayerView === "home" ? "lobby" : multiplayerView,
         restoreRoomFocus,
         matchRoomApi,

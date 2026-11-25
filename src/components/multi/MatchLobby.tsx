@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { AuthUser } from "../../api";
+import { useGameTheme } from "../theme";
 import {
   canSendEmote,
   EMOTE_LABELS,
@@ -140,6 +141,7 @@ function MatchLobby({
   onStart,
   onExit,
 }: MatchLobbyProps) {
+  const theme = useGameTheme();
   const [localReady, setLocalReady] = useState(false);
   const [startPending, setStartPending] = useState(false);
   const [lastEmoteAt, setLastEmoteAt] = useState<number | null>(null);
@@ -219,7 +221,10 @@ function MatchLobby({
   }
 
   return (
-    <main className="create-room-screen vs-lobby">
+    <main
+      className="create-room-screen menu-scene vs-lobby"
+      data-game-theme={theme.id}
+    >
       <header className="room-brand vs-lobby-header">
         <span className="room-wordmark">POLYO</span>
         <span className="room-mode-badge">1 : 1 대전</span>

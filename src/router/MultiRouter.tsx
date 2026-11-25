@@ -1,10 +1,13 @@
-import type { MutableRefObject } from "react";
+import type { MutableRefObject, ReactNode } from "react";
+import { ThemeScope } from "../components/theme";
 import type { MatchRoomApi, MatchRoomDetails } from "../features/multi";
+import type { GameThemeId } from "../features/themes";
 import { CreateRoomScreen, MultiplayerScreen } from "../screens/multi";
 
 export type MultiplayerView = "home" | "lobby" | "create";
 
 export interface MultiRouterProps {
+  themeId: GameThemeId;
   view: MultiplayerView;
   restoreRoomFocus: MutableRefObject<string | null>;
   matchRoomApi: MatchRoomApi;
@@ -13,14 +16,17 @@ export interface MultiRouterProps {
 }
 
 export default function MultiRouter({
+  themeId,
   view,
   restoreRoomFocus,
   matchRoomApi,
   onEnterRoom,
   onSetView,
 }: MultiRouterProps) {
+  let screen: ReactNode = null;
+
   if (view === "create") {
-    return (
+    screen = (
       <CreateRoomScreen
         onClose={() => {
           restoreRoomFocus.current = "lobby-create-room";
@@ -30,10 +36,8 @@ export default function MultiRouter({
         onEnterRoom={onEnterRoom}
       />
     );
-  }
-
-  if (view === "lobby") {
-    return (
+  } else if (view === "lobby") {
+    screen = (
       <MultiplayerScreen
         api={matchRoomApi}
         onBack={() => {
@@ -46,5 +50,5 @@ export default function MultiRouter({
     );
   }
 
-  return null;
+  return <ThemeScope themeId={themeId}>{screen}</ThemeScope>;
 }

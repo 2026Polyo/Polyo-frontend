@@ -10,7 +10,7 @@ import {
 } from "../../components/multi";
 import { PieceShape, PieceTray } from "../../components/piece";
 import RivalHeldPiece from "../../components/RivalHeldPiece";
-import { ThemeScope } from "../../components/theme";
+import { ThemeScope, useGameTheme } from "../../components/theme";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../../features/clearFeedback";
 import {
@@ -134,6 +134,7 @@ function moveSignature(game: MatchGameState | null): string {
 
 // The match plays on the same board, tray, score and effects as solo mode; only the state comes from the server.
 function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
+  const theme = useGameTheme();
   const emoteBubbles = useEmoteBubbles();
   const showEmote = emoteBubbles.show;
   // My own emote is shown right away, so a server echo of it is ignored.
@@ -379,7 +380,10 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   // My own leave also closes my socket with ROOM_CLOSED; that one is not news to me.
   if (match.closedReason && !leaving) {
     return (
-      <main className="create-room-screen match-screen">
+      <main
+        className="create-room-screen menu-scene match-screen"
+        data-game-theme={theme.id}
+      >
         <section className="match-waiting">
           <h1>방이 닫혔어요.</h1>
           <p role="alert">{ROOM_CLOSED_MESSAGES[match.closedReason]}</p>
@@ -393,7 +397,10 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
 
   if (match.fatalError) {
     return (
-      <main className="create-room-screen match-screen">
+      <main
+        className="create-room-screen menu-scene match-screen"
+        data-game-theme={theme.id}
+      >
         <section className="match-waiting">
           <h1>대전에 접속하지 못했어요.</h1>
           <p role="alert">{match.fatalError}</p>
@@ -443,6 +450,7 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   return (
     <main
       className={`app-shell play-shell match-shell${selection.cursorPoint ? " has-cursor-piece" : ""}`}
+      data-game-theme={theme.id}
     >
       {playing && (
         <div className="match-corner-actions">
