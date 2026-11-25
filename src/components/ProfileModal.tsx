@@ -36,6 +36,7 @@ const AVATAR_BACKGROUNDS = [
   "#e8ddff",
   "#d9e8ff",
 ];
+const MAX_NICKNAME_LENGTH = 20;
 
 function ProfileModal({
   user,
@@ -171,10 +172,18 @@ function ProfileModal({
             <label>
               닉네임
               <input
+                aria-describedby="nickname-length"
                 value={nickname}
-                maxLength={20}
-                onChange={(event) => setNickname(event.target.value)}
+                maxLength={MAX_NICKNAME_LENGTH}
+                minLength={2}
+                onChange={(event) =>
+                  setNickname(event.target.value.slice(0, MAX_NICKNAME_LENGTH))
+                }
+                required
               />
+              <span className="profile-nickname-length" id="nickname-length">
+                {nickname.length}/{MAX_NICKNAME_LENGTH}
+              </span>
             </label>
             <div className="profile-block-picker-label">아바타 블록</div>
             <div className="profile-block-picker">
