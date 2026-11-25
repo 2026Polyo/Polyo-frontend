@@ -18,7 +18,7 @@ import {
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import CatTile from "./CatTile";
 import CatDecorations from "./CatDecorations";
-import { SIZE } from "../../constants/gameData";
+import { SIZE } from "../../mocks/gameData";
 
 const STICKER_CELLS = [[0, 0]] as const;
 

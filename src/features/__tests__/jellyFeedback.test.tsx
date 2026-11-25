@@ -2,7 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { ThemeScope } from "../../components/theme";
 import { PieceShape } from "../../components/piece";
-import { colorClass } from "../../constants/gameData";
+import { colorClass } from "../../mocks/gameData";
 import { getGameTheme, getThemeSound } from "../themes/gameThemes";
 import {
   createJellyEffectBatch,

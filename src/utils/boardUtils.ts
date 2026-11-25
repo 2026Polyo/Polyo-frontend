@@ -1,4 +1,4 @@
-import { SIZE } from "../constants/gameData";
+import { SIZE } from "../mocks/gameData";
 import { shuffleInPlace } from "./shuffle";
 import type { Board, ClearedResult } from "../types";
 

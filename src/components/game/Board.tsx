@@ -1,14 +1,14 @@
 import { memo, useId, useLayoutEffect, useMemo, useRef } from "react";
-import { colorClass } from "../constants/gameData";
-import "../styles/Board.css";
+import { colorClass } from "../../mocks/gameData";
+import "../../styles/Board.css";
 import type {
   Board as BoardType,
   Cell,
   PieceInstance,
   PlacementPosition,
   SpecialPieceGroups,
-} from "../types";
-import { getThemeTileStyle, type BoardFeedback } from "../features/themes";
+} from "../../types";
+import { getThemeTileStyle, type BoardFeedback } from "../../features/themes";
 import {
   useGameTheme,
   BoardEffects,
@@ -20,14 +20,14 @@ import {
   CatDecorations,
   CatBoardEffects,
   CatPawDefinition,
-} from "./theme";
+} from "../theme";
 import {
   JELLY_LANDING_MS,
   getCatConnections,
   type CatCell,
-} from "../features/themes";
-import { catConnectionGroup, getSpecialAppearance } from "../features/themes";
-import { SPECIAL_LABELS } from "../features/specials";
+} from "../../features/themes";
+import { catConnectionGroup, getSpecialAppearance } from "../../features/themes";
+import { SPECIAL_LABELS } from "../../mocks/specials";
 const EMPTY_SPECIAL_GROUPS: SpecialPieceGroups = {};
 
 interface BoardProps {

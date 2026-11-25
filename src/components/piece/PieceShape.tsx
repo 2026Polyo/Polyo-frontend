@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { colorClass } from "../../constants/gameData";
+import { colorClass } from "../../mocks/gameData";
 import { pieceBounds } from "../../utils/pieceUtils";
 import type { PieceInstance } from "../../types";
 import { useGameTheme, MinecraftTile, CatTile, CatDecorations } from "../theme";
@@ -8,7 +8,7 @@ import {
   getCatConnections,
   getSpecialAppearance,
 } from "../../features/themes";
-import { SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../../features/specials";
+import { SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../../mocks/specials";
 
 interface PieceShapeProps {
   piece: PieceInstance;

@@ -1,23 +1,25 @@
 import { useEffect, useState } from "react";
 import { Layers, Undo2 } from "lucide-react";
 import { GAME_OVER_PANEL_DELAY_MS } from "../constants/config";
-import BonusTimeEffect from "../components/BonusTimeEffect";
 import {
   BONUS_DURATION_MS,
   BONUS_PLACEMENT_TARGET,
 } from "../features/bonusTime";
-import BlockRewardModal from "../components/BlockRewardModal";
-import Board from "../components/Board";
-import DeckModal from "../components/DeckModal";
+import {
+  AugmentChoiceModal,
+  AugmentPanel,
+  BlockRewardModal,
+  Board,
+  BonusTimeEffect,
+  DeckModal,
+  GameOver,
+  ItemSlots as ItemSlotsView,
+  RerollModal,
+  SpecialChoiceModal,
+} from "../components/game";
 import GameSettingsMenu from "../components/GameSettingsMenu";
-import GameOver from "../components/GameOver";
 import { PieceShape, PieceTray } from "../components/piece";
-import RerollModal from "../components/RerollModal";
 import ScoreBoard from "../components/ScoreBoard";
-import SpecialChoiceModal from "../components/SpecialChoiceModal";
-import { AugmentChoiceModal } from "../components/AugmentChoiceModal";
-import { AugmentPanel } from "../components/AugmentPanel";
-import { ItemSlots as ItemSlotsView } from "../components/ItemSlots";
 import type {
   BonusTimeState,
   GameMode,

@@ -1,4 +1,4 @@
-import { SIZE } from "../constants/gameData";
+import { SIZE } from "../mocks/gameData";
 import type { BoardMetrics, PlacementPosition, PointerPoint } from "../types";
 
 export interface BoardPointerGrid extends BoardMetrics {

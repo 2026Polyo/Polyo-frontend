@@ -1,4 +1,4 @@
-import { PIECES } from "../constants/gameData";
+import { PIECES } from "../mocks/gameData";
 import {
   createPieceInstance,
   randomPiece,

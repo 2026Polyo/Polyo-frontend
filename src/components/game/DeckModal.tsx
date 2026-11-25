@@ -1,8 +1,8 @@
-import "../styles/DeckModal.css";
+import "../../styles/DeckModal.css";
 import { X } from "lucide-react";
-import { PieceShape } from "./piece";
-import { SPECIAL_LABELS } from "../features/specials";
-import type { PieceInstance } from "../types";
+import { PieceShape } from "../piece";
+import { SPECIAL_LABELS } from "../../mocks/specials";
+import type { PieceInstance } from "../../types";
 
 interface DeckTileProps {
   piece: PieceInstance;

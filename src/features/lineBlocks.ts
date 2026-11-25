@@ -1,4 +1,4 @@
-import { PIECES } from "../constants/gameData";
+import { PIECES } from "../mocks/gameData";
 import { clearLineIndices } from "../utils/boardUtils";
 import { cellsAreCoordPairs, makeSpecialValidator } from "./specialPiece";
 import type { Board, CellCoord, ClearedResult, PieceTemplate } from "../types";

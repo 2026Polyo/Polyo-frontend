@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import "../styles/DeckModal.css";
 import { Check, Shuffle, X } from "lucide-react";
 import { PieceShape } from "./piece";
-import { PIECES } from "../constants/gameData";
-import { SPECIAL_LABELS } from "../features/specials";
+import { PIECES } from "../mocks/gameData";
+import { SPECIAL_LABELS } from "../mocks/specials";
 import {
   blockName,
   createPieceInstance,

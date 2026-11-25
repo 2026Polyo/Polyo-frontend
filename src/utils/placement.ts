@@ -1,4 +1,4 @@
-import { SIZE } from "../constants/gameData";
+import { SIZE } from "../mocks/gameData";
 import { clearLines, cloneBoard } from "./boardUtils";
 import { shuffleInPlace } from "./shuffle";
 import type {

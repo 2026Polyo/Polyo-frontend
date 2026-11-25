@@ -1,11 +1,11 @@
-import { createBombTemplate, isValidBombPiece } from "./bombBlocks";
-import { createBoostTemplate, isValidBoostPiece } from "./boostBlocks";
-import { createEchoTemplate, isValidEchoPiece } from "./echoBlocks";
-import { createFillTemplate, isValidFillPiece } from "./fillBlocks";
-import { createGoldenTemplate, isValidGoldenPiece } from "./goldenBlocks";
-import { createGhostTemplate, isValidGhostPiece } from "./ghosts";
-import { createLineTemplate, isValidLinePiece } from "./lineBlocks";
-import { getPieceTemplate, LOCKABLE_BLOCK_IDS } from "../constants/gameData";
+import { createBombTemplate, isValidBombPiece } from "../features/bombBlocks";
+import { createBoostTemplate, isValidBoostPiece } from "../features/boostBlocks";
+import { createEchoTemplate, isValidEchoPiece } from "../features/echoBlocks";
+import { createFillTemplate, isValidFillPiece } from "../features/fillBlocks";
+import { createGoldenTemplate, isValidGoldenPiece } from "../features/goldenBlocks";
+import { createGhostTemplate, isValidGhostPiece } from "../features/ghosts";
+import { createLineTemplate, isValidLinePiece } from "../features/lineBlocks";
+import { getPieceTemplate, LOCKABLE_BLOCK_IDS } from "./gameData";
 import { shuffle } from "../utils/shuffle";
 import type { PieceTemplate, SpecialType } from "../types";
 

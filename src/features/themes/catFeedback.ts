@@ -4,7 +4,7 @@ import {
   type BoardFeedback,
   type FeedbackCell,
 } from "./boardFeedback";
-import { SIZE } from "../../constants/gameData";
+import { SIZE } from "../../mocks/gameData";
 import { getCatConnections } from "./catConnections";
 import type { Board } from "../../types";
 import type { SpecialPieceGroups } from "../../types";

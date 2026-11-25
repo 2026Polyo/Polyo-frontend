@@ -1,18 +1,18 @@
 import { useState } from "react";
-import "../styles/AugmentChoiceModal.css";
+import "../../styles/AugmentChoiceModal.css";
 import {
   getAugmentEffectText,
   getAugmentLevel,
   getAugmentMaxLevel,
   getNextAugmentScore,
-} from "../features/augments";
+} from "../../features/augments";
 import {
   AUGMENT_CHOICE_COUNT,
   AUGMENT_TYPE_LABEL,
   augmentDetails,
-} from "../features/augmentData";
-import { shuffleInPlace } from "../utils/shuffle";
-import type { AugmentDetail, AugmentId, AugmentState } from "../types";
+} from "../../mocks/augmentData";
+import { shuffleInPlace } from "../../utils/shuffle";
+import type { AugmentDetail, AugmentId, AugmentState } from "../../types";
 
 // Pick `count` distinct augments at random, excluding any augment that has
 // already reached its max level.
