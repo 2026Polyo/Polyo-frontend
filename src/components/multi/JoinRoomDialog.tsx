@@ -1,8 +1,8 @@
 import { LoaderCircle, LogIn, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
-import { ENTRY_CODE_PATTERN, normalizeEntryCode } from "../features/matchroom";
-import RoomTextField from "./RoomTextField";
+import { ENTRY_CODE_PATTERN, normalizeEntryCode } from "../../features/multi";
+import RoomTextField from "../RoomTextField";
 
 interface JoinRoomDialogProps {
   busy: boolean;

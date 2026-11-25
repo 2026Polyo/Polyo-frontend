@@ -1,46 +1,51 @@
 import { Flag, Swords, WifiOff } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { AuthUser } from "../api";
-import { Board } from "../components/game";
-import EmoteIcon from "../components/EmoteIcon";
-import EmotePicker from "../components/EmotePicker";
-import MatchLobby from "../components/MatchLobby";
-import { PieceShape, PieceTray } from "../components/piece";
-import RivalHeldPiece from "../components/RivalHeldPiece";
-import { ThemeScope } from "../components/theme";
-import TrophyReward from "../components/TrophyReward";
-import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
-import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
+import type { AuthUser } from "../../api";
+import { Board } from "../../components/game";
+import {
+  EmoteIcon,
+  EmotePicker,
+  MatchLobby,
+  TrophyReward,
+} from "../../components/multi";
+import { PieceShape, PieceTray } from "../../components/piece";
+import RivalHeldPiece from "../../components/RivalHeldPiece";
+import { ThemeScope, useGameTheme } from "../../components/theme";
+import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../../constants/config";
+import { CLEAR_TIER_LABEL, getClearTier } from "../../features/clearFeedback";
 import {
   EMPTY_CURSOR,
   FINISH_REASON_LABELS,
   getCursorPreview,
   getTrophyResult,
+  canSendEmote,
+  EMOTE_LABELS,
+  MatchRoomApiError,
+  matchRoomApi,
   ROOM_CLOSED_MESSAGES,
-} from "../features/matchGame";
-import { MatchRoomApiError, matchRoomApi } from "../features/matchroomApi";
-import type { MatchCursor, MatchGameState } from "../features/matchGame";
-import type { MatchRoomDetails } from "../features/matchroom";
-import { canSendEmote, EMOTE_LABELS } from "../features/matchLobby";
-import type { EmoteId } from "../features/matchLobby";
-import type { EmoteBubble } from "../hooks/useEmoteBubbles";
-import { useComboEffect } from "../hooks/useComboEffect";
-import { useEmoteBubbles } from "../hooks/useEmoteBubbles";
-import { useGameAudio } from "../hooks/useGameAudio";
-import { useMatchGame } from "../hooks/useMatchGame";
-import { usePieceSelection } from "../hooks/usePieceSelection";
-import { usePulseLabel } from "../hooks/usePulseLabel";
+  type EmoteId,
+  type MatchCursor,
+  type MatchGameState,
+  type MatchRoomDetails,
+} from "../../features/multi";
+import type { EmoteBubble } from "../../hooks/useEmoteBubbles";
+import { useComboEffect } from "../../hooks/useComboEffect";
+import { useEmoteBubbles } from "../../hooks/useEmoteBubbles";
+import { useGameAudio } from "../../hooks/useGameAudio";
+import { useMatchGame } from "../../hooks/useMatchGame";
+import { usePieceSelection } from "../../hooks/usePieceSelection";
+import { usePulseLabel } from "../../hooks/usePulseLabel";
 import {
   canPlace,
   getClosestPlacement,
   getPlacementDistanceSquared,
   getPlacementPreview,
-} from "../utils/placement";
-import "../styles/GameOver.css";
+} from "../../utils/placement";
+import "../../styles/GameOver.css";
 // Emote picker and bubble animation styles live with the lobby.
-import "../styles/MatchLobby.css";
-import "../styles/MatchGameScreen.css";
-import type { Board as BoardType, PieceInstance } from "../types";
+import "../../styles/MatchLobby.css";
+import "../../styles/MatchGameScreen.css";
+import type { Board as BoardType, PieceInstance } from "../../types";
 
 const NO_CELLS = new Set<string>();
 const PLACE_TIMEOUT_MS = 3000;
@@ -129,6 +134,7 @@ function moveSignature(game: MatchGameState | null): string {
 
 // The match plays on the same board, tray, score and effects as solo mode; only the state comes from the server.
 function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
+  const theme = useGameTheme();
   const emoteBubbles = useEmoteBubbles();
   const showEmote = emoteBubbles.show;
   // My own emote is shown right away, so a server echo of it is ignored.
@@ -374,7 +380,10 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   // My own leave also closes my socket with ROOM_CLOSED; that one is not news to me.
   if (match.closedReason && !leaving) {
     return (
-      <main className="create-room-screen match-screen">
+      <main
+        className="create-room-screen menu-scene match-screen"
+        data-game-theme={theme.id}
+      >
         <section className="match-waiting">
           <h1>방이 닫혔어요.</h1>
           <p role="alert">{ROOM_CLOSED_MESSAGES[match.closedReason]}</p>
@@ -388,7 +397,10 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
 
   if (match.fatalError) {
     return (
-      <main className="create-room-screen match-screen">
+      <main
+        className="create-room-screen menu-scene match-screen"
+        data-game-theme={theme.id}
+      >
         <section className="match-waiting">
           <h1>대전에 접속하지 못했어요.</h1>
           <p role="alert">{match.fatalError}</p>
@@ -438,6 +450,7 @@ function MatchGameScreen({ onExit, room, user }: MatchGameScreenProps) {
   return (
     <main
       className={`app-shell play-shell match-shell${selection.cursorPoint ? " has-cursor-piece" : ""}`}
+      data-game-theme={theme.id}
     >
       {playing && (
         <div className="match-corner-actions">

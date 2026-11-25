@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { EMOTE_BUBBLE_MS } from "../features/matchLobby";
-import type { EmoteId } from "../features/matchLobby";
+import { EMOTE_BUBBLE_MS, type EmoteId } from "../features/multi";
 
 export interface EmoteBubble {
   emote: EmoteId;

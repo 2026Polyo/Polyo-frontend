@@ -3,8 +3,8 @@ import type {
   MatchRoomApi,
   MatchRoomDetails,
   MatchRoomPage,
-} from "../features/matchroom";
-import { MatchRoomApiError } from "../features/matchroomApi";
+} from "../features/multi";
+import { MatchRoomApiError } from "../features/multi";
 
 function errorMessage(error: unknown, fallback: string): string {
   return error instanceof MatchRoomApiError ? error.message : fallback;

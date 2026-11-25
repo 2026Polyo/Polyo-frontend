@@ -1,4 +1,4 @@
-import type { EmoteId } from "../features/matchLobby";
+import type { EmoteId } from "../../features/multi";
 
 // Each emote is a single block cell with a face, so it reads as part of the game rather than a stock emoji.
 const BLOCK_COLORS: Record<EmoteId, string> = {

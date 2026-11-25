@@ -11,11 +11,12 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import JoinRoomDialog from "../components/JoinRoomDialog";
-import type { MatchRoomApi, MatchRoomDetails } from "../features/matchroom";
-import { useMatchRoomLobby } from "../hooks/useMatchRoomLobby";
-import "../styles/CreateRoomScreen.css";
-import "../styles/MultiplayerScreen.css";
+import { JoinRoomDialog } from "../../components/multi";
+import { useGameTheme } from "../../components/theme";
+import type { MatchRoomApi, MatchRoomDetails } from "../../features/multi";
+import { useMatchRoomLobby } from "../../hooks/useMatchRoomLobby";
+import "../../styles/CreateRoomScreen.css";
+import "../../styles/MultiplayerScreen.css";
 
 interface MultiplayerScreenProps {
   api: MatchRoomApi;
@@ -30,6 +31,7 @@ function MultiplayerScreen({
   onCreateRoom,
   onEnterRoom,
 }: MultiplayerScreenProps) {
+  const theme = useGameTheme();
   const lobby = useMatchRoomLobby(api);
   const [codeOpen, setCodeOpen] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -58,7 +60,10 @@ function MultiplayerScreen({
   }
 
   return (
-    <main className="create-room-screen multiplayer-screen">
+    <main
+      className="create-room-screen menu-scene multiplayer-screen"
+      data-game-theme={theme.id}
+    >
       <header className="room-brand">
         <span className="room-wordmark">POLYO</span>
       </header>

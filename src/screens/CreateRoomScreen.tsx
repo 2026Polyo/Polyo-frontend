@@ -3,11 +3,9 @@ import { useEffect, useRef } from "react";
 import type { FormEvent } from "react";
 import RoomOption from "../components/RoomOption";
 import RoomTextField from "../components/RoomTextField";
-import { getRoomNameLength, ROOM_NAME_MAX_LENGTH } from "../features/matchroom";
-import type {
-  CreateRoomHandler,
-  MatchRoomDetails,
-} from "../features/matchroom";
+import { useGameTheme } from "../components/theme";
+import { getRoomNameLength, ROOM_NAME_MAX_LENGTH } from "../features/multi";
+import type { CreateRoomHandler, MatchRoomDetails } from "../features/multi";
 import { useCreateRoom } from "../hooks/useCreateRoom";
 import "../styles/CreateRoomScreen.css";
 
@@ -34,6 +32,7 @@ function CreateRoomScreen({
   onCreateRoom,
   onEnterRoom,
 }: CreateRoomScreenProps) {
+  const theme = useGameTheme();
   const room = useCreateRoom(onCreateRoom);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -64,7 +63,7 @@ function CreateRoomScreen({
   }
 
   return (
-    <main className="create-room-screen">
+    <main className="create-room-screen menu-scene" data-game-theme={theme.id}>
       <header className="room-brand">
         <span className="room-wordmark">POLYO</span>
       </header>
