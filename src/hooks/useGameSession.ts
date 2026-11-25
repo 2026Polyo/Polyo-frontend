@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
+import {
+  AUGMENT_CHOICE_DELAY_MS,
+  CLEAR_HIGHLIGHT_MS,
+  CLEAR_LABEL_PULSE_MS,
+  MAX_SNAP_DISTANCE,
+} from "../constants/config";
 import {
   DEFAULT_DECK,
   EMPTY_BOARD,
@@ -65,8 +70,14 @@ import { useThemeAudio } from "./useThemeAudio";
 import { useItemSystem } from "./useItemSystem";
 import { usePieceSelection } from "./usePieceSelection";
 import { usePulseLabel } from "./usePulseLabel";
+import { useReducedMotion } from "./useReducedMotion";
 import type { GameThemeId } from "../features/themes";
-import { createBoardFeedback, type BoardFeedback } from "../features/themes";
+import {
+  createBoardFeedback,
+  getClearEffectDurationMs,
+  getGameTheme,
+  type BoardFeedback,
+} from "../features/themes";
 import {
   normalizeSpecialPieceGroups,
   placeSpecialPieceGroups,
@@ -279,6 +290,9 @@ export function useGameSession(
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoUndoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audio = useThemeAudio(themeId, gamePhase === "playing");
+  const reducedMotion = useReducedMotion();
+  // 줄 제거 연출(테마 이펙트·제거 라벨)이 끝나는 시각. 증강 선택은 이 시각 이후에 연다.
+  const clearEffectEndsAtRef = useRef(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -337,7 +351,7 @@ export function useGameSession(
     label: clearLabel,
     pulseId: clearLabelId,
     pulse: pulseClearLabel,
-  } = usePulseLabel();
+  } = usePulseLabel(CLEAR_LABEL_PULSE_MS);
   const scoringAugmentState = augmentState;
   const scoreMultiplier = gameMode === "hard" ? HARD_SCORE_MULTIPLIER : 1;
   const comboMultiplier = gameMode === "hard" ? HARD_COMBO_MULTIPLIER : 1;
@@ -615,6 +629,8 @@ export function useGameSession(
     const specialDue =
       Math.floor(getTotalAugmentLevels(augmentState) / GHOST_AUGMENT_INTERVAL) >
       specialsGranted;
+    const effectRemainingMs =
+      clearEffectEndsAtRef.current - performance.now();
     const timer = setTimeout(() => {
       if (bonusTimeRef.current.remainingMs > 0) return;
       if (specialDue) {
@@ -624,7 +640,7 @@ export function useGameSession(
       } else {
         setAugmentChoiceOpen(true);
       }
-    }, 500);
+    }, Math.max(AUGMENT_CHOICE_DELAY_MS, effectRemainingMs));
     return () => clearTimeout(timer);
   }, [
     bonusActive,
@@ -941,6 +957,22 @@ export function useGameSession(
     setBoardFeedback(feedback);
     const clearTier = getClearTier(outcome.cleared);
     if (clearTier) pulseClearLabel(CLEAR_TIER_LABEL[clearTier]);
+    const clearEffectMs = Math.max(
+      reducedMotion
+        ? 0
+        : getClearEffectDurationMs(
+            getGameTheme(themeId).effects,
+            feedback.cleared.length,
+            outcome.cleared,
+          ),
+      clearTier ? CLEAR_LABEL_PULSE_MS : 0,
+    );
+    if (clearEffectMs > 0) {
+      clearEffectEndsAtRef.current = Math.max(
+        clearEffectEndsAtRef.current,
+        performance.now() + clearEffectMs,
+      );
+    }
 
     setBoard(outcome.displayBoard);
     const nextGroups = placeSpecialPieceGroups(
