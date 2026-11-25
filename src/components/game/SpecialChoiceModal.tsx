@@ -1,9 +1,9 @@
-import "../styles/AugmentChoiceModal.css";
+import "../../styles/AugmentChoiceModal.css";
 import { useMemo } from "react";
-import { PieceShape } from "./piece";
-import { SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../features/specials";
-import { createPieceInstance, pieceBounds } from "../utils/pieceUtils";
-import type { PieceTemplate, SpecialType } from "../types";
+import { PieceShape } from "../piece";
+import { SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../../mocks/specials";
+import { createPieceInstance, pieceBounds } from "../../utils/pieceUtils";
+import type { PieceTemplate, SpecialType } from "../../types";
 
 interface SpecialChoiceModalProps {
   choices: PieceTemplate[];

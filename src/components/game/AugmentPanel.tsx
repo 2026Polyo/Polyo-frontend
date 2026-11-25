@@ -1,10 +1,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Sparkles, X } from "lucide-react";
-import "../styles/AugmentPanel.css";
-import { augmentDetails } from "../features/augmentData";
-import { getAugmentLevel } from "../features/augments";
-import type { AugmentDetailWithLevel, AugmentId, AugmentState } from "../types";
+import "../../styles/AugmentPanel.css";
+import { augmentDetails } from "../../mocks/augmentData";
+import { getAugmentLevel } from "../../features/augments";
+import type { AugmentDetailWithLevel, AugmentId, AugmentState } from "../../types";
 
 interface AugmentPanelProps {
   augmentState: AugmentState;

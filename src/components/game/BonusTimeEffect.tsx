@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import "../styles/BonusTimeEffect.css";
+import "../../styles/BonusTimeEffect.css";
 
 // Mount once per bonus: the entrance clears the board, while the frame stays lit.
 export default function BonusTimeEffect({

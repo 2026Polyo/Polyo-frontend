@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { DEFAULT_DECK } from "../constants/gameData";
+import { DEFAULT_DECK } from "../mocks/gameData";
 import { shuffle } from "../utils/shuffle";
 import {
   addToStash,

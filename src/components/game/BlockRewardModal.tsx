@@ -1,7 +1,7 @@
-import "../styles/BlockRewardModal.css";
-import { PieceShape } from "./piece";
-import { SPECIAL_LABELS } from "../features/specials";
-import type { PieceInstance } from "../types";
+import "../../styles/BlockRewardModal.css";
+import { PieceShape } from "../piece";
+import { SPECIAL_LABELS } from "../../mocks/specials";
+import type { PieceInstance } from "../../types";
 
 interface BlockRewardModalProps {
   piece: PieceInstance | null;

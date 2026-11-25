@@ -4,8 +4,8 @@ import { getEchoScore, isValidEchoPiece } from "../echoBlocks";
 import { isValidGhostPiece, resolveGhostClears } from "../ghosts";
 import { isValidGoldenPiece, resolveGoldenClears } from "../goldenBlocks";
 import { applyLineClear, isValidLinePiece } from "../lineBlocks";
-import { createRandomSpecialTemplate, createRewardChoices, createSpecialChoices, isValidSpecialPiece, SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../specials";
-import { LOCKABLE_BLOCK_IDS } from "../../constants/gameData";
+import { createRandomSpecialTemplate, createRewardChoices, createSpecialChoices, isValidSpecialPiece, SPECIAL_LABELS, SPECIAL_SUMMARIES } from "../../mocks/specials";
+import { LOCKABLE_BLOCK_IDS } from "../../mocks/gameData";
 import type { Board } from "../../types";
 
 function emptyBoard(): Board {

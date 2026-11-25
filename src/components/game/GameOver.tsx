@@ -1,5 +1,5 @@
 import { Home, RotateCcw } from "lucide-react";
-import "../styles/GameOver.css";
+import "../../styles/GameOver.css";
 import type { ReactNode } from "react";
 
 interface GameOverProps {

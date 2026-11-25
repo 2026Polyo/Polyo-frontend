@@ -1,5 +1,5 @@
-import { PIECES, PIECE_COLORS } from "../constants/gameData";
-import { SPECIAL_LABELS } from "../features/specials";
+import { PIECES, PIECE_COLORS } from "../mocks/gameData";
+import { SPECIAL_LABELS } from "../mocks/specials";
 import type { PieceInstance, PieceTemplate } from "../types";
 
 function randomPieceColor(): string {

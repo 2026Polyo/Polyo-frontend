@@ -27,7 +27,7 @@ import {
   PLACEMENT_MULT_PER_LEVEL,
   SPREAD_CLEAR_CHANCE_PER_LEVEL,
   SPREAD_FILL_CHANCE_PER_LEVEL,
-} from "./augmentData";
+} from "../mocks/augmentData";
 import type {
   AugmentId,
   AugmentLevels,

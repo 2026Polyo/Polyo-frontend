@@ -1,4 +1,4 @@
-import { SPECIAL_COLORS } from "../../constants/gameData";
+import { SPECIAL_COLORS } from "../../mocks/gameData";
 import type {
   Board,
   PieceInstance,

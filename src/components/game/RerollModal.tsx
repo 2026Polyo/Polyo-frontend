@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
-import "../styles/RerollModal.css";
-import { PieceShape } from "./piece";
-import { getRerollCount, getRerollReplacementMode } from "../features/augments";
+import "../../styles/RerollModal.css";
+import { PieceShape } from "../piece";
+import { getRerollCount, getRerollReplacementMode } from "../../features/augments";
 import {
   deckPieceInstances,
   rerollCandidates,
   rerollSlots,
-} from "../utils/tray";
-import type { Board, PieceInstance, PieceTemplate, Tray } from "../types";
+} from "../../utils/tray";
+import type { Board, PieceInstance, PieceTemplate, Tray } from "../../types";
 
 const CANDIDATE_COUNT = 3;
 

@@ -1,12 +1,12 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { X } from "lucide-react";
-import "../styles/ItemSlots.css";
-import { itemDetails } from "../features/items";
+import "../../styles/ItemSlots.css";
+import { itemDetails } from "../../features/items";
 import type {
   ItemSlots as ItemSlotsState,
   ItemType,
   UndoSnapshot,
-} from "../types";
+} from "../../types";
 
 interface ItemSlotsProps {
   isClearing: boolean;

@@ -5,10 +5,10 @@ import {
   isValidDeck,
   normalizePieceId,
   SIZE,
-} from "../constants/gameData";
+} from "../mocks/gameData";
 import { getSavedAugmentState } from "./augments";
 import { getSavedItemState, type SavedItemState } from "./items";
-import { isValidSpecialPiece } from "./specials";
+import { isValidSpecialPiece } from "../mocks/specials";
 import { cloneBoard } from "../utils/boardUtils";
 import { normalizeSpecialPieceGroups } from "./themes/specialAppearance";
 import type {

@@ -5,7 +5,7 @@ import {
   EMPTY_BOARD,
   getDeckPieces,
   PIECES,
-} from "../constants/gameData";
+} from "../mocks/gameData";
 import {
   advanceAugmentSchedule,
   chooseAugment,
@@ -32,7 +32,7 @@ import {
   loadSavedGame,
   saveCurrentGame,
 } from "../features/savedGame";
-import { createRewardChoices } from "../features/specials";
+import { createRewardChoices } from "../mocks/specials";
 import {
   getLoadoutPieces,
   MAX_BASE_DECK,
