@@ -2,13 +2,15 @@ import { Flag, Swords, WifiOff } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AuthUser } from "../api";
 import { Board } from "../components/game";
-import EmoteIcon from "../components/EmoteIcon";
-import EmotePicker from "../components/EmotePicker";
-import MatchLobby from "../components/MatchLobby";
+import {
+  EmoteIcon,
+  EmotePicker,
+  MatchLobby,
+  TrophyReward,
+} from "../components/multi";
 import { PieceShape, PieceTray } from "../components/piece";
 import RivalHeldPiece from "../components/RivalHeldPiece";
 import { ThemeScope } from "../components/theme";
-import TrophyReward from "../components/TrophyReward";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
 import {
@@ -16,13 +18,16 @@ import {
   FINISH_REASON_LABELS,
   getCursorPreview,
   getTrophyResult,
+  canSendEmote,
+  EMOTE_LABELS,
+  MatchRoomApiError,
+  matchRoomApi,
   ROOM_CLOSED_MESSAGES,
-} from "../features/matchGame";
-import { MatchRoomApiError, matchRoomApi } from "../features/matchroomApi";
-import type { MatchCursor, MatchGameState } from "../features/matchGame";
-import type { MatchRoomDetails } from "../features/matchroom";
-import { canSendEmote, EMOTE_LABELS } from "../features/matchLobby";
-import type { EmoteId } from "../features/matchLobby";
+  type EmoteId,
+  type MatchCursor,
+  type MatchGameState,
+  type MatchRoomDetails,
+} from "../features/multi";
 import type { EmoteBubble } from "../hooks/useEmoteBubbles";
 import { useComboEffect } from "../hooks/useComboEffect";
 import { useEmoteBubbles } from "../hooks/useEmoteBubbles";

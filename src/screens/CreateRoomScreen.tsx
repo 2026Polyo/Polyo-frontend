@@ -3,11 +3,8 @@ import { useEffect, useRef } from "react";
 import type { FormEvent } from "react";
 import RoomOption from "../components/RoomOption";
 import RoomTextField from "../components/RoomTextField";
-import { getRoomNameLength, ROOM_NAME_MAX_LENGTH } from "../features/matchroom";
-import type {
-  CreateRoomHandler,
-  MatchRoomDetails,
-} from "../features/matchroom";
+import { getRoomNameLength, ROOM_NAME_MAX_LENGTH } from "../features/multi";
+import type { CreateRoomHandler, MatchRoomDetails } from "../features/multi";
 import { useCreateRoom } from "../hooks/useCreateRoom";
 import "../styles/CreateRoomScreen.css";
 

@@ -1,7 +1,6 @@
 import { Smile } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
-import { EMOTE_IDS, EMOTE_LABELS } from "../features/matchLobby";
-import type { EmoteId } from "../features/matchLobby";
+import { EMOTE_IDS, EMOTE_LABELS, type EmoteId } from "../../features/multi";
 import EmoteIcon from "./EmoteIcon";
 
 interface EmotePickerProps {

@@ -1,5 +1,5 @@
-import { SIZE } from "../mocks/gameData";
-import type { Board, PieceInstance } from "../types";
+import { SIZE } from "../../mocks/gameData";
+import type { Board, PieceInstance } from "../../types";
 import { isEmoteId } from "./matchLobby";
 import type { EmoteId } from "./matchLobby";
 

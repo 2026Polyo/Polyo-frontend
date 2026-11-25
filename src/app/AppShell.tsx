@@ -4,10 +4,10 @@ import { useGameSession } from "../hooks/useGameSession";
 import {
   clearActiveRoom,
   loadActiveRoom,
+  matchRoomApi,
   saveActiveRoom,
-} from "../features/activeRoomStorage";
-import { matchRoomApi } from "../features/matchroomApi";
-import type { MatchRoomDetails } from "../features/matchroom";
+  type MatchRoomDetails,
+} from "../features/multi";
 import { ThemeScope } from "../components/theme";
 import { getGameTheme, type GameThemeId } from "../features/themes";
 import { useShopAccount } from "../hooks/shop";

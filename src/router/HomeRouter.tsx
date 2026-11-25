@@ -5,7 +5,7 @@ import type { AuthUser } from "../api";
 import type { GamePhase, GameSessionResult } from "../hooks/useGameSession";
 import PlayScreen from "../screens/PlayScreen";
 import CreateRoomScreen from "../screens/CreateRoomScreen";
-import type { MatchRoomApi, MatchRoomDetails } from "../features/matchroom";
+import type { MatchRoomApi, MatchRoomDetails } from "../features/multi";
 import MultiplayerScreen from "../screens/MultiplayerScreen";
 import PracticeScreen from "../screens/PracticeScreen";
 import { ThemeScope } from "../components/theme";

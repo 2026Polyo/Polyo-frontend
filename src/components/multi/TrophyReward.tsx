@@ -1,6 +1,6 @@
 import { Trophy } from "lucide-react";
-import type { TrophyResult } from "../features/matchGame";
-import "../styles/TrophyReward.css";
+import type { TrophyResult } from "../../features/multi";
+import "../../styles/TrophyReward.css";
 
 interface TrophyRewardProps {
   result: TrophyResult;

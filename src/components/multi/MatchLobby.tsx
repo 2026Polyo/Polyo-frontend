@@ -8,19 +8,18 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { AuthUser } from "../api";
+import type { AuthUser } from "../../api";
 import {
   canSendEmote,
   EMOTE_LABELS,
   getLobbyAction,
-} from "../features/matchLobby";
-import type { EmoteId } from "../features/matchLobby";
-import type { MatchRoomDetails } from "../features/matchroom";
-import type { EmoteBubble } from "../hooks/useEmoteBubbles";
+} from "../../features/multi";
+import type { EmoteId, MatchRoomDetails } from "../../features/multi";
+import type { EmoteBubble } from "../../hooks/useEmoteBubbles";
 import EmoteIcon from "./EmoteIcon";
 import EmotePicker from "./EmotePicker";
-import "../styles/CreateRoomScreen.css";
-import "../styles/MatchLobby.css";
+import "../../styles/CreateRoomScreen.css";
+import "../../styles/MatchLobby.css";
 
 const START_PENDING_MS = 5000;
 
