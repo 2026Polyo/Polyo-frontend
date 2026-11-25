@@ -1,18 +1,18 @@
 import { Flag, Swords, WifiOff } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { AuthUser } from "../api";
-import { Board } from "../components/game";
+import type { AuthUser } from "../../api";
+import { Board } from "../../components/game";
 import {
   EmoteIcon,
   EmotePicker,
   MatchLobby,
   TrophyReward,
-} from "../components/multi";
-import { PieceShape, PieceTray } from "../components/piece";
-import RivalHeldPiece from "../components/RivalHeldPiece";
-import { ThemeScope } from "../components/theme";
-import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
-import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
+} from "../../components/multi";
+import { PieceShape, PieceTray } from "../../components/piece";
+import RivalHeldPiece from "../../components/RivalHeldPiece";
+import { ThemeScope } from "../../components/theme";
+import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../../constants/config";
+import { CLEAR_TIER_LABEL, getClearTier } from "../../features/clearFeedback";
 import {
   EMPTY_CURSOR,
   FINISH_REASON_LABELS,
@@ -27,25 +27,25 @@ import {
   type MatchCursor,
   type MatchGameState,
   type MatchRoomDetails,
-} from "../features/multi";
-import type { EmoteBubble } from "../hooks/useEmoteBubbles";
-import { useComboEffect } from "../hooks/useComboEffect";
-import { useEmoteBubbles } from "../hooks/useEmoteBubbles";
-import { useGameAudio } from "../hooks/useGameAudio";
-import { useMatchGame } from "../hooks/useMatchGame";
-import { usePieceSelection } from "../hooks/usePieceSelection";
-import { usePulseLabel } from "../hooks/usePulseLabel";
+} from "../../features/multi";
+import type { EmoteBubble } from "../../hooks/useEmoteBubbles";
+import { useComboEffect } from "../../hooks/useComboEffect";
+import { useEmoteBubbles } from "../../hooks/useEmoteBubbles";
+import { useGameAudio } from "../../hooks/useGameAudio";
+import { useMatchGame } from "../../hooks/useMatchGame";
+import { usePieceSelection } from "../../hooks/usePieceSelection";
+import { usePulseLabel } from "../../hooks/usePulseLabel";
 import {
   canPlace,
   getClosestPlacement,
   getPlacementDistanceSquared,
   getPlacementPreview,
-} from "../utils/placement";
-import "../styles/GameOver.css";
+} from "../../utils/placement";
+import "../../styles/GameOver.css";
 // Emote picker and bubble animation styles live with the lobby.
-import "../styles/MatchLobby.css";
-import "../styles/MatchGameScreen.css";
-import type { Board as BoardType, PieceInstance } from "../types";
+import "../../styles/MatchLobby.css";
+import "../../styles/MatchGameScreen.css";
+import type { Board as BoardType, PieceInstance } from "../../types";
 
 const NO_CELLS = new Set<string>();
 const PLACE_TIMEOUT_MS = 3000;

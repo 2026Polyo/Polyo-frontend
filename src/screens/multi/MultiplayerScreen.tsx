@@ -11,11 +11,11 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { JoinRoomDialog } from "../components/multi";
-import type { MatchRoomApi, MatchRoomDetails } from "../features/multi";
-import { useMatchRoomLobby } from "../hooks/useMatchRoomLobby";
-import "../styles/CreateRoomScreen.css";
-import "../styles/MultiplayerScreen.css";
+import { JoinRoomDialog } from "../../components/multi";
+import type { MatchRoomApi, MatchRoomDetails } from "../../features/multi";
+import { useMatchRoomLobby } from "../../hooks/useMatchRoomLobby";
+import "../../styles/CreateRoomScreen.css";
+import "../../styles/MultiplayerScreen.css";
 
 interface MultiplayerScreenProps {
   api: MatchRoomApi;

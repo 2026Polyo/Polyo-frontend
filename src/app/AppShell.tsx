@@ -16,7 +16,11 @@ import { clearAuth, type AuthUser } from "../api";
 
 const PRACTICE_DISCOVERY_KEY = "polyo.practice.discovered";
 const HomeRouter = lazy(() => import("../router/HomeRouter"));
-const MatchGameScreen = lazy(() => import("../screens/MatchGameScreen"));
+const MatchGameScreen = lazy(() =>
+  import("../screens/multi").then(({ MatchGameScreen: Screen }) => ({
+    default: Screen,
+  })),
+);
 
 interface AppShellProps {
   user: AuthUser;
@@ -73,6 +77,7 @@ export default function AppShell({ user, onUserChange }: AppShellProps) {
               clearActiveRoom();
               setActiveRoom(null);
               setMultiplayerView("lobby");
+              navigate("/multi");
             }}
             room={activeRoom}
             user={user}
@@ -101,16 +106,16 @@ export default function AppShell({ user, onUserChange }: AppShellProps) {
       startScreenProps={startScreenProps}
       activeThemeId={activeThemeId}
       practice={practice}
-      multiplayerView={multiplayerView}
       profileOpen={profileOpen}
       user={user}
       restoreRoomFocus={restoreRoomFocus}
-      matchRoomApi={matchRoomApi}
-      onEnterRoom={enterRoom}
       onSetPractice={setPractice}
-      onSetMultiplayerView={setMultiplayerView}
       onSetProfileOpen={setProfileOpen}
       onUserChange={onUserChange}
+      onOpenMultiplayer={() => {
+        setMultiplayerView("lobby");
+        navigate("/multi");
+      }}
       onOpenRanking={() => navigate("/ranking")}
       onOpenShop={() => {
         void shopAccount.refresh();
@@ -132,6 +137,16 @@ export default function AppShell({ user, onUserChange }: AppShellProps) {
         themeId: activeThemeId,
         user,
         onUserChange,
+      }}
+      multi={{
+        view: multiplayerView === "home" ? "lobby" : multiplayerView,
+        restoreRoomFocus,
+        matchRoomApi,
+        onEnterRoom: enterRoom,
+        onSetView: (view) => {
+          setMultiplayerView(view);
+          if (view === "home") navigate("/");
+        },
       }}
       shop={{
         themeId: equippedThemeId,
