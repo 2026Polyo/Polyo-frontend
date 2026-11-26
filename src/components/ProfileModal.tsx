@@ -4,6 +4,10 @@ import { PIECE_COLORS, PIECES, getPieceTemplate } from "../mocks/gameData";
 import { profileApi, type AuthUser, type Profile } from "../api";
 import { PieceShape } from "./piece";
 import { createPieceInstance } from "../utils/pieceUtils";
+import {
+  MAX_NICKNAME_LENGTH,
+  MIN_NICKNAME_LENGTH,
+} from "../utils/nickname";
 import "../styles/ProfileModal.css";
 
 interface Props {
@@ -36,8 +40,6 @@ const AVATAR_BACKGROUNDS = [
   "#e8ddff",
   "#d9e8ff",
 ];
-const MAX_NICKNAME_LENGTH = 20;
-
 function ProfileModal({
   user,
   profileUserId,
@@ -175,7 +177,7 @@ function ProfileModal({
                 aria-describedby="nickname-length"
                 value={nickname}
                 maxLength={MAX_NICKNAME_LENGTH}
-                minLength={2}
+                minLength={MIN_NICKNAME_LENGTH}
                 onChange={(event) =>
                   setNickname(event.target.value.slice(0, MAX_NICKNAME_LENGTH))
                 }
