@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import type { MatchRoomApi, MatchRoomDetails, MatchRoomPage } from "../features/matchroom";
-import { MatchRoomApiError } from "../features/matchroomApi";
+import type {
+  MatchRoomApi,
+  MatchRoomDetails,
+  MatchRoomPage,
+} from "../features/multi";
+import { MatchRoomApiError } from "../features/multi";
 
 function errorMessage(error: unknown, fallback: string): string {
   return error instanceof MatchRoomApiError ? error.message : fallback;
@@ -24,19 +28,32 @@ export function useMatchRoomLobby(api: MatchRoomApi) {
     setLoading(true);
     setListError(null);
     setData(null);
-    void api.list(page, controller.signal).then((result) => {
-      if (!controller.signal.aborted) setData(result);
-    }).catch((error: unknown) => {
-      if (!controller.signal.aborted) setListError(errorMessage(error, "방 목록을 불러오지 못했어요. 다시 시도해 주세요."));
-    }).finally(() => {
-      if (!controller.signal.aborted) setLoading(false);
-    });
+    void api
+      .list(page, controller.signal)
+      .then((result) => {
+        if (!controller.signal.aborted) setData(result);
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted)
+          setListError(
+            errorMessage(
+              error,
+              "방 목록을 불러오지 못했어요. 다시 시도해 주세요.",
+            ),
+          );
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
     return () => controller.abort();
   }, [api, page, revision]);
 
   useEffect(() => () => joinRequestRef.current?.abort(), []);
 
-  async function join(request: (signal: AbortSignal) => Promise<MatchRoomDetails>, roomId: number | null): Promise<boolean> {
+  async function join(
+    request: (signal: AbortSignal) => Promise<MatchRoomDetails>,
+    roomId: number | null,
+  ): Promise<boolean> {
     if (joinRequestRef.current || joinedRef.current) return false;
     const controller = new AbortController();
     joinRequestRef.current = controller;
@@ -50,7 +67,10 @@ export function useMatchRoomLobby(api: MatchRoomApi) {
       setJoinedRoom(result);
       return true;
     } catch (error) {
-      if (!controller.signal.aborted) setJoinError(errorMessage(error, "방에 접속하지 못했어요. 다시 시도해 주세요."));
+      if (!controller.signal.aborted)
+        setJoinError(
+          errorMessage(error, "방에 접속하지 못했어요. 다시 시도해 주세요."),
+        );
       return false;
     } finally {
       if (joinRequestRef.current === controller) joinRequestRef.current = null;
@@ -68,10 +88,20 @@ export function useMatchRoomLobby(api: MatchRoomApi) {
   }
 
   return {
-    page, data, loading, listError, joinError, joining, joiningRoomId, joinedRoom,
-    setPage, refresh,
+    page,
+    data,
+    loading,
+    listError,
+    joinError,
+    joining,
+    joiningRoomId,
+    joinedRoom,
+    setPage,
+    refresh,
     clearJoinError: () => setJoinError(null),
-    joinById: (roomId: number) => join((signal) => api.joinById(roomId, signal), roomId),
-    joinByCode: (entryCode: string) => join((signal) => api.joinByCode(entryCode, signal), null)
+    joinById: (roomId: number) =>
+      join((signal) => api.joinById(roomId, signal), roomId),
+    joinByCode: (entryCode: string) =>
+      join((signal) => api.joinByCode(entryCode, signal), null),
   };
 }

@@ -1,0 +1,183 @@
+.practice-stage {
+  width: min(100%, 530px);
+  margin-inline: auto;
+}
+
+.practice-header,
+.practice-controls,
+.practice-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.practice-header {
+  margin-bottom: 14px;
+}
+
+.practice-header h1 {
+  color: var(--text-on-board);
+  font-size: clamp(19px, 5vw, 28px);
+  margin: 0;
+}
+
+.practice-header button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.practice-controls {
+  padding: 12px;
+  margin-bottom: 14px;
+  background: var(--surface-card);
+  color: var(--text-strong);
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.practice-controls label {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.practice-controls select {
+  width: 100%;
+  min-height: 42px;
+  padding: 6px;
+  color: var(--text-strong);
+  background: var(--surface-card-soft);
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-md);
+  font: inherit;
+}
+
+.practice-piece {
+  min-width: 50px;
+}
+
+.practice-actions {
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.practice-transition {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  background: #07152f;
+}
+.practice-transition-out {
+  animation: practice-fade-out 770ms ease-in both;
+}
+.practice-transition-in {
+  animation: practice-fade-in 440ms ease-out both;
+}
+@keyframes practice-fade-out {
+  0%, 43% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes practice-fade-in {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.practice-discovery {
+  position: fixed;
+  z-index: 61;
+  top: max(18px, env(safe-area-inset-top));
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 10px 17px 10px 10px;
+  color: #50350c;
+  background: linear-gradient(145deg, #fffbea, #ffe9a3);
+  border: 2px solid #fff4c6;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px #bd7416, 0 10px 24px #07152f46;
+  pointer-events: none;
+  animation: practice-achievement 4.5s ease both;
+}
+.practice-discovery-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  color: #5f3905;
+  background: linear-gradient(#fff06a, #ffb522);
+  border-radius: 11px;
+}
+.practice-discovery small,
+.practice-discovery strong {
+  display: block;
+}
+.practice-discovery small {
+  color: #80551a;
+  font-size: 12px;
+  font-weight: 800;
+}
+@keyframes practice-achievement {
+  0% { opacity: 0; transform: translate(-50%, -28px) scale(0.96); }
+  11%, 88% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -12px) scale(0.98); }
+}
+
+.practice-confetti {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.practice-confetti-source {
+  position: absolute;
+  bottom: 3%;
+}
+.practice-confetti-source.is-left { left: 6%; }
+.practice-confetti-source.is-right { right: 6%; }
+.practice-confetti i {
+  position: absolute;
+  width: var(--paper-width);
+  height: calc(var(--paper-width) * 1.5);
+  border-radius: 1px;
+  box-shadow: inset 0 2px #fff6;
+  animation: practice-paper-burst cubic-bezier(.18,.58,.36,1) both;
+}
+@keyframes practice-paper-burst {
+  0% { opacity: 0; transform: scale(0.4); }
+  7% { opacity: 1; }
+  56% {
+    opacity: 1;
+    transform: translate(calc(var(--paper-x) * .78vw), calc(var(--paper-rise) * -1dvh)) rotate(var(--paper-spin));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--paper-x) * 1vw), calc((20 - var(--paper-rise)) * 1dvh)) rotate(calc(var(--paper-spin) * 1.45));
+  }
+}
+
+@media (max-width: 420px) {
+  .practice-controls { gap: 8px; }
+  .practice-controls label:nth-child(2) { flex: 1.45; }
+  .practice-piece { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .practice-confetti { display: none; }
+  .practice-transition { animation-duration: 1ms; }
+  .practice-discovery {
+    animation: none;
+    transform: translateX(-50%);
+  }
+}

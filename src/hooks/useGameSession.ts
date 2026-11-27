@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
-import { DEFAULT_DECK, EMPTY_BOARD, getDeckPieces, PIECES } from "../constants/gameData";
+import {
+  DEFAULT_DECK,
+  EMPTY_BOARD,
+  getDeckPieces,
+  PIECES,
+} from "../mocks/gameData";
 import {
   advanceAugmentSchedule,
   chooseAugment,
@@ -9,26 +14,50 @@ import {
   getComboCorrectionBias,
   getNextAugmentStateAfterPlacement,
   getTotalAugmentLevels,
-  shouldOfferAugmentChoice
+  shouldOfferAugmentChoice,
 } from "../features/augments";
-import { BONUS_PIECE, advanceBonusPlacement, createBonusTimeState, createBonusTray, elapseBonusTime, restoreBonusSnapshot } from "../features/bonusTime";
+import {
+  BONUS_PIECE,
+  advanceBonusPlacement,
+  createBonusTimeState,
+  createBonusTray,
+  elapseBonusTime,
+  restoreBonusSnapshot,
+} from "../features/bonusTime";
 import { CLEAR_TIER_LABEL, getClearTier } from "../features/clearFeedback";
 import { GHOST_AUGMENT_INTERVAL } from "../features/ghosts";
 import { resolvePlacement } from "../features/resolvePlacement";
-import { clearSavedGame, loadSavedGame, saveCurrentGame } from "../features/savedGame";
-import { createRewardChoices } from "../features/specials";
+import {
+  clearSavedGame,
+  loadSavedGame,
+  saveCurrentGame,
+} from "../features/savedGame";
+import { createRewardChoices } from "../mocks/specials";
 import {
   getLoadoutPieces,
   MAX_BASE_DECK,
-  MAX_LOADOUT
+  MAX_LOADOUT,
 } from "../features/specialStash";
 import { cloneBoard } from "../utils/boardUtils";
 import { createPieceInstance } from "../utils/pieceUtils";
-import { canPlace, getClosestPlacement, getPlacementDistanceSquared, hasMove } from "../utils/placement";
+import {
+  canPlace,
+  getClosestPlacement,
+  getPlacementDistanceSquared,
+  hasMove,
+} from "../utils/placement";
 import { nextTray } from "../utils/tray";
-import { getMyBestScores, saveGameScore } from "../api/scores";
-import { creditApi, CreditApiError, type HardGame } from "../api/credit";
-import { createGameRewardSession, type GameRewardSession } from "../features/gameReward";
+import {
+  getMyBestScores,
+  saveGameScore,
+  creditApi,
+  CreditApiError,
+  type HardGame,
+} from "../api";
+import {
+  createGameRewardSession,
+  type GameRewardSession,
+} from "../features/gameReward";
 import { useHardGameRequest } from "./useHardGameRequest";
 import { useComboEffect } from "./useComboEffect";
 import { useDeckBuilderState } from "./useDeckBuilderState";
@@ -36,12 +65,12 @@ import { useThemeAudio } from "./useThemeAudio";
 import { useItemSystem } from "./useItemSystem";
 import { usePieceSelection } from "./usePieceSelection";
 import { usePulseLabel } from "./usePulseLabel";
-import type { GameThemeId } from "../features/themes/gameThemes";
-import { createBoardFeedback, type BoardFeedback } from "../features/themes/boardFeedback";
+import type { GameThemeId } from "../features/themes";
+import { createBoardFeedback, type BoardFeedback } from "../features/themes";
 import {
   normalizeSpecialPieceGroups,
-  placeSpecialPieceGroups
-} from "../features/themes/specialAppearance";
+  placeSpecialPieceGroups,
+} from "../features/themes";
 import type {
   AugmentId,
   AugmentState,
@@ -53,7 +82,7 @@ import type {
   PieceTemplate,
   SpecialMarks,
   SpecialPieceGroups,
-  Tray
+  Tray,
 } from "../types";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -75,23 +104,30 @@ function createSpecialMarks(source: SpecialMarksSource = {}): SpecialMarks {
     bomb: new Set(source.bombCells ?? []),
     boost: new Set(source.boostCells ?? []),
     ghost: new Set(source.ghostCells ?? []),
-    golden: new Set(source.goldenCells ?? [])
+    golden: new Set(source.goldenCells ?? []),
   };
 }
 
 function resolveMarkUpdate(
   value: SetStateAction<Set<string>>,
-  current: Set<string>
+  current: Set<string>,
 ): Set<string> {
   return typeof value === "function" ? value(current) : value;
 }
 
-export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "theme_classic") {
+export function useGameSession(
+  isAuthenticated = false,
+  themeId: GameThemeId = "theme_classic",
+) {
   const [initialGame] = useState(loadSavedGame);
-  const [gameMode, setGameMode] = useState<GameMode>(() => initialGame?.gameMode ?? "normal");
+  const [gameMode, setGameMode] = useState<GameMode>(
+    () => initialGame?.gameMode ?? "normal",
+  );
   const [startFlow, setStartFlow] = useState<"mode" | "continue" | null>(null);
   const pendingContinueRef = useRef<ReturnType<typeof loadSavedGame>>(null);
-  const [bonusTime, setBonusTime] = useState<BonusTimeState>(() => initialGame?.bonusTime ?? createBonusTimeState());
+  const [bonusTime, setBonusTime] = useState<BonusTimeState>(
+    () => initialGame?.bonusTime ?? createBonusTimeState(),
+  );
   const bonusTimeRef = useRef(bonusTime);
   const bonusTickRef = useRef<number | null>(null);
   const [hardTimeRemainingMs, setHardTimeRemainingMs] = useState(0);
@@ -121,54 +157,97 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     updateHardTime(limit);
   }
 
-  const [board, setBoard] = useState<BoardType>(() => initialGame?.board ?? cloneBoard(EMPTY_BOARD));
-  const [specialPieceGroups, setSpecialPieceGroups] = useState<SpecialPieceGroups>(
-    () => initialGame?.specialPieceGroups ?? {}
+  const [board, setBoard] = useState<BoardType>(
+    () => initialGame?.board ?? cloneBoard(EMPTY_BOARD),
   );
-  const [deck, setDeck] = useState<string[]>(() => initialGame?.deck ?? DEFAULT_DECK);
+  const [specialPieceGroups, setSpecialPieceGroups] =
+    useState<SpecialPieceGroups>(() => initialGame?.specialPieceGroups ?? {});
+  const [deck, setDeck] = useState<string[]>(
+    () => initialGame?.deck ?? DEFAULT_DECK,
+  );
   const [specialPieces, setSpecialPieces] = useState<PieceTemplate[]>(
-    () => initialGame?.specialPieces ?? []
+    () => initialGame?.specialPieces ?? [],
   );
-  const [specialMarks, setSpecialMarks] = useState<SpecialMarks>(
-    () => createSpecialMarks(initialGame ?? undefined)
+  const [specialMarks, setSpecialMarks] = useState<SpecialMarks>(() =>
+    createSpecialMarks(initialGame ?? undefined),
   );
-  const { bomb: bombCells, boost: boostCells, ghost: ghostCells, golden: goldenCells } = specialMarks;
-  const setGhostCells = useCallback<Dispatch<SetStateAction<Set<string>>>>((value) => {
-    setSpecialMarks((current) => ({ ...current, ghost: resolveMarkUpdate(value, current.ghost) }));
-  }, []);
-  const setGoldenCells = useCallback<Dispatch<SetStateAction<Set<string>>>>((value) => {
-    setSpecialMarks((current) => ({ ...current, golden: resolveMarkUpdate(value, current.golden) }));
-  }, []);
-  const setBombCells = useCallback<Dispatch<SetStateAction<Set<string>>>>((value) => {
-    setSpecialMarks((current) => ({ ...current, bomb: resolveMarkUpdate(value, current.bomb) }));
-  }, []);
-  const setBoostCells = useCallback<Dispatch<SetStateAction<Set<string>>>>((value) => {
-    setSpecialMarks((current) => ({ ...current, boost: resolveMarkUpdate(value, current.boost) }));
-  }, []);
+  const {
+    bomb: bombCells,
+    boost: boostCells,
+    ghost: ghostCells,
+    golden: goldenCells,
+  } = specialMarks;
+  const setGhostCells = useCallback<Dispatch<SetStateAction<Set<string>>>>(
+    (value) => {
+      setSpecialMarks((current) => ({
+        ...current,
+        ghost: resolveMarkUpdate(value, current.ghost),
+      }));
+    },
+    [],
+  );
+  const setGoldenCells = useCallback<Dispatch<SetStateAction<Set<string>>>>(
+    (value) => {
+      setSpecialMarks((current) => ({
+        ...current,
+        golden: resolveMarkUpdate(value, current.golden),
+      }));
+    },
+    [],
+  );
+  const setBombCells = useCallback<Dispatch<SetStateAction<Set<string>>>>(
+    (value) => {
+      setSpecialMarks((current) => ({
+        ...current,
+        bomb: resolveMarkUpdate(value, current.bomb),
+      }));
+    },
+    [],
+  );
+  const setBoostCells = useCallback<Dispatch<SetStateAction<Set<string>>>>(
+    (value) => {
+      setSpecialMarks((current) => ({
+        ...current,
+        boost: resolveMarkUpdate(value, current.boost),
+      }));
+    },
+    [],
+  );
   const deckPieces = useMemo<PieceTemplate[]>(
     () => [...getDeckPieces(deck), ...specialPieces],
-    [deck, specialPieces]
+    [deck, specialPieces],
   );
   const [tray, setTray] = useState<Tray>(
     () =>
       initialGame?.tray ??
       nextTray(initialGame?.board ?? EMPTY_BOARD, [
         ...getDeckPieces(initialGame?.deck ?? DEFAULT_DECK),
-        ...(initialGame?.specialPieces ?? [])
-      ])
+        ...(initialGame?.specialPieces ?? []),
+      ]),
   );
-  const [clearingCells, setClearingCells] = useState<Set<string>>(() => new Set());
-  const [boardFeedback, setBoardFeedback] = useState<BoardFeedback | null>(null);
+  const [clearingCells, setClearingCells] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [boardFeedback, setBoardFeedback] = useState<BoardFeedback | null>(
+    null,
+  );
   const feedbackSequence = useRef(0);
   const [score, setScore] = useState<number>(() => initialGame?.score ?? 0);
-  const [databaseBestScores, setDatabaseBestScores] = useState({ normalBestScore: 0, hardBestScore: 0 });
+  const [databaseBestScores, setDatabaseBestScores] = useState({
+    normalBestScore: 0,
+    hardBestScore: 0,
+  });
   const [augmentState, setAugmentState] = useState<AugmentState>(
-    () => initialGame?.augmentState ?? createInitialAugmentState()
+    () => initialGame?.augmentState ?? createInitialAugmentState(),
   );
   const [augmentChoiceOpen, setAugmentChoiceOpen] = useState(false);
   const [rewardPiece, setRewardPiece] = useState<PieceInstance | null>(null);
-  const [specialChoices, setSpecialChoices] = useState<PieceTemplate[] | null>(null);
-  const [specialsGranted, setSpecialsGranted] = useState<number>(() => initialGame?.specialsGranted ?? 0);
+  const [specialChoices, setSpecialChoices] = useState<PieceTemplate[] | null>(
+    null,
+  );
+  const [specialsGranted, setSpecialsGranted] = useState<number>(
+    () => initialGame?.specialsGranted ?? 0,
+  );
   const [deckModalOpen, setDeckModalOpen] = useState(false);
   const [startDeckOpen, setStartDeckOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -185,12 +264,15 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     removeSpecialFromDeck,
     specialStash,
     unlockedBlocks,
-    unlockBaseBlock
+    unlockBaseBlock,
   } = useDeckBuilderState();
-  const availableBaseSet = useMemo(() => new Set(availableBaseIds), [availableBaseIds]);
+  const availableBaseSet = useMemo(
+    () => new Set(availableBaseIds),
+    [availableBaseIds],
+  );
   const selectedBaseDeck = useMemo(
     () => baseLoadout.filter((id) => availableBaseSet.has(id)),
-    [availableBaseSet, baseLoadout]
+    [availableBaseSet, baseLoadout],
   );
   const canStartNewGame = selectedBaseDeck.length === MAX_BASE_DECK;
   const [autoUndoFlash, setAutoUndoFlash] = useState(false);
@@ -208,7 +290,9 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     }
     void getMyBestScores()
       .then(setDatabaseBestScores)
-      .catch(() => setDatabaseBestScores({ normalBestScore: 0, hardBestScore: 0 }));
+      .catch(() =>
+        setDatabaseBestScores({ normalBestScore: 0, hardBestScore: 0 }),
+      );
   }, [isAuthenticated]);
 
   function playPop() {
@@ -219,7 +303,8 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
   const availablePieces = tray.filter((p): p is PieceInstance => p !== null);
   const isClearing = clearingCells.size > 0;
   const isPlaying = gamePhase === "playing";
-  const selectionBlocked = augmentChoiceOpen || Boolean(rewardPiece) || Boolean(specialChoices);
+  const selectionBlocked =
+    augmentChoiceOpen || Boolean(rewardPiece) || Boolean(specialChoices);
 
   const {
     anchorCell,
@@ -237,14 +322,22 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     previewCells,
     previewClearingCells,
     selectedPiece,
-    setHoverCell
+    setHoverCell,
   } = usePieceSelection({
-    augmentChoiceOpen: selectionBlocked || settingsOpen || deckModalOpen || isClearing,
-    availablePieces, board, isPlaying, onPlace: placePieceAt
+    augmentChoiceOpen:
+      selectionBlocked || settingsOpen || deckModalOpen || isClearing,
+    availablePieces,
+    board,
+    isPlaying,
+    onPlace: placePieceAt,
   });
 
   const comboEffectValue = useComboEffect(augmentState.combo);
-  const { label: clearLabel, pulseId: clearLabelId, pulse: pulseClearLabel } = usePulseLabel();
+  const {
+    label: clearLabel,
+    pulseId: clearLabelId,
+    pulse: pulseClearLabel,
+  } = usePulseLabel();
   const scoringAugmentState = augmentState;
   const scoreMultiplier = gameMode === "hard" ? HARD_SCORE_MULTIPLIER : 1;
   const comboMultiplier = gameMode === "hard" ? HARD_COMBO_MULTIPLIER : 1;
@@ -263,7 +356,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       row: closestPlacementCell.row,
       preview: true,
       scoreMultiplier,
-      comboMultiplier
+      comboMultiplier,
     }).scoreGain;
   }, [
     augmentState,
@@ -276,7 +369,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     invalidPreview,
     selectedPiece,
     scoreMultiplier,
-    comboMultiplier
+    comboMultiplier,
   ]);
 
   const {
@@ -291,7 +384,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     resetItems,
     restoreItems,
     saveUndoSnapshot,
-    undoSnapshot
+    undoSnapshot,
   } = useItemSystem({
     enabled: gameMode === "normal",
     specialPieceGroups,
@@ -305,7 +398,11 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     deckPieces: bonusTime.remainingMs > 0 ? [BONUS_PIECE] : deckPieces,
     bonusTime,
     restoreBonusTime: (saved, savedTray) => {
-      const restored = restoreBonusSnapshot(bonusTimeRef.current, saved, savedTray);
+      const restored = restoreBonusSnapshot(
+        bonusTimeRef.current,
+        saved,
+        savedTray,
+      );
       updateBonusTime(restored.bonusTime);
       bonusTickRef.current = performance.now();
       return restored.tray;
@@ -324,7 +421,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     setGoldenCells,
     setScore,
     setTray,
-    tray
+    tray,
   });
 
   const noMovesLeft =
@@ -333,12 +430,29 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     !gravityAnimating &&
     availablePieces.length > 0 &&
     !hasMove(board, availablePieces);
-  const hardTimedOut = isPlaying && gameMode === "hard" && !isClearing && hardTimeRemainingMs === 0;
-  const gameOver = ((noMovesLeft && !canUndo) || hardTimedOut)
-    && !(gameMode === "hard" && (hardRequest.state.pending || hardRequest.state.retry) && !hardGame.current?.finished);
+  const hardTimedOut =
+    isPlaying &&
+    gameMode === "hard" &&
+    !isClearing &&
+    hardTimeRemainingMs === 0;
+  const gameOver =
+    ((noMovesLeft && !canUndo) || hardTimedOut) &&
+    !(
+      gameMode === "hard" &&
+      (hardRequest.state.pending || hardRequest.state.retry) &&
+      !hardGame.current?.finished
+    );
 
   const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
-  const bonusPaused = !isPlaying || gameOver || isClearing || gravityAnimating || selectionBlocked || settingsOpen || deckModalOpen || rerollModalSlot !== null;
+  // Bonus time keeps running while cleared lines animate; only gameplay pauses stop its clock.
+  const bonusPaused =
+    !isPlaying ||
+    gameOver ||
+    gravityAnimating ||
+    selectionBlocked ||
+    settingsOpen ||
+    deckModalOpen ||
+    rerollModalSlot !== null;
 
   useEffect(() => {
     if (!isPlaying || gameMode !== "hard" || gameOver || settingsOpen) {
@@ -388,7 +502,10 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     }
     bonusTickRef.current = performance.now();
     const timer = setInterval(tickBonusTime, 25);
-    return () => { clearInterval(timer); bonusTickRef.current = null; };
+    return () => {
+      clearInterval(timer);
+      bonusTickRef.current = null;
+    };
     // The interval reads the latest bonus state through its ref.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bonusPaused, bonusTime.remainingMs > 0]);
@@ -398,7 +515,8 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     if (!autoUndo()) return;
     setBoardFeedback(null);
     setAutoUndoFlash(true);
-    if (autoUndoTimerRef.current !== null) clearTimeout(autoUndoTimerRef.current);
+    if (autoUndoTimerRef.current !== null)
+      clearTimeout(autoUndoTimerRef.current);
     autoUndoTimerRef.current = setTimeout(() => setAutoUndoFlash(false), 1500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [noMovesLeft, canUndo]);
@@ -421,7 +539,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       specialPieces,
       specialsGranted,
       tray,
-      undoSnapshot
+      undoSnapshot,
     });
   }, [
     gameMode,
@@ -441,7 +559,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     specialsGranted,
     score,
     tray,
-    undoSnapshot
+    undoSnapshot,
   ]);
 
   useEffect(() => {
@@ -456,13 +574,17 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     if (!gameOver || scoreSavedRef.current) return;
 
     scoreSavedRef.current = true;
-    void saveGameScore(gameMode, score).then((saved) => {
-      setDatabaseBestScores((current) => gameMode === "normal"
-        ? { ...current, normalBestScore: saved.bestScore }
-        : { ...current, hardBestScore: saved.bestScore });
-    }).catch((error: unknown) => {
-      console.error("게임 점수 저장 실패", error);
-    });
+    void saveGameScore(gameMode, score)
+      .then((saved) => {
+        setDatabaseBestScores((current) =>
+          gameMode === "normal"
+            ? { ...current, normalBestScore: saved.bestScore }
+            : { ...current, hardBestScore: saved.bestScore },
+        );
+      })
+      .catch((error: unknown) => {
+        console.error("게임 점수 저장 실패", error);
+      });
   }, [gameMode, gameOver, isPlaying, score]);
 
   useEffect(() => {
@@ -478,15 +600,27 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
   }, [specialChoices]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (gameMode !== "normal" || !isPlaying || gameOver || isClearing || augmentChoiceOpen || rewardPiece || specialChoices) return;
+    if (
+      gameMode !== "normal" ||
+      !isPlaying ||
+      gameOver ||
+      isClearing ||
+      augmentChoiceOpen ||
+      rewardPiece ||
+      specialChoices
+    )
+      return;
     if (!shouldOfferAugmentChoice(augmentState, score, bonusActive)) return;
     clearSelection();
     const specialDue =
-      Math.floor(getTotalAugmentLevels(augmentState) / GHOST_AUGMENT_INTERVAL) > specialsGranted;
+      Math.floor(getTotalAugmentLevels(augmentState) / GHOST_AUGMENT_INTERVAL) >
+      specialsGranted;
     const timer = setTimeout(() => {
       if (bonusTimeRef.current.remainingMs > 0) return;
       if (specialDue) {
-        setSpecialChoices(createRewardChoices(SPECIAL_CHOICE_COUNT, unlockedBlocks));
+        setSpecialChoices(
+          createRewardChoices(SPECIAL_CHOICE_COUNT, unlockedBlocks),
+        );
       } else {
         setAugmentChoiceOpen(true);
       }
@@ -505,17 +639,22 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     score,
     specialChoices,
     specialsGranted,
-    unlockedBlocks
+    unlockedBlocks,
   ]);
 
-  useEffect(() => () => {
-    if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
-    if (autoUndoTimerRef.current !== null) clearTimeout(autoUndoTimerRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
+      if (autoUndoTimerRef.current !== null)
+        clearTimeout(autoUndoTimerRef.current);
+    },
+    [],
+  );
 
   function clearGameState() {
     if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
-    if (autoUndoTimerRef.current !== null) clearTimeout(autoUndoTimerRef.current);
+    if (autoUndoTimerRef.current !== null)
+      clearTimeout(autoUndoTimerRef.current);
     clearTimerRef.current = null;
     autoUndoTimerRef.current = null;
     setAutoUndoFlash(false);
@@ -544,10 +683,17 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     audio.resetComboSound();
   }
 
-  function resetGame(deckIds: string[], carriedSpecials: PieceTemplate[], serverTray?: Tray) {
+  function resetGame(
+    deckIds: string[],
+    carriedSpecials: PieceTemplate[],
+    serverTray?: Tray,
+  ) {
     clearGameState();
     setSpecialPieces(carriedSpecials);
-    setTray(serverTray ?? nextTray(EMPTY_BOARD, [...getDeckPieces(deckIds), ...carriedSpecials]));
+    setTray(
+      serverTray ??
+        nextTray(EMPTY_BOARD, [...getDeckPieces(deckIds), ...carriedSpecials]),
+    );
   }
 
   function resetHardGame() {
@@ -568,8 +714,9 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       if (id === null) return null;
       const current = remaining?.[index];
       if (current?.id === id) return current;
-      const template = PIECES.find(piece => piece.id === id);
-      if (!template) throw new CreditApiError("CREDIT_INVALID_RESPONSE", 200, true);
+      const template = PIECES.find((piece) => piece.id === id);
+      if (!template)
+        throw new CreditApiError("CREDIT_INVALID_RESPONSE", 200, true);
       return createPieceInstance(template);
     }) as Tray;
   }
@@ -584,15 +731,25 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
 
     setGameMode(mode);
     scoreSavedRef.current = false;
-    const gameDeck = mode === "hard" ? PIECES.map((piece) => piece.id) : selectedBaseDeck;
+    const gameDeck =
+      mode === "hard" ? PIECES.map((piece) => piece.id) : selectedBaseDeck;
     setDeck(gameDeck);
-    resetGame(gameDeck, mode === "hard" ? [] : getLoadoutPieces(specialStash, loadoutIds), initialTray);
+    resetGame(
+      gameDeck,
+      mode === "hard" ? [] : getLoadoutPieces(specialStash, loadoutIds),
+      initialTray,
+    );
     if (server) {
       applyHardClock(server);
-      setRewardSession(createGameRewardSession({ gameId: server.gameId, mode: "hard" }, async gameId => {
-        await creditApi.finishHardGame(gameId);
-        return creditApi.claimGameReward(gameId);
-      }));
+      setRewardSession(
+        createGameRewardSession(
+          { gameId: server.gameId, mode: "hard" },
+          async (gameId) => {
+            await creditApi.finishHardGame(gameId);
+            return creditApi.claimGameReward(gameId);
+          },
+        ),
+      );
     }
     setGamePhase("playing");
   }
@@ -600,8 +757,11 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
   function startGame(mode: GameMode = gameMode) {
     if (hardRequest.pending.current) return;
     if (mode === "hard") {
-      hardRequest.run(creditApi.startHardGame, server => openGame("hard", server),
-        "하드모드를 시작하지 못했습니다. 다시 시도해 주세요.");
+      hardRequest.run(
+        creditApi.startHardGame,
+        (server) => openGame("hard", server),
+        "하드모드를 시작하지 못했습니다. 다시 시도해 주세요.",
+      );
     } else {
       resetHardGame();
       openGame(mode);
@@ -611,7 +771,15 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
   function selectGameMode(mode: GameMode) {
     playPop();
     const saved = mode === "normal" ? loadSavedGame() : null;
-    if (saved && saved.gameMode === "normal" && saved.tray.some(Boolean) && hasMove(saved.board, saved.tray.filter((piece): piece is PieceInstance => piece !== null))) {
+    if (
+      saved &&
+      saved.gameMode === "normal" &&
+      saved.tray.some(Boolean) &&
+      hasMove(
+        saved.board,
+        saved.tray.filter((piece): piece is PieceInstance => piece !== null),
+      )
+    ) {
       pendingContinueRef.current = saved;
       setStartFlow("continue");
       return;
@@ -645,7 +813,8 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
 
   function quitGame() {
     if (hardRequest.pending.current) return;
-    if (gameMode === "normal") void saveGameScore(gameMode, score).catch(() => undefined);
+    if (gameMode === "normal")
+      void saveGameScore(gameMode, score).catch(() => undefined);
     resetHardGame();
     clearGameState();
     setGamePhase("start");
@@ -654,7 +823,8 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
 
   function goHomeFromSettings() {
     if (hardRequest.pending.current) return;
-    if (gameMode === "normal") void saveGameScore(gameMode, score).catch(() => undefined);
+    if (gameMode === "normal")
+      void saveGameScore(gameMode, score).catch(() => undefined);
     resetHardGame();
     setSettingsOpen(false);
     clearSelection();
@@ -668,41 +838,76 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       return;
     }
     if (hardRequest.pending.current || hardRequest.state.retry) return;
-    hardRequest.run(() => creditApi.setHardGamePaused(server.gameId, open), next => {
-      applyHardClock(next);
-      setSettingsOpen(open && !next.finished);
-    }, "하드모드 일시 정지 상태를 변경하지 못했습니다.");
+    hardRequest.run(
+      () => creditApi.setHardGamePaused(server.gameId, open),
+      (next) => {
+        applyHardClock(next);
+        setSettingsOpen(open && !next.finished);
+      },
+      "하드모드 일시 정지 상태를 변경하지 못했습니다.",
+    );
   }
 
   function placePieceAt(piece: PieceInstance, row: number, col: number) {
-    if (!isPlaying || selectionBlocked || settingsOpen || deckModalOpen || rerollModalSlot !== null || isClearing || gravityAnimating || !tray.some((entry) => entry?.uid === piece.uid) || !canPlace(board, piece, row, col)) return;
+    if (
+      !isPlaying ||
+      selectionBlocked ||
+      settingsOpen ||
+      deckModalOpen ||
+      rerollModalSlot !== null ||
+      isClearing ||
+      gravityAnimating ||
+      !tray.some((entry) => entry?.uid === piece.uid) ||
+      !canPlace(board, piece, row, col)
+    )
+      return;
     if (gameMode === "hard") {
       const server = hardGame.current;
-      if (!server || hardTimeRef.current === 0 || hardRequest.pending.current || hardRequest.state.retry) return;
-      const slot = tray.findIndex(entry => entry?.uid === piece.uid);
+      if (
+        !server ||
+        hardTimeRef.current === 0 ||
+        hardRequest.pending.current ||
+        hardRequest.state.retry
+      )
+        return;
+      const slot = tray.findIndex((entry) => entry?.uid === piece.uid);
       const move = { moveNumber: server.moveNumber, slot, row, col };
       audio.resume();
-      hardRequest.run(() => creditApi.placeHardPiece(server.gameId, move), next => {
-        if (next.moveNumber === server.moveNumber + 1) {
-          const remaining = tray.map(entry => entry?.uid === piece.uid ? null : entry) as Tray;
-          const nextTray = serverTray(next, remaining);
-          applyPlacement(piece, row, col, next, nextTray);
-        } else {
-          applyHardClock(next);
-          clearSelection();
-        }
-      }, "블록 배치 결과를 확인하지 못했습니다.");
+      hardRequest.run(
+        () => creditApi.placeHardPiece(server.gameId, move),
+        (next) => {
+          if (next.moveNumber === server.moveNumber + 1) {
+            const remaining = tray.map((entry) =>
+              entry?.uid === piece.uid ? null : entry,
+            ) as Tray;
+            const nextTray = serverTray(next, remaining);
+            applyPlacement(piece, row, col, next, nextTray);
+          } else {
+            applyHardClock(next);
+            clearSelection();
+          }
+        },
+        "블록 배치 결과를 확인하지 못했습니다.",
+      );
       return;
     }
 
     if (placementLockRef.current) return;
     if (tickBonusTime()) return;
     placementLockRef.current = true;
-    queueMicrotask(() => { placementLockRef.current = false; });
+    queueMicrotask(() => {
+      placementLockRef.current = false;
+    });
     applyPlacement(piece, row, col);
   }
 
-  function applyPlacement(piece: PieceInstance, row: number, col: number, server?: HardGame, confirmedTray?: Tray) {
+  function applyPlacement(
+    piece: PieceInstance,
+    row: number,
+    col: number,
+    server?: HardGame,
+    confirmedTray?: Tray,
+  ) {
     audio.resume();
     audio.playPlacement(piece.color);
 
@@ -717,20 +922,34 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       piece,
       row,
       scoreMultiplier,
-      comboMultiplier
+      comboMultiplier,
     });
     const feedback = createBoardFeedback(
-      ++feedbackSequence.current, piece, row, col,
-      outcome.displayBoard, outcome.clearingCells
+      ++feedbackSequence.current,
+      piece,
+      row,
+      col,
+      outcome.displayBoard,
+      outcome.clearingCells,
+      outcome.cleared,
     );
-    audio.playClearFeedback(outcome.cleared, outcome.clearingCells.size, feedback.cleared);
+    audio.playClearFeedback(
+      outcome.cleared,
+      outcome.clearingCells.size,
+      feedback.cleared,
+    );
     setBoardFeedback(feedback);
     const clearTier = getClearTier(outcome.cleared);
     if (clearTier) pulseClearLabel(CLEAR_TIER_LABEL[clearTier]);
 
     setBoard(outcome.displayBoard);
     const nextGroups = placeSpecialPieceGroups(
-      board, specialPieceGroups, piece, row, col, outcome.displayBoard
+      board,
+      specialPieceGroups,
+      piece,
+      row,
+      col,
+      outcome.displayBoard,
     );
     setSpecialPieceGroups(nextGroups);
     setClearingCells(outcome.clearingCells);
@@ -739,24 +958,44 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       bomb: outcome.bombCells,
       boost: outcome.boostCells,
       ghost: outcome.ghostCells,
-      golden: outcome.goldenCells
+      golden: outcome.goldenCells,
     });
 
-    const updatedTray = tray.map((p) => (p?.uid === piece.uid ? null : p)) as Tray;
+    const updatedTray = tray.map((p) =>
+      p?.uid === piece.uid ? null : p,
+    ) as Tray;
     const trayCompleted = updatedTray.every((p) => !p);
     const trayClearedLine = augmentState.trayClearedLine || outcome.cleared > 0;
     if (trayCompleted && !trayClearedLine) audio.resetComboSound();
     const previousBonus = bonusTimeRef.current;
-    const refreshedTray = confirmedTray ?? (trayCompleted
-      ? (previousBonus.remainingMs > 0 ? createBonusTray() : nextTray(outcome.settledBoard, deckPieces, getComboCorrectionBias(augmentState)))
-      : updatedTray);
+    const refreshedTray =
+      confirmedTray ??
+      (trayCompleted
+        ? previousBonus.remainingMs > 0
+          ? createBonusTray()
+          : nextTray(
+              outcome.settledBoard,
+              deckPieces,
+              getComboCorrectionBias(augmentState),
+            )
+        : updatedTray);
     saveUndoSnapshot();
-    const nextBonus = advanceBonusPlacement(previousBonus, gameMode, refreshedTray);
-    const bonusStarted = previousBonus.remainingMs === 0 && nextBonus.remainingMs > 0;
+    const nextBonus = advanceBonusPlacement(
+      previousBonus,
+      gameMode,
+      refreshedTray,
+    );
+    const bonusStarted =
+      previousBonus.remainingMs === 0 && nextBonus.remainingMs > 0;
     updateBonusTime(nextBonus);
     if (server) applyHardClock(server);
     if (bonusStarted) bonusTickRef.current = performance.now();
-    setAugmentState((current) => getNextAugmentStateAfterPlacement(current, { cleared: outcome.cleared, trayCompleted }));
+    setAugmentState((current) =>
+      getNextAugmentStateAfterPlacement(current, {
+        cleared: outcome.cleared,
+        trayCompleted,
+      }),
+    );
     setTray(bonusStarted ? createBonusTray() : refreshedTray);
     clearSelection();
 
@@ -764,7 +1003,9 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       if (clearTimerRef.current !== null) clearTimeout(clearTimerRef.current);
       clearTimerRef.current = setTimeout(() => {
         setBoard(outcome.settledBoard);
-        setSpecialPieceGroups(normalizeSpecialPieceGroups(outcome.settledBoard, nextGroups));
+        setSpecialPieceGroups(
+          normalizeSpecialPieceGroups(outcome.settledBoard, nextGroups),
+        );
         setClearingCells(new Set());
       }, CLEAR_HIGHLIGHT_MS);
     }
@@ -777,7 +1018,11 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       : { row, col };
     const closest = getClosestPlacement(board, selectedPiece, targetCell);
     if (!closest) return;
-    if (getPlacementDistanceSquared(targetCell, closest) > MAX_SNAP_DISTANCE ** 2) return;
+    if (
+      getPlacementDistanceSquared(targetCell, closest) >
+      MAX_SNAP_DISTANCE ** 2
+    )
+      return;
     placePieceAt(selectedPiece, closest.row, closest.col);
   }
 
@@ -800,7 +1045,13 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
     setAugmentState((current) => advanceAugmentSchedule(current, score));
   }
 
-  const best = gameMode === "hard" ? databaseBestScores.hardBestScore : databaseBestScores.normalBestScore;
+  const databaseBest =
+    gameMode === "hard"
+      ? databaseBestScores.hardBestScore
+      : databaseBestScores.normalBestScore;
+  // 플레이 중 현재 점수가 DB 최고 기록을 넘으면 즉시 화면에 반영한다.
+  // DB 값은 게임 종료 시 저장 응답으로 갱신된다.
+  const best = isPlaying ? Math.max(databaseBest, score) : databaseBest;
   const normalBest = databaseBestScores.normalBestScore;
 
   function buildPlayScreenProps() {
@@ -833,7 +1084,7 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
         previewCells,
         previewClearingCells,
         selectedPiece,
-        setHoverCell
+        setHoverCell,
       },
       comboEffectValue,
       gameOver,
@@ -845,7 +1096,10 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       },
       isClearing,
       itemSlots,
-      onOpenDeckModal: () => { playPop(); setDeckModalOpen(true); },
+      onOpenDeckModal: () => {
+        playPop();
+        setDeckModalOpen(true);
+      },
       previewGain,
       score,
       modals: {
@@ -867,23 +1121,26 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
         rerollModalSlot,
         specialChoices,
         applyReroll,
-        cancelReroll
+        cancelReroll,
       },
       settings: {
         open: settingsOpen,
         onClose: () => changeSettings(false),
         onGoHome: goHomeFromSettings,
         onQuit: quitGame,
-        onToggle: () => { playPop(); changeSettings(!settingsOpen); }
+        onToggle: () => {
+          playPop();
+          changeSettings(!settingsOpen);
+        },
       },
       tray: {
         clearSelection,
         handlePieceSelect,
         handlePieceActivate,
         pieces: tray,
-        selectedPiece
+        selectedPiece,
       },
-      undoSnapshot
+      undoSnapshot,
     };
   }
 
@@ -902,7 +1159,10 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
         hardRequest.reset();
         setStartFlow(null);
       },
-      onStartFresh: () => { playPop(); startGame("normal"); },
+      onStartFresh: () => {
+        playPop();
+        startGame("normal");
+      },
       maxBase: MAX_BASE_DECK,
       maxSpecial: MAX_LOADOUT,
       score,
@@ -911,18 +1171,29 @@ export function useGameSession(isAuthenticated = false, themeId: GameThemeId = "
       onAddBase: addBaseBlock,
       onAddSpecial: addSpecialToDeck,
       onCloseDeck: () => setStartDeckOpen(false),
-      onContinue: () => { playPop(); continueGame(); },
-      onNewGame: () => { playPop(); setStartFlow("mode"); },
-      onOpenDeck: () => { playPop(); setStartDeckOpen(true); },
+      onContinue: () => {
+        playPop();
+        continueGame();
+      },
+      onNewGame: () => {
+        playPop();
+        setStartFlow("mode");
+      },
+      onOpenDeck: () => {
+        playPop();
+        setStartDeckOpen(true);
+      },
       onRemoveBase: removeBaseBlock,
       onRemoveSpecial: removeSpecialFromDeck,
-      onRandomizeDeck: randomizeDeck
+      onRandomizeDeck: randomizeDeck,
     };
   }
 
   return {
     gamePhase,
     playScreenProps: buildPlayScreenProps(),
-    startScreenProps: buildStartScreenProps()
+    startScreenProps: buildStartScreenProps(),
   };
 }
+
+export type GameSessionResult = ReturnType<typeof useGameSession>;

@@ -1,4 +1,4 @@
-import { PIECES } from "../constants/gameData";
+import { PIECES } from "../mocks/gameData";
 import { cellsAreCoordPairs, makeSpecialValidator } from "./specialPiece";
 import type { PieceTemplate } from "../types";
 
@@ -13,22 +13,27 @@ export function createGoldenTemplate(): GoldenTemplate {
     id: `golden-${base.id}`,
     cells: base.cells.map(([row, col]) => [row, col]),
     color: "golden",
-    special: "golden"
+    special: "golden",
   };
 }
 
-export function isGoldenPiece(piece: PieceTemplate | null | undefined): boolean {
+export function isGoldenPiece(
+  piece: PieceTemplate | null | undefined,
+): boolean {
   return piece?.special === "golden";
 }
 
-export const isValidGoldenPiece = makeSpecialValidator<GoldenTemplate>("golden", cellsAreCoordPairs);
+export const isValidGoldenPiece = makeSpecialValidator<GoldenTemplate>(
+  "golden",
+  cellsAreCoordPairs,
+);
 
 // When golden cells are cleared, add 1x extra per cell (= 2x total).
 // clearScore is the score already awarded for the lines cleared this turn.
 export function resolveGoldenClears(
   goldenCells: Set<string>,
   clearedCells: Set<string>,
-  clearScore: number
+  clearScore: number,
 ): { bonus: number; goldenCells: Set<string> } {
   if (!goldenCells.size || !clearedCells.size || clearScore === 0) {
     return { bonus: 0, goldenCells };
@@ -42,6 +47,6 @@ export function resolveGoldenClears(
   });
   return {
     bonus: Math.round(clearedCount * perCellScore),
-    goldenCells: remaining
+    goldenCells: remaining,
   };
 }

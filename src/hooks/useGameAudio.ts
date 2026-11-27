@@ -1,5 +1,5 @@
 import { useEffect, useRef, type RefObject } from "react";
-import type { FeedbackCell } from "../features/themes/boardFeedback";
+import type { FeedbackCell } from "../features/themes";
 import trackSound from "../asset/sound/track.mp3";
 import popSound from "../asset/sound/pop.mp3";
 import popupSound from "../asset/sound/popup.mp3";
@@ -20,7 +20,16 @@ import combo7 from "../asset/sound/combo7.mp3";
 import combo8 from "../asset/sound/combo8.mp3";
 import gameOverSound from "../asset/sound/game_over.mp3";
 
-const COMBO_SOUNDS = [combo1, combo2, combo3, combo4, combo5, combo6, combo7, combo8];
+const COMBO_SOUNDS = [
+  combo1,
+  combo2,
+  combo3,
+  combo4,
+  combo5,
+  combo6,
+  combo7,
+  combo8,
+];
 
 export interface GameAudio {
   /** Resume the AudioContext; call from a user gesture so playback is allowed. */
@@ -29,14 +38,21 @@ export interface GameAudio {
   /** The "block placed" track sound. */
   playPlacement: (color?: string) => void;
   /** Legacy uses line count; theme audio also accepts removed cells for special-block clears. */
-  playClearFeedback: (cleared: number, removedCells?: number, cells?: readonly FeedbackCell[]) => void;
+  playClearFeedback: (
+    cleared: number,
+    removedCells?: number,
+    cells?: readonly FeedbackCell[],
+  ) => void;
   /** Reset the combo-sound escalation back to the first step. */
   resetComboSound: () => void;
   playGameOver: () => void;
   playPopup: () => void;
 }
 
-export function useGameAudio(enabled = true, sharedContext?: RefObject<AudioContext | null>): GameAudio {
+export function useGameAudio(
+  enabled = true,
+  sharedContext?: RefObject<AudioContext | null>,
+): GameAudio {
   const ownContext = useRef<AudioContext | null>(null);
   const ctxRef = sharedContext ?? ownContext;
   const trackRef = useRef<AudioBuffer | null>(null);
@@ -52,36 +68,73 @@ export function useGameAudio(enabled = true, sharedContext?: RefObject<AudioCont
   useEffect(() => {
     if (!enabled || typeof AudioContext === "undefined") return;
     let ctx: AudioContext;
-    try { ctx = new AudioContext(); } catch { return; }
+    try {
+      ctx = new AudioContext();
+    } catch {
+      return;
+    }
     let disposed = false;
     ctxRef.current = ctx;
     const decode = (url: string) =>
-      fetch(url).then((res) => {
-        if (!res.ok) throw new Error("Audio unavailable");
-        return res.arrayBuffer();
-      }).then((buf) => ctx.decodeAudioData(buf));
-    decode(trackSound).then((decoded) => { if (!disposed) trackRef.current = decoded; }).catch(() => undefined);
-    decode(popSound).then((decoded) => { if (!disposed) popRef.current = decoded; }).catch(() => undefined);
-    decode(popupSound).then((decoded) => { if (!disposed) popupRef.current = decoded; }).catch(() => undefined);
+      fetch(url)
+        .then((res) => {
+          if (!res.ok) throw new Error("Audio unavailable");
+          return res.arrayBuffer();
+        })
+        .then((buf) => ctx.decodeAudioData(buf));
+    decode(trackSound)
+      .then((decoded) => {
+        if (!disposed) trackRef.current = decoded;
+      })
+      .catch(() => undefined);
+    decode(popSound)
+      .then((decoded) => {
+        if (!disposed) popRef.current = decoded;
+      })
+      .catch(() => undefined);
+    decode(popupSound)
+      .then((decoded) => {
+        if (!disposed) popupRef.current = decoded;
+      })
+      .catch(() => undefined);
     Promise.all([decode(goodM), decode(goodFm)])
-      .then((buffers) => { if (!disposed) goodRef.current = buffers; })
+      .then((buffers) => {
+        if (!disposed) goodRef.current = buffers;
+      })
       .catch(() => undefined);
     Promise.all([decode(greatM), decode(greatFm)])
-      .then((buffers) => { if (!disposed) greatRef.current = buffers; })
+      .then((buffers) => {
+        if (!disposed) greatRef.current = buffers;
+      })
       .catch(() => undefined);
     Promise.all([decode(excellentM), decode(excellentFm)])
-      .then((buffers) => { if (!disposed) excellentRef.current = buffers; })
+      .then((buffers) => {
+        if (!disposed) excellentRef.current = buffers;
+      })
       .catch(() => undefined);
     Promise.all(COMBO_SOUNDS.map(decode))
-      .then((buffers) => { if (!disposed) comboRef.current = buffers; })
+      .then((buffers) => {
+        if (!disposed) comboRef.current = buffers;
+      })
       .catch(() => undefined);
-    decode(gameOverSound).then((decoded) => { if (!disposed) gameOverRef.current = decoded; }).catch(() => undefined);
+    decode(gameOverSound)
+      .then((decoded) => {
+        if (!disposed) gameOverRef.current = decoded;
+      })
+      .catch(() => undefined);
 
     return () => {
       disposed = true;
       if (ctxRef.current === ctx) ctxRef.current = null;
-      trackRef.current = popRef.current = popupRef.current = gameOverRef.current = null;
-      goodRef.current = []; greatRef.current = []; excellentRef.current = []; comboRef.current = [];
+      trackRef.current =
+        popRef.current =
+        popupRef.current =
+        gameOverRef.current =
+          null;
+      goodRef.current = [];
+      greatRef.current = [];
+      excellentRef.current = [];
+      comboRef.current = [];
       ctx.close().catch(() => undefined);
     };
   }, [enabled, ctxRef]);
@@ -97,7 +150,8 @@ export function useGameAudio(enabled = true, sharedContext?: RefObject<AudioCont
 
   function resume() {
     // Browsers start the context suspended until a user gesture occurs.
-    if (ctxRef.current?.state === "suspended") ctxRef.current.resume().catch(() => undefined);
+    if (ctxRef.current?.state === "suspended")
+      ctxRef.current.resume().catch(() => undefined);
   }
 
   function playPop() {
@@ -111,14 +165,21 @@ export function useGameAudio(enabled = true, sharedContext?: RefObject<AudioCont
   function playClearFeedback(cleared: number) {
     const tier = getClearTier(cleared);
     const pool =
-      tier === "good" ? goodRef.current :
-      tier === "great" ? greatRef.current :
-      tier === "excellent" ? excellentRef.current :
-      null;
+      tier === "good"
+        ? goodRef.current
+        : tier === "great"
+          ? greatRef.current
+          : tier === "excellent"
+            ? excellentRef.current
+            : null;
     if (pool?.length) play(pool[Math.floor(Math.random() * pool.length)]);
 
     if (cleared > 0 && comboRef.current.length === COMBO_SOUNDS.length) {
-      play(comboRef.current[Math.min(comboStepRef.current, COMBO_SOUNDS.length - 1)]);
+      play(
+        comboRef.current[
+          Math.min(comboStepRef.current, COMBO_SOUNDS.length - 1)
+        ],
+      );
       comboStepRef.current += 1;
     }
   }
@@ -135,5 +196,13 @@ export function useGameAudio(enabled = true, sharedContext?: RefObject<AudioCont
     play(popupRef.current);
   }
 
-  return { resume, playPop, playPlacement, playClearFeedback, resetComboSound, playGameOver, playPopup };
+  return {
+    resume,
+    playPop,
+    playPlacement,
+    playClearFeedback,
+    resetComboSound,
+    playGameOver,
+    playPopup,
+  };
 }

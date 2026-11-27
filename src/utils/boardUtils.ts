@@ -1,4 +1,4 @@
-import { SIZE } from "../constants/gameData";
+import { SIZE } from "../mocks/gameData";
 import { shuffleInPlace } from "./shuffle";
 import type { Board, ClearedResult } from "../types";
 
@@ -25,16 +25,18 @@ export function simulateGravity(board: Board): GravitySimulation {
   const colors: Board = cloneBoard(board);
   // Track each cell's original key so we can build the net move map across the whole cascade.
   const ids: (string | null)[][] = board.map((row, r) =>
-    row.map((cell, c) => (cell ? `${r}-${c}` : null))
+    row.map((cell, c) => (cell ? `${r}-${c}` : null)),
   );
   const frames: Board[] = [];
   const frameMoves: Map<string, string>[] = [];
   const captureFrame = () => {
     frames.push(cloneBoard(colors));
     const positions = new Map<string, string>();
-    ids.forEach((line, r) => line.forEach((id, c) => {
-      if (id) positions.set(id, `${r}-${c}`);
-    }));
+    ids.forEach((line, r) =>
+      line.forEach((id, c) => {
+        if (id) positions.set(id, `${r}-${c}`);
+      }),
+    );
     frameMoves.push(positions);
   };
 
@@ -95,7 +97,11 @@ export function isBoardEmpty(board: Board): boolean {
 
 // Count filled cells orthogonally adjacent to the given rows/cols but not inside them — used
 // by the 균열 제거 augment to reward blocks bordering the lines being cleared.
-export function countAdjacentBlocks(board: Board, rows: number[], cols: number[]): number {
+export function countAdjacentBlocks(
+  board: Board,
+  rows: number[],
+  cols: number[],
+): number {
   const rowSet = new Set(rows);
   const colSet = new Set(cols);
   const seen = new Set<string>();
@@ -110,10 +116,16 @@ export function countAdjacentBlocks(board: Board, rows: number[], cols: number[]
   };
 
   rows.forEach((r) => {
-    for (let c = 0; c < width; c += 1) { consider(r - 1, c); consider(r + 1, c); }
+    for (let c = 0; c < width; c += 1) {
+      consider(r - 1, c);
+      consider(r + 1, c);
+    }
   });
   cols.forEach((c) => {
-    for (let r = 0; r < height; r += 1) { consider(r, c - 1); consider(r, c + 1); }
+    for (let r = 0; r < height; r += 1) {
+      consider(r, c - 1);
+      consider(r, c + 1);
+    }
   });
 
   return seen.size;
@@ -124,12 +136,18 @@ export function clearLines(board: Board): ClearedResult {
     .map((row, index) => (row.every(Boolean) ? index : null))
     .filter((row): row is number => row !== null);
   const fullCols = Array.from({ length: SIZE }, (_, col) =>
-    board.every((row) => row[col]) ? col : null
+    board.every((row) => row[col]) ? col : null,
   ).filter((col): col is number => col !== null);
   const clearedCells = new Set<string>();
 
   if (!fullRows.length && !fullCols.length) {
-    return { board, cleared: 0, clearedCells: [], clearedRows: [], clearedCols: [] };
+    return {
+      board,
+      cleared: 0,
+      clearedCells: [],
+      clearedRows: [],
+      clearedCols: [],
+    };
   }
 
   const next = cloneBoard(board);
@@ -151,7 +169,7 @@ export function clearLines(board: Board): ClearedResult {
     cleared: fullRows.length + fullCols.length,
     clearedCells: [...clearedCells],
     clearedRows: fullRows,
-    clearedCols: fullCols
+    clearedCols: fullCols,
   };
 }
 
@@ -159,7 +177,7 @@ export function clearLines(board: Board): ClearedResult {
 export function clearLineIndices(
   board: Board,
   rows: number[],
-  cols: number[]
+  cols: number[],
 ): { board: Board; clearedCells: string[] } {
   const next = cloneBoard(board);
   const clearedCells: string[] = [];
@@ -184,7 +202,7 @@ export function clearLineIndices(
 export function pickAdjacentLines(
   clearedRows: number[],
   clearedCols: number[],
-  count: number
+  count: number,
 ): { rows: number[]; cols: number[] } {
   if (count <= 0) return { rows: [], cols: [] };
 
@@ -196,7 +214,12 @@ export function pickAdjacentLines(
   clearedRows.forEach((row) => {
     [row - 1, row + 1].forEach((nextRow) => {
       const key = `row-${nextRow}`;
-      if (nextRow >= 0 && nextRow < SIZE && !clearedRowSet.has(nextRow) && !seen.has(key)) {
+      if (
+        nextRow >= 0 &&
+        nextRow < SIZE &&
+        !clearedRowSet.has(nextRow) &&
+        !seen.has(key)
+      ) {
         seen.add(key);
         candidates.push({ type: "row", index: nextRow });
       }
@@ -205,7 +228,12 @@ export function pickAdjacentLines(
   clearedCols.forEach((col) => {
     [col - 1, col + 1].forEach((nextCol) => {
       const key = `col-${nextCol}`;
-      if (nextCol >= 0 && nextCol < SIZE && !clearedColSet.has(nextCol) && !seen.has(key)) {
+      if (
+        nextCol >= 0 &&
+        nextCol < SIZE &&
+        !clearedColSet.has(nextCol) &&
+        !seen.has(key)
+      ) {
         seen.add(key);
         candidates.push({ type: "col", index: nextCol });
       }
@@ -214,18 +242,32 @@ export function pickAdjacentLines(
 
   const chosen = shuffleInPlace(candidates).slice(0, count);
   return {
-    rows: chosen.filter((line) => line.type === "row").map((line) => line.index),
-    cols: chosen.filter((line) => line.type === "col").map((line) => line.index)
+    rows: chosen
+      .filter((line) => line.type === "row")
+      .map((line) => line.index),
+    cols: chosen
+      .filter((line) => line.type === "col")
+      .map((line) => line.index),
   };
 }
 
 // Extend a clear result by also clearing `extraLineCount` lines next to the cleared ones.
-export function applySpreadClear(result: ClearedResult, extraLineCount: number): ClearedResult {
-  if (extraLineCount <= 0 || (!result.clearedRows.length && !result.clearedCols.length)) {
+export function applySpreadClear(
+  result: ClearedResult,
+  extraLineCount: number,
+): ClearedResult {
+  if (
+    extraLineCount <= 0 ||
+    (!result.clearedRows.length && !result.clearedCols.length)
+  ) {
     return result;
   }
 
-  const { rows, cols } = pickAdjacentLines(result.clearedRows, result.clearedCols, extraLineCount);
+  const { rows, cols } = pickAdjacentLines(
+    result.clearedRows,
+    result.clearedCols,
+    extraLineCount,
+  );
   if (!rows.length && !cols.length) return result;
 
   const extra = clearLineIndices(result.board, rows, cols);
@@ -235,6 +277,6 @@ export function applySpreadClear(result: ClearedResult, extraLineCount: number):
     cleared: result.cleared + rows.length + cols.length,
     clearedCells: [...result.clearedCells, ...extra.clearedCells],
     clearedRows: [...result.clearedRows, ...rows],
-    clearedCols: [...result.clearedCols, ...cols]
+    clearedCols: [...result.clearedCols, ...cols],
   };
 }

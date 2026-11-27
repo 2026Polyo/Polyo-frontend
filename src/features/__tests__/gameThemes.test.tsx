@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { colorClass } from "../../constants/gameData";
+import { colorClass } from "../../mocks/gameData";
 import {
   getGameTheme,
   getThemeSound,
@@ -15,8 +15,8 @@ import {
   PLACEMENT_PARTICLE_COUNT,
   uniqueFeedbackCells,
 } from "../themes/boardFeedback";
-import { ThemeScope } from "../../components/ThemeScope";
-import PieceShape from "../../components/PieceShape";
+import { ThemeScope } from "../../components/theme";
+import { PieceShape } from "../../components/piece";
 import type { Board, PieceInstance } from "../../types";
 
 const piece: PieceInstance = {
@@ -97,6 +97,7 @@ describe("visual feedback separated from game resolution", () => {
 
     expect(feedback).toEqual({
       id: 10,
+      clearedLines: 0,
       placed: [
         { row: 4, col: 5, color: "cyan" },
         { row: 4, col: 6, color: "cyan" },

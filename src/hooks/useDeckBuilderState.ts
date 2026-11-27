@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { DEFAULT_DECK } from "../constants/gameData";
+import { DEFAULT_DECK } from "../mocks/gameData";
 import { shuffle } from "../utils/shuffle";
 import {
   addToStash,
@@ -15,7 +15,7 @@ import {
   saveBaseLoadout,
   saveLoadout,
   saveStash,
-  saveUnlockedBlocks
+  saveUnlockedBlocks,
 } from "../features/specialStash";
 import type { PieceTemplate } from "../types";
 
@@ -23,14 +23,26 @@ export function useDeckBuilderState() {
   const [specialStash, setSpecialStash] = useState<PieceTemplate[]>(loadStash);
   const [loadoutIds, setLoadoutIds] = useState<string[]>(loadLoadout);
   const [baseLoadout, setBaseLoadout] = useState<string[]>(loadBaseLoadout);
-  const [unlockedBlocks, setUnlockedBlocks] = useState<string[]>(loadUnlockedBlocks);
+  const [unlockedBlocks, setUnlockedBlocks] =
+    useState<string[]>(loadUnlockedBlocks);
 
-  const availableBaseIds = useMemo(() => [...DEFAULT_DECK, ...unlockedBlocks], [unlockedBlocks]);
+  const availableBaseIds = useMemo(
+    () => [...DEFAULT_DECK, ...unlockedBlocks],
+    [unlockedBlocks],
+  );
 
-  useEffect(() => { saveStash(specialStash); }, [specialStash]);
-  useEffect(() => { saveLoadout(loadoutIds); }, [loadoutIds]);
-  useEffect(() => { saveBaseLoadout(baseLoadout); }, [baseLoadout]);
-  useEffect(() => { saveUnlockedBlocks(unlockedBlocks); }, [unlockedBlocks]);
+  useEffect(() => {
+    saveStash(specialStash);
+  }, [specialStash]);
+  useEffect(() => {
+    saveLoadout(loadoutIds);
+  }, [loadoutIds]);
+  useEffect(() => {
+    saveBaseLoadout(baseLoadout);
+  }, [baseLoadout]);
+  useEffect(() => {
+    saveUnlockedBlocks(unlockedBlocks);
+  }, [unlockedBlocks]);
   useEffect(() => {
     setBaseLoadout((current) => {
       const normalized = normalizeBaseLoadout(current, availableBaseIds);
@@ -40,7 +52,9 @@ export function useDeckBuilderState() {
 
   function addSpecialToDeck(id: string) {
     setLoadoutIds((current) =>
-      current.includes(id) || current.length >= MAX_LOADOUT ? current : [...current, id]
+      current.includes(id) || current.length >= MAX_LOADOUT
+        ? current
+        : [...current, id],
     );
   }
 
@@ -76,7 +90,9 @@ export function useDeckBuilderState() {
 
   function randomizeDeck() {
     setBaseLoadout(shuffle(availableBaseIds).slice(0, MAX_BASE_DECK));
-    setLoadoutIds(shuffle(specialStash.map((piece) => piece.id)).slice(0, MAX_LOADOUT));
+    setLoadoutIds(
+      shuffle(specialStash.map((piece) => piece.id)).slice(0, MAX_LOADOUT),
+    );
   }
 
   return {
@@ -91,6 +107,6 @@ export function useDeckBuilderState() {
     removeSpecialFromDeck,
     specialStash,
     unlockedBlocks,
-    unlockBaseBlock
+    unlockBaseBlock,
   };
 }

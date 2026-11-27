@@ -14,15 +14,21 @@ export function usePulseLabel(durationMs = 940): PulseLabel {
   const [state, setState] = useState<{ text: string; id: number } | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const pulse = useCallback((text: string) => {
-    setState({ text, id: Date.now() });
-    if (timerRef.current !== null) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setState(null), durationMs);
-  }, [durationMs]);
+  const pulse = useCallback(
+    (text: string) => {
+      setState({ text, id: Date.now() });
+      if (timerRef.current !== null) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setState(null), durationMs);
+    },
+    [durationMs],
+  );
 
-  useEffect(() => () => {
-    if (timerRef.current !== null) clearTimeout(timerRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current !== null) clearTimeout(timerRef.current);
+    },
+    [],
+  );
 
   return { label: state?.text ?? null, pulseId: state?.id ?? 0, pulse };
 }

@@ -61,12 +61,31 @@ function ScoreBoard({ best, score, previewGain }: ScoreBoardProps) {
         </div>
       )}
       <div className="score-row" aria-label="Current score">
-        <div className="score-box">
-          <strong className={isCounting ? "is-counting" : ""}>{displayedScore}</strong>
+        <div
+          className={`score-box${showPreview ? " has-preview" : ""}`}
+          // Characters on the line (score, plus "+gain" while previewing) so narrow screens can
+          // shrink the font to keep both values on one line without overlapping or clipping.
+          style={
+            {
+              "--score-chars":
+                String(displayedScore).length +
+                (showPreview
+                  ? String(lastPositiveGainRef.current).length + 1
+                  : 0),
+            } as React.CSSProperties
+          }
+        >
+          <strong className={isCounting ? "is-counting" : ""}>
+            {displayedScore}
+          </strong>
           <span
             className={`score-preview-gain${showPreview ? " is-visible" : ""}`}
             aria-hidden={showPreview ? undefined : "true"}
-            aria-label={showPreview ? `배치 시 +${lastPositiveGainRef.current}점` : undefined}
+            aria-label={
+              showPreview
+                ? `배치 시 +${lastPositiveGainRef.current}점`
+                : undefined
+            }
           >
             +{lastPositiveGainRef.current}
           </span>

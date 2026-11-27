@@ -1,20 +1,36 @@
-import { SIZE } from "../constants/gameData";
+import { SIZE } from "../mocks/gameData";
 import { clearLines, cloneBoard } from "./boardUtils";
 import { shuffleInPlace } from "./shuffle";
-import type { Board, PieceInstance, PieceTemplate, PlacementResult, PlacementPosition, CellCoord } from "../types";
+import type {
+  Board,
+  PieceInstance,
+  PieceTemplate,
+  PlacementResult,
+  PlacementPosition,
+  CellCoord,
+} from "../types";
 
-export function canPlace(board: Board, piece: PieceTemplate, row: number, col: number): boolean {
+export function canPlace(
+  board: Board,
+  piece: PieceTemplate,
+  row: number,
+  col: number,
+): boolean {
   // Ghost blocks may overlap existing blocks; they only need to stay on the board.
   const allowOverlap = piece.special === "ghost";
   return piece.cells.every(([dr, dc]) => {
     const nextRow = row + dr;
     const nextCol = col + dc;
-    if (nextRow < 0 || nextRow >= SIZE || nextCol < 0 || nextCol >= SIZE) return false;
+    if (nextRow < 0 || nextRow >= SIZE || nextCol < 0 || nextCol >= SIZE)
+      return false;
     return allowOverlap || !board[nextRow][nextCol];
   });
 }
 
-export function getPlacements(board: Board, piece: PieceTemplate): PlacementPosition[] {
+export function getPlacements(
+  board: Board,
+  piece: PieceTemplate,
+): PlacementPosition[] {
   const placements: PlacementPosition[] = [];
 
   for (let row = 0; row < SIZE; row += 1) {
@@ -32,7 +48,12 @@ export function hasMove(board: Board, pieces: PieceTemplate[]): boolean {
   return pieces.some((piece) => getPlacements(board, piece).length > 0);
 }
 
-export function placePiece(board: Board, piece: PieceInstance, row: number, col: number): PlacementResult {
+export function placePiece(
+  board: Board,
+  piece: PieceInstance,
+  row: number,
+  col: number,
+): PlacementResult {
   const next = cloneBoard(board);
   // Cells that already held a block before this piece landed on them (ghost overlap).
   const overlappedCells: string[] = [];
@@ -50,7 +71,7 @@ const ADJACENT_DELTAS: CellCoord[] = [
   [-1, 0],
   [1, 0],
   [0, -1],
-  [0, 1]
+  [0, 1],
 ];
 
 // Empty cells next to the just-placed piece (board should include the piece). The piece's
@@ -60,7 +81,7 @@ function findEmptyNeighbors(
   piece: PieceTemplate,
   row: number,
   col: number,
-  deltas: CellCoord[]
+  deltas: CellCoord[],
 ): PlacementPosition[] {
   const seen = new Set<string>();
   const cells: PlacementPosition[] = [];
@@ -93,14 +114,14 @@ export function getSurroundingEmptyCells(
   board: Board,
   piece: PieceTemplate,
   row: number,
-  col: number
+  col: number,
 ): PlacementPosition[] {
   return findEmptyNeighbors(board, piece, row, col, ADJACENT_DELTAS);
 }
 
 export function getPlacementDistanceSquared(
   a: PlacementPosition | null,
-  b: PlacementPosition | null
+  b: PlacementPosition | null,
 ): number {
   if (!a || !b) return Infinity;
   return (a.row - b.row) ** 2 + (a.col - b.col) ** 2;
@@ -109,14 +130,18 @@ export function getPlacementDistanceSquared(
 export function getClosestPlacement(
   board: Board,
   piece: PieceTemplate | null,
-  target: PlacementPosition | null
+  target: PlacementPosition | null,
 ): PlacementPosition | null {
   if (!piece || !target) return null;
   const placements = getPlacements(board, piece);
   if (!placements.length) return null;
-  return placements.reduce((closest, p) =>
-    getPlacementDistanceSquared(p, target) < getPlacementDistanceSquared(closest, target) ? p : closest,
-    placements[0]
+  return placements.reduce(
+    (closest, p) =>
+      getPlacementDistanceSquared(p, target) <
+      getPlacementDistanceSquared(closest, target)
+        ? p
+        : closest,
+    placements[0],
   );
 }
 
@@ -126,11 +151,13 @@ export function getSpreadFillCells(
   piece: PieceTemplate,
   row: number,
   col: number,
-  count: number
+  count: number,
 ): PlacementPosition[] {
   if (count <= 0) return [];
 
-  const candidates = shuffleInPlace(findEmptyNeighbors(board, piece, row, col, ADJACENT_DELTAS));
+  const candidates = shuffleInPlace(
+    findEmptyNeighbors(board, piece, row, col, ADJACENT_DELTAS),
+  );
   return candidates.slice(0, count);
 }
 
@@ -142,8 +169,15 @@ export interface PlacementPreview {
 }
 
 /** What placing the piece at (row, col) will look like; used for my drag preview and the rival's. */
-export function getPlacementPreview(board: Board, piece: PieceInstance, row: number, col: number): PlacementPreview {
-  const cells = new Set(piece.cells.map(([dr, dc]) => `${row + dr}-${col + dc}`));
+export function getPlacementPreview(
+  board: Board,
+  piece: PieceInstance,
+  row: number,
+  col: number,
+): PlacementPreview {
+  const cells = new Set(
+    piece.cells.map(([dr, dc]) => `${row + dr}-${col + dc}`),
+  );
 
   if (piece.special === "line") {
     const cross = new Set<string>();
@@ -159,11 +193,16 @@ export function getPlacementPreview(board: Board, piece: PieceInstance, row: num
   const result = placePiece(board, piece, row, col);
   if (piece.special === "fill") {
     const filledBoard = cloneBoard(result.placedBoard);
-    getSurroundingEmptyCells(result.placedBoard, piece, row, col).forEach((cell) => {
-      cells.add(`${cell.row}-${cell.col}`);
-      filledBoard[cell.row][cell.col] = piece.color;
-    });
-    return { cells, clearingCells: new Set(clearLines(filledBoard).clearedCells) };
+    getSurroundingEmptyCells(result.placedBoard, piece, row, col).forEach(
+      (cell) => {
+        cells.add(`${cell.row}-${cell.col}`);
+        filledBoard[cell.row][cell.col] = piece.color;
+      },
+    );
+    return {
+      cells,
+      clearingCells: new Set(clearLines(filledBoard).clearedCells),
+    };
   }
 
   return { cells, clearingCells: new Set(result.clearedCells) };

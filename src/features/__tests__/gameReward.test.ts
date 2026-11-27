@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { CreditApiError } from "../../api/credit";
+import { CreditApiError } from "../../api";
 import { createGameRewardSession } from "../gameReward";
 
 const reward = {

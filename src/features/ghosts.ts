@@ -1,4 +1,4 @@
-import { PIECES } from "../constants/gameData";
+import { PIECES } from "../mocks/gameData";
 import { cellsAreCoordPairs, makeSpecialValidator } from "./specialPiece";
 import type { PieceTemplate } from "../types";
 
@@ -26,7 +26,7 @@ export function createGhostTemplate(): GhostTemplate {
     baseId: base.id,
     cells: base.cells.map(([row, col]) => [row, col]),
     color: "ghost",
-    special: "ghost"
+    special: "ghost",
   };
 }
 
@@ -40,9 +40,10 @@ export function isGhostPiece(piece: PieceTemplate | null | undefined): boolean {
 export function resolveGhostClears(
   ghostCells: Set<string>,
   newOverlapCells: string[],
-  clearedCells: Set<string> | string[]
+  clearedCells: Set<string> | string[],
 ): { bonus: number; ghostCells: Set<string> } {
-  const cleared = clearedCells instanceof Set ? clearedCells : new Set(clearedCells);
+  const cleared =
+    clearedCells instanceof Set ? clearedCells : new Set(clearedCells);
   const marked = new Set(ghostCells);
   newOverlapCells.forEach((key) => marked.add(key));
 
@@ -56,4 +57,7 @@ export function resolveGhostClears(
   return { bonus: clearedCount * GHOST_CLEAR_BONUS, ghostCells: remaining };
 }
 
-export const isValidGhostPiece = makeSpecialValidator<GhostTemplate>("ghost", cellsAreCoordPairs);
+export const isValidGhostPiece = makeSpecialValidator<GhostTemplate>(
+  "ghost",
+  cellsAreCoordPairs,
+);

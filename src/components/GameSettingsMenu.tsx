@@ -16,7 +16,7 @@ function GameSettingsMenu({
   onGoHome,
   onQuit,
   onToggle,
-  status
+  status,
 }: GameSettingsMenuProps) {
   return (
     <>
@@ -39,14 +39,27 @@ function GameSettingsMenu({
           aria-labelledby="settings-title"
           onClick={onClose}
         >
-          <section className="game-settings-menu" onClick={(event) => event.stopPropagation()}>
-            <strong id="settings-title" className="game-settings-title">설정</strong>
+          <section
+            className="game-settings-menu"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <strong id="settings-title" className="game-settings-title">
+              설정
+            </strong>
             {status}
-            <button className="game-settings-menu-button" onClick={onQuit} type="button">
+            <button
+              className="game-settings-menu-button"
+              onClick={onQuit}
+              type="button"
+            >
               <LogOut size={18} aria-hidden="true" />
               <span>그만하기</span>
             </button>
-            <button className="game-settings-menu-button" onClick={onGoHome} type="button">
+            <button
+              className="game-settings-menu-button"
+              onClick={onGoHome}
+              type="button"
+            >
               <Home size={18} aria-hidden="true" />
               <span>홈</span>
             </button>

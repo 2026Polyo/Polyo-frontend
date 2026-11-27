@@ -3,7 +3,7 @@ import {
   advanceBonusPlacement, BONUS_PLACEMENT_TARGET, BONUS_DURATION_MS, BONUS_PIECE, createBonusTimeState,
   createBonusTray, elapseBonusTime, getSavedBonusTime, restoreBonusSnapshot
 } from "../bonusTime";
-import { EMPTY_BOARD } from "../../constants/gameData";
+import { EMPTY_BOARD } from "../../mocks/gameData";
 import { createPieceInstance } from "../../utils/pieceUtils";
 import { isValidTray, loadSavedGame, saveCurrentGame } from "../savedGame";
 import { createInitialAugmentState } from "../augments";

@@ -1,0 +1,909 @@
+.app-shell {
+  align-items: center;
+  display: flex;
+  min-height: 100vh;
+  padding: 24px;
+  justify-content: center;
+}
+
+/* While a block is held, keep the pointer visible as a closed "grabbing" hand. */
+.app-shell.has-cursor-piece,
+.app-shell.has-cursor-piece * {
+  cursor: grabbing;
+}
+
+.app-shell.has-cell-mode .board-cell {
+  cursor: crosshair;
+}
+
+.game-area {
+  /* Wider so the side columns use the page margins; the board stays centered.
+     This gives the left column room to fit 8 augment tiles per row on wide screens. */
+  width: min(100%, 1920px);
+}
+
+.board-layout {
+  align-items: start;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 600px) minmax(0, 1fr);
+}
+
+.board-stack {
+  grid-column: 2;
+  justify-self: center;
+  min-width: 0;
+  width: 100%;
+}
+
+.board-combo-stage {
+  position: relative;
+}
+
+.placement-hint {
+  margin-top: 8px;
+  text-align: center;
+  color: var(--text-on-board);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.combo-burst {
+  animation: combo-burst 940ms ease-out forwards;
+  color: hsl(0 0% 100%);
+  font-size: clamp(3.4rem, 10vw, 6.8rem);
+  font-weight: 900;
+  left: 50%;
+  letter-spacing: 0;
+  line-height: 0.95;
+  pointer-events: none;
+  position: absolute;
+  text-shadow:
+    0 4px 0 var(--accent-strong),
+    0 12px 28px hsl(205 90% 20% / 0.42),
+    0 0 34px hsl(205 90% 62% / 0.55);
+  text-transform: uppercase;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  z-index: 20;
+}
+
+@keyframes combo-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -42%) scale(0.72);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.14);
+  }
+
+  52% {
+    opacity: 1;
+    transform: translate(-50%, -54%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -70%) scale(1.05);
+  }
+}
+
+.clear-burst {
+  animation: clear-burst 940ms ease-out forwards;
+  background: none;
+  color: hsl(42 100% 60%);
+  font-size: clamp(2.2rem, 6.4vw, 4.2rem);
+  font-style: italic;
+  font-weight: 900;
+  left: 50%;
+  line-height: 0.95;
+  pointer-events: none;
+  position: absolute;
+  text-shadow:
+    0 2px 0 hsl(28 100% 42%),
+    0 0 18px hsl(40 100% 55% / 0.55);
+  text-transform: uppercase;
+  top: 26%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  z-index: 21;
+}
+
+@keyframes clear-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -38%) scale(0.6) rotate(-4deg);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.18) rotate(-2deg);
+  }
+
+  55% {
+    opacity: 1;
+    transform: translate(-50%, -52%) scale(1) rotate(-2deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -66%) scale(1.04) rotate(-2deg);
+  }
+}
+
+.game-settings {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  top: max(24px, env(safe-area-inset-top));
+  z-index: 50;
+}
+
+.game-settings-button {
+  align-items: center;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  color: var(--accent-strong);
+  cursor: pointer;
+  display: inline-flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.game-settings-button:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.game-settings-backdrop {
+  align-items: center;
+  background: hsl(205 70% 16% / 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 90;
+}
+
+.game-settings-menu {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--modal-shadow-lg);
+  display: grid;
+  gap: 14px;
+  min-width: 320px;
+  padding: 28px;
+}
+
+.game-settings-title {
+  color: var(--modal-text);
+  display: block;
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.game-settings-menu-button {
+  align-items: center;
+  background: var(--modal-surface);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-md);
+  color: var(--modal-text);
+  cursor: pointer;
+  display: flex;
+  font-size: 1.08rem;
+  font-weight: 800;
+  gap: 10px;
+  justify-content: center;
+  min-height: 60px;
+  padding: 14px 18px;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.game-settings-menu-button:hover {
+  box-shadow: var(--modal-shadow-md);
+  transform: translateY(-1px);
+}
+
+.game-settings-menu-button svg {
+  color: var(--blue-300);
+  height: 22px;
+  width: 22px;
+}
+
+.deck-view-button {
+  /* Same column as the item slots, lifted near the tray level. */
+  grid-column: 3;
+  grid-row: 1;
+  align-self: end;
+  justify-self: start;
+  align-items: center;
+  background: var(--panel-dark);
+  border: 1px solid var(--panel-dark-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  color: hsl(0 0% 100%);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 132px;
+  justify-content: center;
+  margin-bottom: 28px;
+  min-width: 132px;
+  padding: 14px;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.deck-view-button:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.deck-view-button span {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.deck-view-button svg {
+  height: 38px;
+  width: 38px;
+  color: var(--blue-300);
+}
+
+.primary-action {
+  align-items: center;
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  color: hsl(0 0% 100%);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 900;
+  gap: 8px;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 132px;
+  padding: 12px 18px;
+  text-transform: uppercase;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.primary-action:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+
+.primary-action:active {
+  transform: translateY(0);
+}
+
+.secondary-action {
+  align-items: center;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-card-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-strong);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: center;
+  min-height: 42px;
+  min-width: 132px;
+  padding: 10px 18px;
+  text-transform: uppercase;
+  transition: box-shadow 140ms ease, transform 140ms ease;
+}
+
+.secondary-action:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.secondary-action:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 1520px) {
+  .app-shell {
+    padding: 14px;
+  }
+
+  .game-area {
+    width: min(100%, 620px);
+  }
+
+  .board-layout {
+    grid-template-columns: minmax(0, 620px);
+    justify-content: center;
+  }
+
+  .board-stack {
+    grid-column: auto;
+  }
+
+  .deck-view-button {
+    grid-column: auto;
+    grid-row: auto;
+    align-self: auto;
+    justify-self: center;
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 460px) {
+  .game-settings-menu {
+    min-width: 0;
+    width: min(100%, 320px);
+  }
+
+  .deck-view-button {
+    height: 92px;
+    min-width: 92px;
+  }
+
+  .deck-view-button svg {
+    height: 28px;
+    width: 28px;
+  }
+
+  .deck-view-button span {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .play-shell {
+    align-items: flex-start;
+    min-height: 100svh;
+    padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+    position: relative;
+  }
+
+  .play-shell .game-area {
+    width: min(100%, 480px);
+    min-width: 0;
+    position: relative;
+  }
+
+  .board-layout {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .board-stack {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: min(100%, max(240px, calc(100svh - 220px)));
+  }
+
+  .board-layout > .undo-items {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    order: 0;
+  }
+
+  .board-layout > .augment-panel {
+    grid-column: 1;
+    grid-row: 2;
+    order: 0;
+    min-width: 0;
+  }
+
+  .deck-view-button {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    min-width: 64px;
+    min-height: 44px;
+    height: 44px;
+    padding: 8px 12px;
+    gap: 6px;
+    flex-direction: row;
+    border-radius: var(--radius-md);
+  }
+
+  .deck-view-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .game-settings {
+    position: absolute;
+    top: max(10px, env(safe-area-inset-top));
+    right: max(10px, env(safe-area-inset-right));
+  }
+
+  .game-settings-backdrop {
+    padding: 16px;
+  }
+
+  .combo-burst {
+    font-size: clamp(2.5rem, 12vw, 4.5rem);
+  }
+}
+
+.bonus-status {
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  gap: 8px 16px;
+  justify-content: center;
+  padding: 8px 12px;
+}
+
+.bonus-status.is-active {
+  background: var(--surface-card);
+  border: 1px solid var(--accent-strong);
+  border-radius: var(--radius-md);
+  color: var(--accent-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.bonus-status.hard-status {
+  color: var(--accent-strong);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.hard-timer {
+  background: hsl(0 0% 100% / 0.5);
+  border: 1px solid hsl(0 70% 52% / 0.35);
+  border-radius: 999px;
+  display: inline-block;
+  height: 12px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.hard-timer-fill {
+  background: linear-gradient(90deg, hsl(8 75% 52%), hsl(42 95% 55%));
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  transition: width 80ms linear;
+}
+
+.augment-progress-wrap {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.augment-progress-label {
+  color: var(--text-muted);
+  display: block;
+  font-size: clamp(0.62rem, 1.55cqw, 0.85rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hard-timer.augment-progress {
+  margin-bottom: 0;
+}
+
+.augment-progress-fill {
+  background: linear-gradient(90deg, hsl(205 72% 68%), hsl(213 88% 34%));
+  transition: width 180ms ease-out;
+}
+
+/* ---------- Solo play (일반모드 / 하드모드): the whole game always fits one screen ----------
+   The shell is locked to the viewport height and never scrolls. The board-layout takes the height
+   left after the score row, and the board side (--solo-board) is the smallest of 600px,
+   the width it may use, and the height left after the timer and tray (--solo-stack-chrome).
+   Wide screens (>= 1200px) keep the augment | board | items columns; narrower screens stack the
+   compact item / augment / deck row above the board. */
+.solo-play-shell {
+  --solo-tray-h: clamp(56px, 14dvh, 124px);
+  --solo-tray-gap: clamp(6px, 1.4dvh, 18px);
+  --solo-tray-pad: 8px;
+  --solo-timer-h: 0px;
+  --solo-stack-chrome: calc(var(--solo-timer-h) + var(--solo-tray-gap) + var(--solo-tray-h) + 2 * var(--solo-tray-pad) + 2px);
+  align-items: stretch;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  padding:
+    max(clamp(8px, 2dvh, 24px), env(safe-area-inset-top))
+    max(clamp(10px, 1.8vw, 24px), env(safe-area-inset-right))
+    max(clamp(8px, 2dvh, 24px), env(safe-area-inset-bottom))
+    max(clamp(10px, 1.8vw, 24px), env(safe-area-inset-left));
+}
+
+.solo-play-shell.is-hard {
+  --solo-timer-h: 22px;
+}
+
+.solo-play-shell:not(.is-hard) {
+  --solo-timer-h: 42px;
+}
+
+.solo-play-shell .game-area {
+  display: flex;
+  flex-direction: column;
+  margin-inline: auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.solo-play-shell .game-area > * {
+  flex: 0 0 auto;
+}
+
+/* Score line (all screen sizes): the current score alone, or score + gap + "+gain" as one group,
+   always centred on the board's centre line. The hidden gain takes no space, so the score alone is
+   centred too. Equal side margins keep clear of the trophy and settings button without shifting
+   the centre; the fixed row height keeps the board still when the gain appears or disappears.
+   Long numbers shrink the font (--score-chars is set by ScoreBoard) instead of overlapping. */
+.solo-play-shell {
+  --solo-score-font: clamp(1.8rem, 6dvh, 3.7rem);
+}
+
+.solo-play-shell .score-row {
+  align-items: center;
+  container-type: inline-size;
+  height: calc(var(--solo-score-font) * 1.1);
+  justify-content: center;
+  margin-bottom: clamp(2px, 1dvh, 18px);
+  margin-inline: 76px;
+}
+
+.solo-play-shell .score-box {
+  align-items: baseline;
+  font-size: min(var(--solo-score-font), 100cqw / (var(--score-chars, 1) * 0.62 + 0.35));
+  gap: 0.3em;
+  justify-content: center;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.solo-play-shell .score-box strong {
+  font-size: 1em;
+  line-height: 1;
+  min-width: 0;
+  overflow-wrap: normal;
+}
+
+.solo-play-shell .score-preview-gain {
+  display: none;
+}
+
+.solo-play-shell .score-preview-gain.is-visible {
+  animation: score-gain-in 140ms ease-out;
+  bottom: auto;
+  display: inline-block;
+  font-size: 1em;
+  line-height: 1;
+  opacity: 1;
+  position: static;
+  transform: none;
+}
+
+/* Visually hidden, still read by screen readers (bonus time announcement). */
+.solo-sr-only {
+  clip-path: inset(50%);
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.solo-play-shell .game-area > .board-layout {
+  container-type: size;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.solo-play-shell .board-stack {
+  --solo-board: max(120px, min(600px, 100cqw, 100cqh - var(--solo-stack-chrome)));
+  align-items: center;
+  align-self: stretch;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  min-height: 0;
+}
+
+.solo-play-shell .board-stack > * {
+  flex: 0 0 auto;
+  width: var(--solo-board);
+}
+
+.solo-play-shell .hard-timer {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.solo-play-shell .board-stack {
+  /* On very short windows the board gets small; keep the tray wide enough to pick pieces. */
+  --solo-tray-w: min(100cqw, max(var(--solo-board), 320px));
+}
+
+.solo-play-shell .board-stack > .tray {
+  width: var(--solo-tray-w);
+}
+
+.solo-play-shell .tray {
+  gap: 10px;
+  margin-top: var(--solo-tray-gap);
+  padding: var(--solo-tray-pad);
+}
+
+.solo-play-shell .piece-preview {
+  height: var(--solo-tray-h);
+  min-width: 0;
+  padding: 6px;
+}
+
+.solo-play-shell .piece-preview .mini-grid {
+  /* Each piece is sized to its own span (longest side, at least 3 cells) so small pieces read
+     clearly while a 5-cell line still fits its slot. Slot = tray width minus padding, border and
+     the two 10px gaps, split in 3, minus the 6px preview padding on each side. */
+  --solo-piece-span: max(var(--piece-span, 5), 3);
+  --mini-cell-size: max(6px, min(
+    var(--solo-cell-max, 26px),
+    (((var(--solo-tray-w) - 2 * var(--solo-tray-pad) - 22px) / 3 - 12px) - (var(--solo-piece-span) - 1) * 2px) / var(--solo-piece-span),
+    ((var(--solo-tray-h) - 12px) - (var(--solo-piece-span) - 1) * 2px) / var(--solo-piece-span)
+  )) !important;
+  --mini-cell-gap: 2px !important;
+  gap: 2px;
+}
+
+.solo-play-shell .piece-preview .mini-cell {
+  height: var(--mini-cell-size);
+  width: var(--mini-cell-size);
+}
+
+/* Wide landscape: augment column | board | items + deck column, all inside the one row.
+   Portrait screens use the stacked HUD layout below at any width. */
+@media (min-width: 1200px) and (orientation: landscape) {
+  .solo-play-shell .game-area {
+    width: min(100%, 1920px);
+  }
+
+  .solo-play-shell .board-layout {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .solo-play-shell .board-layout > .board-stack {
+    grid-column: 2;
+    grid-row: 1;
+    width: max(120px, min(600px, 100cqh - var(--solo-stack-chrome)));
+  }
+
+  .solo-play-shell .board-layout > .augment-panel {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: end;
+    max-height: 100%;
+    order: 0;
+    overflow-y: auto;
+    width: min(100%, 660px);
+  }
+
+  .solo-play-shell .augment-list {
+    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  }
+
+  /* The item panel fills its column up to the width that holds 3 slots side by side.
+     Its slot row switches all at once: 1x3 when 3 slots + 2 gaps fit, otherwise 3x1 filling
+     the panel width (never a 2 + 1 wrap). Empty and filled slots share the same size. */
+  .solo-play-shell .board-layout > .undo-items {
+    --item-slot-w: 112px;
+    --item-slot-gap: 12px;
+    --item-panel-pad: 16px;
+    align-self: start;
+    container: item-panel / inline-size;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    max-width: calc(3 * var(--item-slot-w) + 2 * var(--item-slot-gap) + 2 * var(--item-panel-pad) + 2px);
+    order: 0;
+    padding: var(--item-panel-pad);
+    width: 100%;
+  }
+
+  .solo-play-shell .undo-item-row {
+    display: grid;
+    gap: var(--item-slot-gap);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .solo-play-shell .undo-item-row > .undo-item {
+    width: 100%;
+  }
+
+  /* 3 * 112px slots + 2 * 12px gaps = 360px of panel content width. */
+  @container item-panel (min-width: 360px) {
+    .solo-play-shell .undo-item-row {
+      grid-template-columns: repeat(3, var(--item-slot-w));
+    }
+  }
+
+  .solo-play-shell .board-layout > .deck-view-button {
+    align-self: end;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    margin-bottom: 0;
+  }
+}
+
+/* Short wide windows: shrink the item and deck tiles so the right column still fits. */
+@media (min-width: 1200px) and (orientation: landscape) and (max-height: 760px) {
+  .solo-play-shell .board-layout > .undo-items {
+    --item-panel-pad: 10px;
+    gap: 8px;
+  }
+
+  .solo-play-shell .undo-item {
+    height: 96px;
+    padding: 8px;
+  }
+
+  .solo-play-shell .undo-item-icon {
+    height: 44px;
+    width: 44px;
+  }
+
+  .solo-play-shell .deck-view-button {
+    height: 96px;
+    min-width: 96px;
+  }
+}
+
+/* Narrow or portrait: one centred play group with even gaps.
+   Score, item row, augment + deck HUD row, board and tray stack top to bottom with the
+   same gap (--solo-gap); the spare height is split above and below the group. The game-area is the
+   size container, so the shared row width (--solo-row-w) is the board side: the smallest of 720px,
+   the width, and the height left after every fixed-height row. The board stays square. */
+@media (max-width: 1199px), (orientation: portrait) {
+  .solo-play-shell {
+    --solo-gap: clamp(8px, 1.6dvh, 14px);
+    --solo-score-h: clamp(40px, 6.5dvh, 64px);
+    --solo-items-h: 64px;
+    --solo-hud-h: 44px;
+    --solo-row-gaps: 3;
+    --solo-tray-gap: var(--solo-gap);
+    --solo-tray-h: clamp(72px, min(24vw, 13dvh), 150px);
+    --solo-cell-max: 30px;
+  }
+
+  .solo-play-shell.is-hard {
+    --solo-items-h: 0px;
+    --solo-row-gaps: 2;
+  }
+
+  .solo-play-shell .game-area {
+    --solo-row-w: max(min(220px, 100cqw), min(720px, 100cqw, 100cqh - var(--solo-score-h) - var(--solo-items-h) - var(--solo-hud-h) - var(--solo-row-gaps) * var(--solo-gap) - var(--solo-stack-chrome)));
+    container-type: size;
+    gap: var(--solo-gap);
+    height: 100%;
+    justify-content: center;
+    width: min(100%, 720px);
+  }
+
+  .solo-play-shell .score-row {
+    align-items: center;
+    height: var(--solo-score-h);
+    margin-block: 0;
+  }
+
+  .solo-play-shell {
+    --solo-score-font: calc(var(--solo-score-h) * 0.82);
+  }
+
+  .solo-play-shell .game-area > .board-layout {
+    container-type: normal;
+    flex: 0 0 auto;
+    gap: var(--solo-gap);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+  }
+
+  .solo-play-shell .board-layout > .undo-items {
+    grid-column: 1;
+    grid-row: 1;
+    height: var(--solo-items-h);
+    justify-self: center;
+    width: var(--solo-row-w);
+  }
+
+  .solo-play-shell .board-layout > .augment-panel {
+    align-self: center;
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+    margin-left: calc((100cqw - var(--solo-row-w)) / 2);
+    min-width: 0;
+    width: auto;
+  }
+
+  .solo-play-shell .board-layout > .deck-view-button {
+    align-self: center;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    flex-direction: row;
+    font-size: 0.95rem;
+    gap: 6px;
+    grid-column: 1;
+    grid-row: 2;
+    height: var(--solo-hud-h);
+    justify-self: end;
+    margin: 0 calc((100cqw - var(--solo-row-w)) / 2) 0 0;
+    min-height: 0;
+    min-width: 0;
+    padding: 0 14px;
+  }
+
+  .solo-play-shell .deck-view-button svg {
+    height: 18px;
+    width: 18px;
+  }
+
+  .solo-play-shell .deck-view-button span {
+    font-size: 0.95rem;
+  }
+
+  .solo-play-shell .board-layout > .board-stack {
+    /* Exactly the board + timer + tray; never taller than the height left for it. */
+    --solo-board: max(120px, min(100cqw, 100cqh - var(--solo-stack-chrome)));
+    --solo-tray-w: 100cqw;
+    grid-column: 1;
+    grid-row: 3;
+    height: min(var(--solo-row-w) + var(--solo-stack-chrome), 100cqh - var(--solo-score-h) - var(--solo-items-h) - var(--solo-hud-h) - var(--solo-row-gaps) * var(--solo-gap));
+    justify-self: center;
+    width: var(--solo-row-w);
+  }
+
+  /* Hard mode has no item row: the deck row moves up so the gaps stay even. */
+  .solo-play-shell.is-hard .board-layout > .deck-view-button {
+    grid-row: 1;
+  }
+
+  .solo-play-shell.is-hard .board-layout > .board-stack {
+    grid-row: 2;
+  }
+}
+
+@keyframes score-gain-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

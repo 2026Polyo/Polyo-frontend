@@ -1,4 +1,4 @@
-import { SIZE } from "../../constants/gameData";
+import { SIZE } from "../../mocks/gameData";
 import type { Board, PieceInstance } from "../../types";
 
 export interface FeedbackCell {
@@ -11,6 +11,7 @@ export interface BoardFeedback {
   id: number;
   placed: FeedbackCell[];
   cleared: FeedbackCell[];
+  clearedLines?: number;
 }
 
 /** 실제로 성공한 배치에서만 호출한다. 보드 차이로 추측하지 않아 되돌리기·불러오기는 제외된다. */
@@ -21,6 +22,7 @@ export function createBoardFeedback(
   col: number,
   displayBoard: Board,
   clearingCells: ReadonlySet<string>,
+  clearedLines = 0,
 ): BoardFeedback {
   const placed = piece.cells.map(([dr, dc]) => ({
     row: row + dr,
@@ -38,6 +40,7 @@ export function createBoardFeedback(
   });
   return {
     id,
+    clearedLines,
     placed: uniqueFeedbackCells(placed),
     cleared: uniqueFeedbackCells(cleared),
   };

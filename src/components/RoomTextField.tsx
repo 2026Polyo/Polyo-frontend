@@ -10,12 +10,23 @@ interface RoomTextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   mobileHint?: string;
 }
 
-function RoomTextField({ id, label, hint, error, counter, inputRef, mobileHint, ...inputProps }: RoomTextFieldProps) {
+function RoomTextField({
+  id,
+  label,
+  hint,
+  error,
+  counter,
+  inputRef,
+  mobileHint,
+  ...inputProps
+}: RoomTextFieldProps) {
   return (
     <div className={`room-field${error ? " room-field-error" : ""}`}>
       <div className="room-field-label">
         <label htmlFor={id}>{label}</label>
-        {counter !== undefined && <span className="room-field-counter">{counter}</span>}
+        {counter !== undefined && (
+          <span className="room-field-counter">{counter}</span>
+        )}
       </div>
       <input
         {...inputProps}
@@ -26,7 +37,15 @@ function RoomTextField({ id, label, hint, error, counter, inputRef, mobileHint, 
         ref={inputRef}
       />
       <p className="room-field-hint" id={`${id}-hint`}>
-        {error ?? (mobileHint ? <><span className="room-desktop-copy">{hint}</span><span className="room-mobile-copy">{mobileHint}</span></> : hint)}
+        {error ??
+          (mobileHint ? (
+            <>
+              <span className="room-desktop-copy">{hint}</span>
+              <span className="room-mobile-copy">{mobileHint}</span>
+            </>
+          ) : (
+            hint
+          ))}
       </p>
     </div>
   );

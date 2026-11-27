@@ -1,13 +1,14 @@
 import { useRef, useState } from "react";
 import { ArrowLeft, ChevronLeft, ChevronRight, Coins } from "lucide-react";
 import MenuBlock from "../components/MenuBlock";
-import ShopThemeCard from "../components/ShopThemeCard";
-import ShopThemeDialog from "../components/ShopThemeDialog";
+import { ShopThemeCard, ShopThemeDialog } from "../components/shop";
 import type { ShopTheme } from "../features/shop";
-import type { GameThemeId } from "../features/themes/gameThemes";
-import { useShopCatalog, type ShopCatalogState } from "../hooks/useShopCatalog";
-import type { ShopAccountState } from "../hooks/useShopAccount";
-import "../styles/ShopScreen.css";
+import type { GameThemeId } from "../features/themes";
+import {
+  useShopCatalog,
+  type ShopAccountState,
+  type ShopCatalogState,
+} from "../hooks/shop";
 
 interface ShopCatalogProps {
   state: ShopCatalogState;
@@ -16,7 +17,12 @@ interface ShopCatalogProps {
   onOpenDetails: (theme: ShopTheme, trigger: HTMLButtonElement) => void;
 }
 
-function ShopCatalog({ state, wallet, onRetry, onOpenDetails }: ShopCatalogProps) {
+function ShopCatalog({
+  state,
+  wallet,
+  onRetry,
+  onOpenDetails,
+}: ShopCatalogProps) {
   if (state.status === "loading") {
     return (
       <p className="shop-status" role="status">
@@ -37,16 +43,44 @@ function ShopCatalog({ state, wallet, onRetry, onOpenDetails }: ShopCatalogProps
   if (state.data.items.length === 0) {
     return <p className="shop-status">아직 등록된 상품이 없어요.</p>;
   }
+  const renderCard = (theme: ShopTheme) => (
+    <ShopThemeCard
+      key={theme.themeId}
+      theme={theme}
+      wallet={wallet}
+      onOpenDetails={onOpenDetails}
+    />
+  );
+  if (!wallet.account) {
+    return <div className="shop-grid">{state.data.items.map(renderCard)}</div>;
+  }
+
+  const ownedIds = new Set([
+    ...wallet.account.ownedThemeIds,
+    wallet.account.equippedThemeId,
+  ]);
+  const owned = state.data.items.filter(({ themeId }) => ownedIds.has(themeId));
+  const unowned = state.data.items.filter(
+    ({ themeId }) => !ownedIds.has(themeId),
+  );
+  const groups = [
+    { id: "owned", title: "보유 테마", themes: owned },
+    { id: "unowned", title: "미보유 테마", themes: unowned },
+  ];
+
+  // Keep cards under the same parent when a purchase moves them between groups.
   return (
     <div className="shop-grid">
-      {state.data.items.map((theme) => (
-        <ShopThemeCard
-          key={theme.themeId}
-          theme={theme}
-          wallet={wallet}
-          onOpenDetails={onOpenDetails}
-        />
-      ))}
+      {groups.flatMap(({ id, title, themes }) =>
+        themes.length
+          ? [
+              <h3 className="shop-group-heading" key={`heading-${id}`}>
+                {title}
+              </h3>,
+              ...themes.map(renderCard),
+            ]
+          : [],
+      )}
     </div>
   );
 }

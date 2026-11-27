@@ -1,4 +1,4 @@
-import { PIECES } from "../constants/gameData";
+import { PIECES } from "../mocks/gameData";
 import { cellsAreCoordPairs, makeSpecialValidator } from "./specialPiece";
 import type { PieceTemplate } from "../types";
 
@@ -19,7 +19,7 @@ export function createBoostTemplate(): BoostTemplate {
     id: `boost-${base.id}`,
     cells: base.cells.map(([row, col]) => [row, col]),
     color: "boost",
-    special: "boost"
+    special: "boost",
   };
 }
 
@@ -27,7 +27,10 @@ export function isBoostPiece(piece: PieceTemplate | null | undefined): boolean {
   return piece?.special === "boost";
 }
 
-export const isValidBoostPiece = makeSpecialValidator<BoostTemplate>("boost", cellsAreCoordPairs);
+export const isValidBoostPiece = makeSpecialValidator<BoostTemplate>(
+  "boost",
+  cellsAreCoordPairs,
+);
 
 // Score multiplier applied to a placement while `cellCount` boost-block cells are on the board.
 export function getBoostMultiplier(cellCount: number): number {

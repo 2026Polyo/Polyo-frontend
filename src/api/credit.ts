@@ -71,25 +71,49 @@ function isId(value: unknown): value is string {
 }
 
 function isShopAccount(value: unknown): value is ShopAccount {
-  return isRecord(value) && isCoinAmount(value.coin)
-    && Array.isArray(value.ownedThemeIds) && value.ownedThemeIds.every(isId)
-    && isId(value.equippedThemeId);
+  return (
+    isRecord(value) &&
+    isCoinAmount(value.coin) &&
+    Array.isArray(value.ownedThemeIds) &&
+    value.ownedThemeIds.every(isId) &&
+    isId(value.equippedThemeId)
+  );
 }
 
 function isThemePage(value: unknown): value is ThemePage {
-  return isRecord(value) && Array.isArray(value.items)
-    && value.items.every(theme => isRecord(theme) && isId(theme.themeId)
-      && isId(theme.name) && isCoinAmount(theme.price))
-    && isCoinAmount(value.page) && value.page > 0 && isCoinAmount(value.size) && value.size > 0
-    && isCoinAmount(value.totalElements) && isCoinAmount(value.totalPages);
+  return (
+    isRecord(value) &&
+    Array.isArray(value.items) &&
+    value.items.every(
+      (theme) =>
+        isRecord(theme) &&
+        isId(theme.themeId) &&
+        isId(theme.name) &&
+        isCoinAmount(theme.price),
+    ) &&
+    isCoinAmount(value.page) &&
+    value.page > 0 &&
+    isCoinAmount(value.size) &&
+    value.size > 0 &&
+    isCoinAmount(value.totalElements) &&
+    isCoinAmount(value.totalPages)
+  );
 }
 
 function isHardGame(value: unknown): value is HardGame {
-  return isRecord(value) && isId(value.gameId) && Array.isArray(value.tray)
-    && value.tray.length === 3 && value.tray.every(piece => piece === null || isId(piece))
-    && isCoinAmount(value.score) && isCoinAmount(value.moveNumber)
-    && isCoinAmount(value.remainingMs) && isCoinAmount(value.turnLimitMs)
-    && value.remainingMs <= value.turnLimitMs && typeof value.finished === "boolean";
+  return (
+    isRecord(value) &&
+    isId(value.gameId) &&
+    Array.isArray(value.tray) &&
+    value.tray.length === 3 &&
+    value.tray.every((piece) => piece === null || isId(piece)) &&
+    isCoinAmount(value.score) &&
+    isCoinAmount(value.moveNumber) &&
+    isCoinAmount(value.remainingMs) &&
+    isCoinAmount(value.turnLimitMs) &&
+    value.remainingMs <= value.turnLimitMs &&
+    typeof value.finished === "boolean"
+  );
 }
 
 export function isGameReward(
@@ -203,22 +227,33 @@ export function createCreditApi({
     isValid: (data: unknown) => data is T,
   ): Promise<T> {
     const data = await request(path, init);
-    if (!isValid(data)) throw new CreditApiError("CREDIT_INVALID_RESPONSE", 200, true);
+    if (!isValid(data))
+      throw new CreditApiError("CREDIT_INVALID_RESPONSE", 200, true);
     return data;
   }
 
   function json(method: "POST" | "PUT", body: object): RequestInit {
-    return { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+    return {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    };
   }
 
   function hardGameRequest(path: string, init: RequestInit, gameId?: string) {
-    return checked(`${CREDIT_API_PATH}/hard-games${path}`, init,
-      (data): data is HardGame => isHardGame(data) && (gameId === undefined || data.gameId === gameId));
+    return checked(
+      `${CREDIT_API_PATH}/hard-games${path}`,
+      init,
+      (data): data is HardGame =>
+        isHardGame(data) && (gameId === undefined || data.gameId === gameId),
+    );
   }
 
   return {
     async getBalance(): Promise<{ coin: number }> {
-      const data = await request(`${CREDIT_API_PATH}/balances/me`, { method: "GET" });
+      const data = await request(`${CREDIT_API_PATH}/balances/me`, {
+        method: "GET",
+      });
       if (!isRecord(data) || !isCoinAmount(data.coin)) {
         throw new CreditApiError("CREDIT_INVALID_RESPONSE", 200, true);
       }
@@ -229,7 +264,10 @@ export function createCreditApi({
       if (!gameId.trim())
         throw new CreditApiError("INVALID_REQUEST_BODY", 0, false);
 
-      const data = await request(`${CREDIT_API_PATH}/game-rewards`, json("POST", { gameId }));
+      const data = await request(
+        `${CREDIT_API_PATH}/game-rewards`,
+        json("POST", { gameId }),
+      );
       if (!isGameReward(data, gameId)) {
         throw new CreditApiError("CREDIT_INVALID_RESPONSE", 200, true);
       }
@@ -238,21 +276,50 @@ export function createCreditApi({
 
     startHardGame: () => hardGameRequest("", { method: "POST" }),
     placeHardPiece: (gameId: string, move: HardMove) =>
-      hardGameRequest(`/${encodeURIComponent(gameId)}/moves`, json("POST", move), gameId),
+      hardGameRequest(
+        `/${encodeURIComponent(gameId)}/moves`,
+        json("POST", move),
+        gameId,
+      ),
     setHardGamePaused: (gameId: string, paused: boolean) =>
-      hardGameRequest(`/${encodeURIComponent(gameId)}/timer`, json("PUT", { paused }), gameId),
+      hardGameRequest(
+        `/${encodeURIComponent(gameId)}/timer`,
+        json("PUT", { paused }),
+        gameId,
+      ),
     finishHardGame: (gameId: string) =>
-      hardGameRequest(`/${encodeURIComponent(gameId)}/completion`, { method: "PUT" }, gameId),
+      hardGameRequest(
+        `/${encodeURIComponent(gameId)}/completion`,
+        { method: "PUT" },
+        gameId,
+      ),
 
     getShopThemes: (page: number, sort: string) => {
-      const params = new URLSearchParams({ page: String(page), sort, size: "6" });
-      return checked(`${SHOP_API_PATH}/themes?${params}`, { method: "GET" }, isThemePage);
+      const params = new URLSearchParams({
+        page: String(page),
+        sort,
+        size: "6",
+      });
+      return checked(
+        `${SHOP_API_PATH}/themes?${params}`,
+        { method: "GET" },
+        isThemePage,
+      );
     },
-    getShopAccount: () => checked(`${SHOP_API_PATH}/accounts/me`, { method: "GET" }, isShopAccount),
+    getShopAccount: () =>
+      checked(`${SHOP_API_PATH}/accounts/me`, { method: "GET" }, isShopAccount),
     purchaseTheme: (themeId: string) =>
-      checked(`${SHOP_API_PATH}/purchases`, json("POST", { themeId }), isShopAccount),
+      checked(
+        `${SHOP_API_PATH}/purchases`,
+        json("POST", { themeId }),
+        isShopAccount,
+      ),
     equipTheme: (themeId: string) =>
-      checked(`${SHOP_API_PATH}/equipment/me`, json("PUT", { themeId }), isShopAccount),
+      checked(
+        `${SHOP_API_PATH}/equipment/me`,
+        json("PUT", { themeId }),
+        isShopAccount,
+      ),
   };
 }
 
@@ -265,7 +332,8 @@ export const creditApi = createCreditApi({
     headers.set("Authorization", `Bearer ${token}`);
     const response = await fetch(input, { ...init, headers });
     // A late reply for a signed-out session must not clear a newer session.
-    if (token !== localStorage.getItem(AUTH_TOKEN_KEY)) throw new Error("Authentication changed");
+    if (token !== localStorage.getItem(AUTH_TOKEN_KEY))
+      throw new Error("Authentication changed");
     return response;
   },
 });

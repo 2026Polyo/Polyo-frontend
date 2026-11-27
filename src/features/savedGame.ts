@@ -1,9 +1,14 @@
 import { getSavedBonusTime } from "./bonusTime";
 import { SAVED_GAME_KEY } from "../constants/config";
-import { DEFAULT_DECK, isValidDeck, normalizePieceId, SIZE } from "../constants/gameData";
+import {
+  DEFAULT_DECK,
+  isValidDeck,
+  normalizePieceId,
+  SIZE,
+} from "../mocks/gameData";
 import { getSavedAugmentState } from "./augments";
 import { getSavedItemState, type SavedItemState } from "./items";
-import { isValidSpecialPiece } from "./specials";
+import { isValidSpecialPiece } from "../mocks/specials";
 import { cloneBoard } from "../utils/boardUtils";
 import { normalizeSpecialPieceGroups } from "./themes/specialAppearance";
 import type {
@@ -17,7 +22,7 @@ import type {
   SavedGame,
   SpecialPieceGroups,
   Tray,
-  UndoSnapshot
+  UndoSnapshot,
 } from "../types";
 
 export interface LoadedGame extends SavedItemState {
@@ -57,7 +62,9 @@ export interface CurrentGameSnapshot {
 }
 
 function toStringArray(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((key): key is string => typeof key === "string") : [];
+  return Array.isArray(value)
+    ? value.filter((key): key is string => typeof key === "string")
+    : [];
 }
 
 function normalizeSavedDeck(deck: string[]): string[] {
@@ -87,7 +94,7 @@ function isValidPiece(piece: unknown): piece is PieceInstance {
         Array.isArray(cell) &&
         cell.length === 2 &&
         Number.isInteger(cell[0]) &&
-        Number.isInteger(cell[1])
+        Number.isInteger(cell[1]),
     )
   );
 }
@@ -104,7 +111,12 @@ export function loadSavedGame(): LoadedGame | null {
   try {
     const raw = localStorage.getItem(SAVED_GAME_KEY);
     const savedGame = raw ? (JSON.parse(raw) as SavedGame) : null;
-    if (!savedGame || savedGame.gameMode === "hard" || !isValidBoard(savedGame.board) || !isValidTray(savedGame.tray)) {
+    if (
+      !savedGame ||
+      savedGame.gameMode === "hard" ||
+      !isValidBoard(savedGame.board) ||
+      !isValidTray(savedGame.tray)
+    ) {
       return null;
     }
 
@@ -114,22 +126,27 @@ export function loadSavedGame(): LoadedGame | null {
       augmentState: getSavedAugmentState(savedGame),
       board: cloneBoard(savedGame.board as Board),
       specialPieceGroups: normalizeSpecialPieceGroups(
-        savedGame.board as Board, savedGame.specialPieceGroups
+        savedGame.board as Board,
+        savedGame.specialPieceGroups,
       ),
       bombCells: toStringArray(savedGame.bombCells),
       boostCells: toStringArray(savedGame.boostCells),
-      deck: isValidDeck(savedGame.deck) ? normalizeSavedDeck(savedGame.deck) : DEFAULT_DECK,
+      deck: isValidDeck(savedGame.deck)
+        ? normalizeSavedDeck(savedGame.deck)
+        : DEFAULT_DECK,
       ghostCells: toStringArray(savedGame.ghostCells),
       goldenCells: toStringArray(savedGame.goldenCells),
       score: Number.isFinite(savedGame.score) ? (savedGame.score as number) : 0,
       specialPieces: Array.isArray(savedGame.specialPieces)
-        ? ((savedGame.specialPieces as unknown[]).filter(isValidSpecialPiece) as PieceTemplate[])
+        ? ((savedGame.specialPieces as unknown[]).filter(
+            isValidSpecialPiece,
+          ) as PieceTemplate[])
         : [],
       specialsGranted: Number.isFinite(savedGame.specialsGranted)
         ? Math.max(0, savedGame.specialsGranted as number)
         : 0,
       tray: savedGame.tray as Tray,
-      ...getSavedItemState(savedGame, { isValidBoard, isValidTray })
+      ...getSavedItemState(savedGame, { isValidBoard, isValidTray }),
     };
   } catch {
     return null;
@@ -160,7 +177,7 @@ export function saveCurrentGame({
   specialPieces,
   specialsGranted,
   tray,
-  undoSnapshot
+  undoSnapshot,
 }: CurrentGameSnapshot): void {
   if (gameMode !== "normal") return;
   try {
@@ -171,7 +188,10 @@ export function saveCurrentGame({
         bonusTime,
         augmentState,
         board,
-        specialPieceGroups: normalizeSpecialPieceGroups(board, specialPieceGroups),
+        specialPieceGroups: normalizeSpecialPieceGroups(
+          board,
+          specialPieceGroups,
+        ),
         bombCells: [...bombCells],
         boostCells: [...boostCells],
         deck,
@@ -182,8 +202,8 @@ export function saveCurrentGame({
         specialPieces,
         specialsGranted,
         tray,
-        undoSnapshot
-      })
+        undoSnapshot,
+      }),
     );
   } catch {
     // Continue without persistence when storage is unavailable or full.

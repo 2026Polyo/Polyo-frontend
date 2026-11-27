@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import BoardView from "../../components/Board";
-import PieceShape from "../../components/PieceShape";
-import { ThemeScope } from "../../components/ThemeScope";
+import { Board as BoardView } from "../../components/game";
+import { PieceShape } from "../../components/piece";
+import { ThemeScope } from "../../components/theme";
 import { getCatConnections } from "../themes/catConnections";
 import { getGameTheme } from "../themes/gameThemes";
 import type { Board, PieceInstance } from "../../types";
@@ -20,7 +20,11 @@ const piece: PieceInstance = {
     [1, 1],
   ],
 };
-function renderBoard(board: Board, clearing = new Set<string>(), previewClearing = new Set<string>()) {
+function renderBoard(
+  board: Board,
+  clearing = new Set<string>(),
+  previewClearing = new Set<string>(),
+) {
   return renderToStaticMarkup(
     <ThemeScope themeId="theme_cat">
       <BoardView

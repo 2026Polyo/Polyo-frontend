@@ -11,7 +11,10 @@ interface ApiResponse<T> {
 }
 
 export class AuthRequestError extends Error {
-  constructor(message: string, readonly status: number) {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
     super(message);
     this.name = "AuthRequestError";
   }
@@ -25,12 +28,14 @@ async function request<T>(path: string, body: object): Promise<T> {
     response = await fetch(`${API_BASE_URL}${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
   } catch {
     throw new Error("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
   }
-  const result = (await response.json().catch(() => null)) as ApiResponse<T> | null;
+  const result = (await response
+    .json()
+    .catch(() => null)) as ApiResponse<T> | null;
   if (!response.ok || !result?.success || !result.data) {
     throw new Error(result?.error?.message ?? "요청을 처리하지 못했습니다.");
   }
@@ -45,25 +50,36 @@ async function requestCurrentUser(): Promise<AuthUser> {
   try {
     response = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
       method: "GET",
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
   } catch {
     throw new Error("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
   }
 
-  const result = (await response.json().catch(() => null)) as ApiResponse<AuthUser> | null;
+  const result = (await response
+    .json()
+    .catch(() => null)) as ApiResponse<AuthUser> | null;
   if (!response.ok || !result?.success || !result.data) {
-    throw new AuthRequestError(result?.error?.message ?? "로그인이 필요합니다.", response.status);
+    throw new AuthRequestError(
+      result?.error?.message ?? "로그인이 필요합니다.",
+      response.status,
+    );
   }
   return result.data;
 }
 
 export function login(loginId: string, password: string) {
-  return request<{ accessToken: string; user: AuthUser }>("/api/v1/auth/login", { loginId, password });
+  return request<{ accessToken: string; user: AuthUser }>(
+    "/api/v1/auth/login",
+    { loginId, password },
+  );
 }
 
 export function signup(loginId: string, password: string, nickname: string) {
-  return request<{ userId: string; loginId: string; nickname: string }>("/api/v1/auth/signup", { loginId, password, nickname });
+  return request<{ userId: string; loginId: string; nickname: string }>(
+    "/api/v1/auth/signup",
+    { loginId, password, nickname },
+  );
 }
 
 export function getCurrentUser() {

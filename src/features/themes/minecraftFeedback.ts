@@ -18,7 +18,10 @@ export const MINECRAFT_EFFECT_LIFETIME_MS =
 export const MINECRAFT_POOF_COUNT = 5;
 
 export function getMinecraftStaggerStep(count: number): number {
-  return Math.min(MINECRAFT_STAGGER_STEP_MS, MINECRAFT_STAGGER_MAX_MS / Math.max(1, count - 1));
+  return Math.min(
+    MINECRAFT_STAGGER_STEP_MS,
+    MINECRAFT_STAGGER_MAX_MS / Math.max(1, count - 1),
+  );
 }
 
 export interface MinecraftPoof {
