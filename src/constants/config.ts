@@ -5,6 +5,10 @@ export const MAX_SNAP_DISTANCE = 1;
 
 /** How long cleared cells stay highlighted before the board updates (ms). */
 export const CLEAR_HIGHLIGHT_MS = 260;
+/** How long the Good/Great/Excellent clear label stays on screen (ms). */
+export const CLEAR_LABEL_PULSE_MS = 940;
+/** Minimum wait before the augment choice opens once it is due (ms). It also waits for clear effects to finish. */
+export const AUGMENT_CHOICE_DELAY_MS = 500;
 // The game-over panel opens this long after the game ends, so the final board stays visible briefly.
 export const GAME_OVER_PANEL_DELAY_MS = 300;
 
