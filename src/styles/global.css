@@ -112,6 +112,149 @@ body {
 button {
   font: inherit;
   touch-action: manipulation;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    filter 140ms ease;
+}
+
+button:not(:disabled):hover {
+  filter: brightness(1.03);
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active {
+  filter: brightness(0.98);
+  transform: translateY(1px) scale(0.98);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid hsl(200 92% 64% / 0.6);
+  outline-offset: 3px;
+}
+
+input,
+select,
+textarea {
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--accent);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 4px hsl(200 92% 64% / 0.14);
+}
+
+:where(
+    .auth-card,
+    .create-room-card,
+    .ranking-card,
+    .shop-products,
+    .multiplayer-panel,
+    .profile-panel,
+    .deck-panel,
+    .game-settings-menu
+  ) {
+  animation: card-enter 260ms ease-out both;
+}
+
+:where(.shop-card, .ranking-row, .reroll-row, .undo-item-row) {
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+:where(.shop-card, .ranking-row, .reroll-row, .undo-item-row):hover {
+  transform: translateY(-2px);
+}
+
+:where(.shop-card, .ranking-row, .reroll-row, .undo-item-row):active {
+  transform: translateY(0) scale(0.995);
+}
+
+:where(.ranking-tab, .auth-tab, .start-menu-action, .deck-view-button) {
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.route-transition > * {
+  animation: page-content-enter 280ms ease-out both;
+}
+
+.route-transition {
+  animation: route-enter 240ms ease-out both;
+  width: 100%;
+}
+
+[role="dialog"],
+dialog[open] {
+  animation: dialog-enter 180ms ease-out both;
+}
+
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes page-content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 h1 {
@@ -126,4 +269,15 @@ p {
   color: var(--text-body);
   font-size: 0.98rem;
   margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
