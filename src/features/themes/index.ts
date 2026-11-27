@@ -2,6 +2,7 @@ export * from "./boardFeedback";
 export * from "./catConnections";
 export * from "./catFeedback";
 export * from "./catRegions";
+export * from "./clearEffectTiming";
 export * from "./gameThemes";
 export * from "./jellyClearSound";
 export * from "./jellyFeedback";
