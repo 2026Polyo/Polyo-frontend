@@ -6,7 +6,8 @@ import {
   login,
   signup,
   type AuthUser,
-} from "../api/auth";
+} from "../api";
+import { getNicknameLengthError } from "../utils/nickname";
 
 interface AuthScreenProps {
   onAuthenticated: (user: AuthUser) => void;
@@ -31,6 +32,13 @@ function AuthScreen({ onAuthenticated }: AuthScreenProps) {
     if (!loginId.trim() || !password || (isSignup && !nickname.trim())) {
       setMessage("필수 항목을 모두 입력해주세요.");
       return;
+    }
+    if (isSignup) {
+      const nicknameError = getNicknameLengthError(nickname);
+      if (nicknameError) {
+        setMessage(nicknameError);
+        return;
+      }
     }
     setLoading(true);
     try {

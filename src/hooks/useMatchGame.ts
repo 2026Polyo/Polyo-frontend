@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AUTH_TOKEN_KEY } from "../api/auth";
+import { AUTH_TOKEN_KEY } from "../api";
 import {
   EMPTY_CURSOR,
   FATAL_ERROR_CODES,
@@ -7,14 +7,12 @@ import {
   getMatchSocketUrl,
   parseServerMessage,
   sameCursor,
-} from "../features/matchGame";
-import type {
-  MatchCursor,
-  MatchGameState,
-  MatchServerMessage,
-  RoomClosedReason,
-} from "../features/matchGame";
-import type { EmoteId } from "../features/matchLobby";
+  type EmoteId,
+  type MatchCursor,
+  type MatchGameState,
+  type MatchServerMessage,
+  type RoomClosedReason,
+} from "../features/multi";
 
 type WaitingMessage = Extract<MatchServerMessage, { type: "WAITING" }>;
 

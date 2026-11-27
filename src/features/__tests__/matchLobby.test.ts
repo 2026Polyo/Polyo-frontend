@@ -1,9 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { canSendEmote, EMOTE_COOLDOWN_MS, EMOTE_IDS, getLobbyAction, isEmoteId } from "../matchLobby";
-import type { LobbyActionInput } from "../matchLobby";
+import {
+  canSendEmote,
+  EMOTE_COOLDOWN_MS,
+  EMOTE_IDS,
+  getLobbyAction,
+  isEmoteId,
+} from "../multi";
+import type { LobbyActionInput } from "../multi";
 
 const base: LobbyActionInput = {
-  isHost: true, connected: true, rivalConnected: true, myReady: false, rivalReady: true, startPending: false
+  isHost: true,
+  connected: true,
+  rivalConnected: true,
+  myReady: false,
+  rivalReady: true,
+  startPending: false,
 };
 
 describe("emotes", () => {
@@ -27,12 +38,21 @@ describe("emotes", () => {
 
 describe("getLobbyAction", () => {
   it("lets the host start once the rival is connected and ready", () => {
-    expect(getLobbyAction(base)).toMatchObject({ type: "start", label: "게임 시작", disabled: false });
+    expect(getLobbyAction(base)).toMatchObject({
+      type: "start",
+      label: "게임 시작",
+      disabled: false,
+    });
   });
 
   it("keeps start disabled until the rival is there and ready", () => {
-    expect(getLobbyAction({ ...base, rivalConnected: false }).disabled).toBe(true);
-    expect(getLobbyAction({ ...base, rivalReady: false })).toMatchObject({ disabled: true, hint: "상대가 준비하면 게임을 시작할 수 있어요." });
+    expect(getLobbyAction({ ...base, rivalConnected: false }).disabled).toBe(
+      true,
+    );
+    expect(getLobbyAction({ ...base, rivalReady: false })).toMatchObject({
+      disabled: true,
+      hint: "상대가 준비하면 게임을 시작할 수 있어요.",
+    });
   });
 
   it("blocks a second start while the first is pending", () => {
@@ -41,12 +61,21 @@ describe("getLobbyAction", () => {
 
   it("toggles ready for the guest", () => {
     const guest = { ...base, isHost: false, rivalReady: false };
-    expect(getLobbyAction(guest)).toMatchObject({ type: "ready", label: "준비", disabled: false });
-    expect(getLobbyAction({ ...guest, myReady: true })).toMatchObject({ type: "unready", label: "준비 취소" });
+    expect(getLobbyAction(guest)).toMatchObject({
+      type: "ready",
+      label: "준비",
+      disabled: false,
+    });
+    expect(getLobbyAction({ ...guest, myReady: true })).toMatchObject({
+      type: "unready",
+      label: "준비 취소",
+    });
   });
 
   it("disables every action while disconnected", () => {
     expect(getLobbyAction({ ...base, connected: false }).disabled).toBe(true);
-    expect(getLobbyAction({ ...base, isHost: false, connected: false }).disabled).toBe(true);
+    expect(
+      getLobbyAction({ ...base, isHost: false, connected: false }).disabled,
+    ).toBe(true);
   });
 });

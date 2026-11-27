@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
   createInitialRoomValues,
+  MatchRoomApiError,
   toCreateRoomInput,
-  validateRoomForm
-} from "../features/matchroom";
-import type { CreatedMatchRoom, CreateRoomHandler, RoomFormValues } from "../features/matchroom";
-import { MatchRoomApiError } from "../features/matchroomApi";
+  validateRoomForm,
+  type CreatedMatchRoom,
+  type CreateRoomHandler,
+  type RoomFormValues,
+} from "../features/multi";
 
 type SubmissionStatus = "idle" | "submitting" | "success";
 
@@ -23,7 +25,10 @@ export function useCreateRoom(onCreateRoom: CreateRoomHandler) {
 
   useEffect(() => () => requestRef.current?.abort(), []);
 
-  function updateValue<Key extends keyof RoomFormValues>(key: Key, value: RoomFormValues[Key]) {
+  function updateValue<Key extends keyof RoomFormValues>(
+    key: Key,
+    value: RoomFormValues[Key],
+  ) {
     if (requestRef.current || completedRef.current) return;
     setValues((current) => ({ ...current, [key]: value }));
     setSubmissionError(null);
@@ -45,7 +50,10 @@ export function useCreateRoom(onCreateRoom: CreateRoomHandler) {
     setSubmissionError(null);
 
     try {
-      const result = await onCreateRoom(toCreateRoomInput(values), controller.signal);
+      const result = await onCreateRoom(
+        toCreateRoomInput(values),
+        controller.signal,
+      );
       if (controller.signal.aborted) return;
       completedRef.current = true;
       setCreatedRoom(result);
@@ -56,7 +64,7 @@ export function useCreateRoom(onCreateRoom: CreateRoomHandler) {
       setSubmissionError(
         error instanceof MatchRoomApiError
           ? error.message
-          : "연결 상태를 확인하고 다시 시도해 주세요."
+          : "연결 상태를 확인하고 다시 시도해 주세요.",
       );
     } finally {
       if (requestRef.current === controller) requestRef.current = null;
@@ -74,6 +82,6 @@ export function useCreateRoom(onCreateRoom: CreateRoomHandler) {
     createdRoom,
     updateValue,
     touchField,
-    submit
+    submit,
   };
 }

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { CreditApiError, type HardGame } from "../api/credit";
+import { CreditApiError, type HardGame } from "../api";
 
 export interface HardGameRequest {
   pending: boolean;

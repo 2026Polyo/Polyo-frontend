@@ -5,7 +5,7 @@ import {
   EMPTY_BOARD,
   getDeckPieces,
   PIECES,
-} from "../constants/gameData";
+} from "../mocks/gameData";
 import {
   advanceAugmentSchedule,
   chooseAugment,
@@ -32,7 +32,7 @@ import {
   loadSavedGame,
   saveCurrentGame,
 } from "../features/savedGame";
-import { createRewardChoices } from "../features/specials";
+import { createRewardChoices } from "../mocks/specials";
 import {
   getLoadoutPieces,
   MAX_BASE_DECK,
@@ -47,8 +47,13 @@ import {
   hasMove,
 } from "../utils/placement";
 import { nextTray } from "../utils/tray";
-import { getMyBestScores, saveGameScore } from "../api/scores";
-import { creditApi, CreditApiError, type HardGame } from "../api/credit";
+import {
+  getMyBestScores,
+  saveGameScore,
+  creditApi,
+  CreditApiError,
+  type HardGame,
+} from "../api";
 import {
   createGameRewardSession,
   type GameRewardSession,
@@ -60,15 +65,12 @@ import { useThemeAudio } from "./useThemeAudio";
 import { useItemSystem } from "./useItemSystem";
 import { usePieceSelection } from "./usePieceSelection";
 import { usePulseLabel } from "./usePulseLabel";
-import type { GameThemeId } from "../features/themes/gameThemes";
-import {
-  createBoardFeedback,
-  type BoardFeedback,
-} from "../features/themes/boardFeedback";
+import type { GameThemeId } from "../features/themes";
+import { createBoardFeedback, type BoardFeedback } from "../features/themes";
 import {
   normalizeSpecialPieceGroups,
   placeSpecialPieceGroups,
-} from "../features/themes/specialAppearance";
+} from "../features/themes";
 import type {
   AugmentId,
   AugmentState,
@@ -1043,10 +1045,13 @@ export function useGameSession(
     setAugmentState((current) => advanceAugmentSchedule(current, score));
   }
 
-  const best =
+  const databaseBest =
     gameMode === "hard"
       ? databaseBestScores.hardBestScore
       : databaseBestScores.normalBestScore;
+  // 플레이 중 현재 점수가 DB 최고 기록을 넘으면 즉시 화면에 반영한다.
+  // DB 값은 게임 종료 시 저장 응답으로 갱신된다.
+  const best = isPlaying ? Math.max(databaseBest, score) : databaseBest;
   const normalBest = databaseBestScores.normalBestScore;
 
   function buildPlayScreenProps() {
@@ -1190,3 +1195,5 @@ export function useGameSession(
     startScreenProps: buildStartScreenProps(),
   };
 }
+
+export type GameSessionResult = ReturnType<typeof useGameSession>;

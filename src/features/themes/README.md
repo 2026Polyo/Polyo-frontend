@@ -14,15 +14,15 @@
 | `minecraftSound.ts`, `minecraftOriginalAudio.ts` | 재질별 Java 1.21.1 원본 음원 로딩·변형·재생 높낮이와 채굴→획득 예약 |
 | `../themePresentation.ts` | 상점 설명·미리보기 메타데이터 |
 | `../../mocks/shopThemes.ts` | 임시 상품 DTO. 실제 API 공급자로 교체할 대상 |
-| `../../components/ThemeScope.tsx` | 플레이어별 테마 범위. 상대 플레이어는 별도 범위로 감싼다 |
-| `../../components/Board.tsx`, `PieceShape.tsx` | 필드·트레이·드래그·덱에서 공통 타일 사용 |
+| `../../components/theme/ThemeScope.tsx` | 플레이어별 테마 범위. 상대 플레이어는 별도 범위로 감싼다 |
+| `../../components/game/Board.tsx`, `../../components/piece/PieceShape.tsx` | 필드·트레이·드래그·덱에서 공통 타일 사용 |
 | `boardFeedback.ts` | 성공한 배치의 위치와 제거 전 색상 스냅샷. 게임 계산과 시각 효과의 접점 |
 | `jellyFeedback.ts`, `minecraftFeedback.ts`, `catFeedback.ts` | 테마별 애니메이션 자료 계산 |
 | `catRegions.ts`, `catConnections.ts` | 흰 영역 연결·얼굴/귀 위치·표정 선택 |
 | `specialAppearance.ts` | 특수 종류 판별·고양이 털 무늬·표시용 조각 소유 정보 관리 |
-| `../../components/*BoardEffects.tsx`, `BoardEffects.tsx` | 애니메이션 표시·동시 효과 상한·타이머 정리 |
-| `../../styles/*Theme.css` | 테마 ID 아래로 범위를 제한한 스타일 |
-| `../../App.tsx` | 계정에 장착한 테마를 싱글 플레이에 전달 |
+| `../../components/theme/*BoardEffects.tsx`, `../../components/theme/BoardEffects.tsx` | 애니메이션 표시·동시 효과 상한·타이머 정리 |
+| `../../styles/theme/*Theme.css`, `../../styles/theme/NeonBlackHole.styles.ts` | 테마 ID 또는 Emotion 컴포넌트 아래로 범위를 제한한 스타일 |
+| `../../app/AppShell.tsx` | 계정에 장착한 테마를 싱글 플레이에 전달 |
 
 ## 수정할 때 유지할 규칙
 
@@ -118,6 +118,7 @@
 
 ## 검증 방법
 
+- 최신 develop의 폴더·라우터 구조와 통합한 뒤 테스트 32개 파일·381개 케이스와 빌드를 통과했다. Edge에서 다섯 테마의 연습실 제목 정렬·복귀와 네온 가장자리 균열·2/3/4줄 발동·중단 후 정리를 다시 확인했다.
 - 자동 검사: `npm test`
 - 타입·배포 빌드: `npm run build`
 - 화면 확인: `npm run dev -- --port 5188` 후 시작 화면에서 테마를 선택한다. 네 테마의 새 게임·배치·가로/세로 제거·홈 왕복·이어하기·상점 카드/상세를 확인한다.

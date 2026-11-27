@@ -1,4 +1,4 @@
-import { SIZE } from "../../constants/gameData";
+import { SIZE } from "../../mocks/gameData";
 import {
   createVisualRandom,
   uniqueFeedbackCells,

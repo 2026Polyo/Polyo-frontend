@@ -1,24 +1,25 @@
 import { useEffect, useState } from "react";
 import { Layers, Undo2 } from "lucide-react";
 import { GAME_OVER_PANEL_DELAY_MS } from "../constants/config";
-import BonusTimeEffect from "../components/BonusTimeEffect";
 import {
   BONUS_DURATION_MS,
   BONUS_PLACEMENT_TARGET,
 } from "../features/bonusTime";
-import BlockRewardModal from "../components/BlockRewardModal";
-import Board from "../components/Board";
-import DeckModal from "../components/DeckModal";
+import {
+  AugmentChoiceModal,
+  AugmentPanel,
+  BlockRewardModal,
+  Board,
+  BonusTimeEffect,
+  DeckModal,
+  GameOver,
+  ItemSlots as ItemSlotsView,
+  RerollModal,
+  SpecialChoiceModal,
+} from "../components/game";
 import GameSettingsMenu from "../components/GameSettingsMenu";
-import GameOver from "../components/GameOver";
-import PieceShape from "../components/PieceShape";
-import PieceTray from "../components/PieceTray";
-import RerollModal from "../components/RerollModal";
+import { PieceShape, PieceTray } from "../components/piece";
 import ScoreBoard from "../components/ScoreBoard";
-import SpecialChoiceModal from "../components/SpecialChoiceModal";
-import { AugmentChoiceModal } from "../components/AugmentChoiceModal";
-import { AugmentPanel } from "../components/AugmentPanel";
-import { ItemSlots as ItemSlotsView } from "../components/ItemSlots";
 import type {
   BonusTimeState,
   GameMode,
@@ -41,9 +42,8 @@ import type { UsePieceSelectionResult } from "../hooks/usePieceSelection";
 import type { HardGameRequest } from "../hooks/useHardGameRequest";
 import type { GameRewardSession } from "../features/gameReward";
 import GameRewardStatus from "../components/GameRewardStatus";
-import { ThemeScope } from "../components/ThemeScope";
-import type { GameThemeId } from "../features/themes/gameThemes";
-import type { BoardFeedback } from "../features/themes/boardFeedback";
+import { ThemeScope } from "../components/theme";
+import type { BoardFeedback, GameThemeId } from "../features/themes";
 import type { SpecialPieceGroups } from "../types";
 
 interface PlayScreenProps {
@@ -162,6 +162,17 @@ function PlayScreenContent({
     return () => window.clearTimeout(timerId);
   }, [gameOver]);
   const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
+  const augmentTargetScore = Math.max(0, augmentState.nextChoiceScore);
+  const augmentStartScore = Math.min(
+    Math.max(0, augmentState.scoreAtLastChoice),
+    augmentTargetScore,
+  );
+  const augmentScoreRange = Math.max(1, augmentTargetScore - augmentStartScore);
+  const augmentScoreRemaining = Math.max(0, augmentTargetScore - score);
+  const augmentProgress = Math.min(
+    100,
+    Math.max(0, ((score - augmentStartScore) / augmentScoreRange) * 100),
+  );
   const requestError = hardRequest?.error && (
     <div>
       <p role="alert">{hardRequest.error}</p>
@@ -223,6 +234,26 @@ function PlayScreenContent({
             <AugmentPanel augmentState={augmentState} />
           )}
           <div className="board-stack">
+            {gameMode === "normal" && (
+              <div className="augment-progress-wrap">
+                <span className="augment-progress-label">
+                  증강 선택까지 남은 점수 {augmentScoreRemaining.toLocaleString()}
+                </span>
+                <div
+                  aria-label={`증강 선택까지 남은 점수 ${augmentScoreRemaining}, 현재 점수 ${score}, 증강 선택 발생 점수 ${augmentTargetScore}`}
+                  aria-valuemax={augmentTargetScore}
+                  aria-valuemin={augmentStartScore}
+                  aria-valuenow={Math.min(score, augmentTargetScore)}
+                  className="hard-timer augment-progress"
+                  role="progressbar"
+                >
+                  <span
+                    className="hard-timer-fill augment-progress-fill"
+                    style={{ width: `${augmentProgress}%` }}
+                  />
+                </div>
+              </div>
+            )}
             {gameMode === "hard" && (
               <div
                 aria-label="다음 블록까지 남은 시간"

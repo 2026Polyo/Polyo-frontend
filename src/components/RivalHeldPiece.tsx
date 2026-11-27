@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import type { PieceInstance } from "../types";
 import { pieceBounds } from "../utils/pieceUtils";
-import PieceShape from "./PieceShape";
+import { PieceShape } from "./piece";
 
 interface RivalHeldPieceProps {
   /** Positioned container both the board and the tray live in; the ghost is placed relative to it. */

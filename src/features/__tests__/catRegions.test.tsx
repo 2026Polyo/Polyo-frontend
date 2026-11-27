@@ -6,7 +6,7 @@ import {
   CAT_EXPRESSIONS,
 } from "../themes/catRegions";
 import type { CatCell } from "../themes/catRegions";
-import CatDecorations from "../../components/CatDecorations";
+import { CatDecorations } from "../../components/theme";
 
 describe("connected cat decorations", () => {
   it("gives each orthogonal region one face and two ears, excluding diagonal contacts", () => {

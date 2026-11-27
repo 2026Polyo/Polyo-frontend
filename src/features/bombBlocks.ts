@@ -1,4 +1,4 @@
-import { PIECES, SIZE } from "../constants/gameData";
+import { PIECES, SIZE } from "../mocks/gameData";
 import { cloneBoard } from "../utils/boardUtils";
 import { cellsAreCoordPairs, makeSpecialValidator } from "./specialPiece";
 import type { Board, PieceTemplate } from "../types";

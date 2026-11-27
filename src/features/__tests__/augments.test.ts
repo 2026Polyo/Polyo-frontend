@@ -12,7 +12,7 @@ import {
   getRerollCount,
   getRerollReplacementMode
 } from "../augments";
-import { REROLL_MAX_LEVEL } from "../augmentData";
+import { REROLL_MAX_LEVEL } from "../../mocks/augmentData";
 import type { PieceInstance } from "../../types";
 
 function piece(cellCount: number): PieceInstance {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, type RefObject } from "react";
-import type { FeedbackCell } from "../features/themes/boardFeedback";
+import type { FeedbackCell } from "../features/themes";
 import trackSound from "../asset/sound/track.mp3";
 import popSound from "../asset/sound/pop.mp3";
 import popupSound from "../asset/sound/popup.mp3";

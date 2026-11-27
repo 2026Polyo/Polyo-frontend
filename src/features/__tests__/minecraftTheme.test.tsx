@@ -1,9 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { colorClass } from "../../constants/gameData";
-import PieceShape from "../../components/PieceShape";
-import MinecraftItemCube from "../../components/MinecraftItemCube";
-import { ThemeScope } from "../../components/ThemeScope";
+import { colorClass } from "../../mocks/gameData";
+import { PieceShape } from "../../components/piece";
+import { MinecraftItemCube, ThemeScope } from "../../components/theme";
 import { getGameTheme, getThemeSound } from "../themes/gameThemes";
 import { createBoardFeedback } from "../themes/boardFeedback";
 import {

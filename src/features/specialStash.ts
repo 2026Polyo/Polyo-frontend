@@ -1,5 +1,5 @@
-import { DEFAULT_DECK, LOCKABLE_BLOCK_IDS, normalizePieceId } from "../constants/gameData";
-import { isValidSpecialPiece } from "./specials";
+import { DEFAULT_DECK, LOCKABLE_BLOCK_IDS, normalizePieceId } from "../mocks/gameData";
+import { isValidSpecialPiece } from "../mocks/specials";
 import type { PieceTemplate } from "../types";
 
 // Special blocks earned across games are kept here so up to MAX_LOADOUT can be carried into

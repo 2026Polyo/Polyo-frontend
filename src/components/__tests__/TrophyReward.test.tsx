@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import TrophyReward from "../TrophyReward";
+import { TrophyReward } from "../multi";
 
 describe("trophy reward display", () => {
   it("shows the gain and the new total", () => {

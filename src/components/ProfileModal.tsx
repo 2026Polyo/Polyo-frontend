@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Pencil, Save, X } from "lucide-react";
-import { PIECE_COLORS, PIECES, getPieceTemplate } from "../constants/gameData";
-import type { AuthUser } from "../api/auth";
-import { profileApi, type Profile } from "../api/profile";
-import PieceShape from "./PieceShape";
+import { PIECE_COLORS, PIECES, getPieceTemplate } from "../mocks/gameData";
+import { profileApi, type AuthUser, type Profile } from "../api";
+import { PieceShape } from "./piece";
 import { createPieceInstance } from "../utils/pieceUtils";
+import {
+  MAX_NICKNAME_LENGTH,
+  MIN_NICKNAME_LENGTH,
+} from "../utils/nickname";
 import "../styles/ProfileModal.css";
 
 interface Props {
@@ -37,7 +40,6 @@ const AVATAR_BACKGROUNDS = [
   "#e8ddff",
   "#d9e8ff",
 ];
-
 function ProfileModal({
   user,
   profileUserId,
@@ -172,10 +174,18 @@ function ProfileModal({
             <label>
               닉네임
               <input
+                aria-describedby="nickname-length"
                 value={nickname}
-                maxLength={20}
-                onChange={(event) => setNickname(event.target.value)}
+                maxLength={MAX_NICKNAME_LENGTH}
+                minLength={MIN_NICKNAME_LENGTH}
+                onChange={(event) =>
+                  setNickname(event.target.value.slice(0, MAX_NICKNAME_LENGTH))
+                }
+                required
               />
+              <span className="profile-nickname-length" id="nickname-length">
+                {nickname.length}/{MAX_NICKNAME_LENGTH}
+              </span>
             </label>
             <div className="profile-block-picker-label">아바타 블록</div>
             <div className="profile-block-picker">

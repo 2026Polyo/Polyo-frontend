@@ -2,7 +2,7 @@ import spaceImage from "../../asset/theme/neon-space.jpg";
 import catMeow from "../../asset/sound/cat/meow.mp3";
 import type { CSSProperties } from "react";
 import { MINECRAFT_MATERIALS } from "./minecraftMaterials";
-import { colorClass } from "../../constants/gameData";
+import { colorClass } from "../../mocks/gameData";
 import type { ThemeSynthPreset } from "./themeSoundSynthesis";
 
 export type GameThemeId =
