@@ -3,29 +3,11 @@
   margin-inline: auto;
 }
 
-.practice-header,
 .practice-controls,
 .practice-actions {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.practice-header {
-  margin-bottom: 14px;
-}
-
-.practice-header h1 {
-  color: var(--text-on-board);
-  font-size: clamp(19px, 5vw, 28px);
-  margin: 0;
-}
-
-.practice-header button {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
 }
 
 .practice-controls {

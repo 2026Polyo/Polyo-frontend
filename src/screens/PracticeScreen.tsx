@@ -24,6 +24,7 @@ import { cloneBoard } from "../utils/boardUtils";
 import { blockName, createPieceInstance } from "../utils/pieceUtils";
 import { canPlace, getPlacementPreview, placePiece } from "../utils/placement";
 import "../styles/PracticeScreen.css";
+import { PracticeHeader } from "../styles/PracticeScreen.styles";
 
 const THEMES = [
   CLASSIC_THEME,
@@ -203,7 +204,7 @@ export default function PracticeScreen({
           aria-labelledby="practice-title"
           inert={!showRoom}
         >
-          <header className="practice-header">
+          <PracticeHeader className="practice-header">
             <button
               className="secondary-action"
               type="button"
@@ -212,7 +213,7 @@ export default function PracticeScreen({
               <ArrowLeft size={18} aria-hidden="true" /> 메인으로
             </button>
             <h1 id="practice-title">숨겨진 연습실</h1>
-          </header>
+          </PracticeHeader>
           <div className="practice-controls">
             <label>
               <span id="practice-theme-label">테마</span>
