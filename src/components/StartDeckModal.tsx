@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import "../styles/DeckModal.css";
+import { DeckBuilderBackdrop } from "../styles/app/StartDeckModal.styles";
 import { Check, Shuffle, X } from "lucide-react";
 import { PieceShape } from "./piece";
 import { PIECES } from "../mocks/gameData";
@@ -123,7 +123,7 @@ function StartDeckModal({
     .filter((id) => (specialCounts.get(id) ?? 0) > 0);
 
   return (
-    <div
+    <DeckBuilderBackdrop
       className="deck-backdrop"
       role="dialog"
       aria-modal="true"
@@ -268,7 +268,7 @@ function StartDeckModal({
           </div>
         </div>
       </section>
-    </div>
+    </DeckBuilderBackdrop>
   );
 }
 

@@ -5,7 +5,12 @@ import type { ThemePage } from "../../features/shop";
 export type ShopCatalogState =
   | { status: "loading" }
   | { status: "error" }
-  | { status: "ready"; data: ThemePage };
+  | {
+      status: "ready";
+      data: ThemePage;
+      refreshing: boolean;
+      refreshError: boolean;
+    };
 
 export function useShopCatalog() {
   const [catalog, setCatalog] = useState<ShopCatalogState>({
@@ -17,15 +22,31 @@ export function useShopCatalog() {
 
   useEffect(() => {
     let active = true;
-    setCatalog({ status: "loading" });
+    // Retain the last successful page until a replacement is fully available.
+    setCatalog((current) =>
+      current.status === "ready"
+        ? { ...current, refreshing: true, refreshError: false }
+        : { status: "loading" },
+    );
 
     creditApi
       .getShopThemes(page, sort)
       .then((data) => {
-        if (active) setCatalog({ status: "ready", data });
+        if (active)
+          setCatalog({
+            status: "ready",
+            data,
+            refreshing: false,
+            refreshError: false,
+          });
       })
       .catch(() => {
-        if (active) setCatalog({ status: "error" });
+        if (active)
+          setCatalog((current) =>
+            current.status === "ready"
+              ? { ...current, refreshing: false, refreshError: true }
+              : { status: "error" },
+          );
       });
 
     // 이전 조회 결과가 최신 정렬·페이지 결과를 덮어쓰지 않도록 한다.
@@ -39,11 +60,17 @@ export function useShopCatalog() {
     setPage(1);
   }
 
+  function changePage(nextPage: number) {
+    // A failed request can leave the displayed page different from the requested page.
+    if (nextPage === page) setRetryCount((count) => count + 1);
+    else setPage(nextPage);
+  }
+
   return {
     catalog,
     page,
     sort,
-    setPage,
+    setPage: changePage,
     changeSort,
     retry: () => setRetryCount((count) => count + 1),
   };

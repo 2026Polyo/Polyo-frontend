@@ -2,6 +2,7 @@ import PieceShape from "./PieceShape";
 import type { PieceInstance, CellCoord } from "../../types";
 
 interface PiecePreviewProps {
+  label?: string;
   piece: PieceInstance;
   disabled: boolean;
   selected: boolean;
@@ -13,6 +14,7 @@ interface PiecePreviewProps {
 }
 
 function PiecePreview({
+  label,
   piece,
   disabled,
   selected,
@@ -40,7 +42,8 @@ function PiecePreview({
       onClick={(event) => {
         if (event.detail === 0) onActivate();
       }}
-      aria-label={`${piece.cells.length}칸 블록 선택`}
+      aria-label={label ?? `${piece.cells.length}칸 블록 선택`}
+      title={label}
       aria-pressed={selected}
       type="button"
     >

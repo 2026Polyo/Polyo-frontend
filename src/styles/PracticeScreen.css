@@ -1,55 +1,3 @@
-.practice-stage {
-  width: min(100%, 530px);
-  margin-inline: auto;
-}
-
-.practice-controls,
-.practice-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.practice-controls {
-  padding: 12px;
-  margin-bottom: 14px;
-  background: var(--surface-card);
-  color: var(--text-strong);
-  border: 1px solid var(--surface-card-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-}
-
-.practice-controls label {
-  min-width: 0;
-  flex: 1;
-  display: grid;
-  gap: 5px;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.practice-controls select {
-  width: 100%;
-  min-height: 42px;
-  padding: 6px;
-  color: var(--text-strong);
-  background: var(--surface-card-soft);
-  border: 1px solid var(--surface-card-border);
-  border-radius: var(--radius-md);
-  font: inherit;
-}
-
-.practice-piece {
-  min-width: 50px;
-}
-
-.practice-actions {
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 12px;
-}
-
 .practice-transition {
   position: fixed;
   z-index: 100;
@@ -147,12 +95,6 @@
     opacity: 0;
     transform: translate(calc(var(--paper-x) * 1vw), calc((20 - var(--paper-rise)) * 1dvh)) rotate(calc(var(--paper-spin) * 1.45));
   }
-}
-
-@media (max-width: 420px) {
-  .practice-controls { gap: 8px; }
-  .practice-controls label:nth-child(2) { flex: 1.45; }
-  .practice-piece { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
