@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { Layers, Undo2 } from "lucide-react";
 import { GAME_OVER_PANEL_DELAY_MS } from "../constants/config";
-import {
-  BONUS_DURATION_MS,
-  BONUS_PLACEMENT_TARGET,
-} from "../features/bonusTime";
+import { BONUS_DURATION_MS } from "../features/bonusTime";
 import {
   AugmentChoiceModal,
   AugmentPanel,
@@ -162,17 +159,6 @@ function PlayScreenContent({
     return () => window.clearTimeout(timerId);
   }, [gameOver]);
   const bonusActive = gameMode === "normal" && bonusTime.remainingMs > 0;
-  const augmentTargetScore = Math.max(0, augmentState.nextChoiceScore);
-  const augmentStartScore = Math.min(
-    Math.max(0, augmentState.scoreAtLastChoice),
-    augmentTargetScore,
-  );
-  const augmentScoreRange = Math.max(1, augmentTargetScore - augmentStartScore);
-  const augmentScoreRemaining = Math.max(0, augmentTargetScore - score);
-  const augmentProgress = Math.min(
-    100,
-    Math.max(0, ((score - augmentStartScore) / augmentScoreRange) * 100),
-  );
   const requestError = hardRequest?.error && (
     <div>
       <p role="alert">{hardRequest.error}</p>
@@ -214,19 +200,14 @@ function PlayScreenContent({
           }
         >
           <span>{gameMode === "hard" ? "하드모드" : "일반모드"}</span>
-          {gameMode !== "hard" &&
-            (bonusTime.remainingMs > 0 ? (
-              <>
-                <strong role="status">보너스 타임 · 한 칸 블록!</strong>
-                <span role="timer" aria-label="보너스 남은 시간">
-                  {(bonusTime.remainingMs / 1000).toFixed(1)}초
-                </span>
-              </>
-            ) : (
-              <span>
-                보너스까지 {bonusTime.placements} / {BONUS_PLACEMENT_TARGET}
+          {gameMode !== "hard" && bonusTime.remainingMs > 0 && (
+            <>
+              <strong role="status">보너스 타임 · 한 칸 블록!</strong>
+              <span role="timer" aria-label="보너스 남은 시간">
+                {(bonusTime.remainingMs / 1000).toFixed(1)}초
               </span>
-            ))}
+            </>
+          )}
         </div>
         {!settings.open && !gameOver && requestError}
         <div className="board-layout">
@@ -234,26 +215,6 @@ function PlayScreenContent({
             <AugmentPanel augmentState={augmentState} />
           )}
           <div className="board-stack">
-            {gameMode === "normal" && (
-              <div className="augment-progress-wrap">
-                <span className="augment-progress-label">
-                  증강 선택까지 남은 점수 {augmentScoreRemaining.toLocaleString()}
-                </span>
-                <div
-                  aria-label={`증강 선택까지 남은 점수 ${augmentScoreRemaining}, 현재 점수 ${score}, 증강 선택 발생 점수 ${augmentTargetScore}`}
-                  aria-valuemax={augmentTargetScore}
-                  aria-valuemin={augmentStartScore}
-                  aria-valuenow={Math.min(score, augmentTargetScore)}
-                  className="hard-timer augment-progress"
-                  role="progressbar"
-                >
-                  <span
-                    className="hard-timer-fill augment-progress-fill"
-                    style={{ width: `${augmentProgress}%` }}
-                  />
-                </div>
-              </div>
-            )}
             {gameMode === "hard" && (
               <div
                 aria-label="다음 블록까지 남은 시간"
