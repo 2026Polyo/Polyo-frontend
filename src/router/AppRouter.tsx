@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ReactNode } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import type { MultiRouterProps } from "./MultiRouter";
 import type { RankingRouterProps } from "./RankingRouter";
 import type { ShopRouterProps } from "./ShopRouter";
@@ -21,14 +21,18 @@ export default function AppRouter({
   shop,
   home,
 }: AppRouterProps) {
+  const location = useLocation();
+
   return (
     <Suspense fallback={null}>
-      <Routes>
-        <Route path="/ranking" element={<RankingRouter {...ranking} />} />
-        <Route path="/multi" element={<MultiRouter {...multi} />} />
-        <Route path="/shop" element={<ShopRouter {...shop} />} />
-        <Route path="*" element={home} />
-      </Routes>
+      <div className="route-transition" key={location.pathname}>
+        <Routes>
+          <Route path="/ranking" element={<RankingRouter {...ranking} />} />
+          <Route path="/multi" element={<MultiRouter {...multi} />} />
+          <Route path="/shop" element={<ShopRouter {...shop} />} />
+          <Route path="*" element={home} />
+        </Routes>
+      </div>
     </Suspense>
   );
 }
