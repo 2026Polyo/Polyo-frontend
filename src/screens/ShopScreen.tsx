@@ -1,7 +1,12 @@
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ArrowLeft, ChevronLeft, ChevronRight, Coins } from "lucide-react";
 import MenuBlock from "../components/MenuBlock";
-import { ShopThemeCard, ShopThemeDialog } from "../components/shop";
+import {
+  ShopSortMenu,
+  ShopThemeCard,
+  ShopThemeDialog,
+} from "../components/shop";
 import type { ShopTheme } from "../features/shop";
 import type { GameThemeId } from "../features/themes";
 import {
@@ -9,6 +14,7 @@ import {
   type ShopAccountState,
   type ShopCatalogState,
 } from "../hooks/shop";
+import { ShopCatalogNotice } from "../styles/shop/ShopCatalogNotice.styles";
 
 interface ShopCatalogProps {
   state: ShopCatalogState;
@@ -100,6 +106,10 @@ export default function ShopScreen({
   const [selectedTheme, setSelectedTheme] = useState<ShopTheme | null>(null);
   const detailsTrigger = useRef<HTMLButtonElement | null>(null);
   const totalPages = catalog.status === "ready" ? catalog.data.totalPages : 0;
+  const visiblePage = catalog.status === "ready" ? catalog.data.page : page;
+  const pending =
+    catalog.status === "loading" ||
+    (catalog.status === "ready" && catalog.refreshing);
 
   function openDetails(theme: ShopTheme, trigger: HTMLButtonElement) {
     detailsTrigger.current = trigger;
@@ -148,19 +158,9 @@ export default function ShopScreen({
           )}
           <div className="shop-toolbar">
             <h2 id="shop-products-title">블록 테마</h2>
-            <label>
-              정렬{" "}
-              <select
-                value={sort}
-                onChange={(event) => changeSort(event.target.value)}
-              >
-                <option value="name,asc">이름순</option>
-                <option value="price,asc">낮은 가격순</option>
-                <option value="price,desc">높은 가격순</option>
-              </select>
-            </label>
+            <ShopSortMenu value={sort} onChange={changeSort} />
           </div>
-          <div aria-live="polite" aria-busy={catalog.status === "loading"}>
+          <div aria-live="polite" aria-busy={pending}>
             <ShopCatalog
               state={catalog}
               wallet={wallet}
@@ -173,19 +173,19 @@ export default function ShopScreen({
               <button
                 type="button"
                 aria-label="이전 페이지"
-                disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
+                disabled={pending || visiblePage <= 1}
+                onClick={() => setPage(visiblePage - 1)}
               >
                 <ChevronLeft size={18} />
               </button>
               <span aria-current="page">
-                {page} / {totalPages}
+                {visiblePage} / {totalPages}
               </span>
               <button
                 type="button"
                 aria-label="다음 페이지"
-                disabled={page >= totalPages}
-                onClick={() => setPage(page + 1)}
+                disabled={pending || visiblePage >= totalPages}
+                onClick={() => setPage(visiblePage + 1)}
               >
                 <ChevronRight size={18} />
               </button>
@@ -199,6 +199,17 @@ export default function ShopScreen({
         onClose={closeDetails}
         onDevPreview={onDevPreview}
       />
+      {catalog.status === "ready" &&
+        catalog.refreshError &&
+        createPortal(
+          <ShopCatalogNotice role="alert">
+            <span>목록을 새로 불러오지 못했어요.</span>
+            <button type="button" onClick={retry}>
+              다시 시도
+            </button>
+          </ShopCatalogNotice>,
+          document.body,
+        )}
     </main>
   );
 }

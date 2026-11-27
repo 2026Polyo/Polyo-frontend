@@ -27,6 +27,8 @@ interface UsePieceSelectionParams {
   board: Board;
   isPlaying: boolean;
   onPlace: (piece: PieceInstance, row: number, col: number) => void;
+  /** Reusable palettes cancel a moved drag on release, including invalid/outside drops. */
+  clearSelectionOnDrop?: boolean;
 }
 
 export interface UsePieceSelectionResult {
@@ -58,6 +60,7 @@ export function usePieceSelection({
   board,
   isPlaying,
   onPlace,
+  clearSelectionOnDrop = false,
 }: UsePieceSelectionParams): UsePieceSelectionResult {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [cursorPiece, setCursorPiece] = useState<PieceInstance | null>(null);
@@ -176,6 +179,7 @@ export function usePieceSelection({
           drag.pointerType,
         ),
       );
+      if (clearSelectionOnDrop) clearSelection();
       if (!cell) return;
       const target = {
         row: cell.row - anchorCell[0],
@@ -224,6 +228,7 @@ export function usePieceSelection({
     augmentChoiceOpen,
     isPlaying,
     clearSelection,
+    clearSelectionOnDrop,
   ]);
 
   const placementCell = useMemo<PlacementPosition | null>(() => {
@@ -241,10 +246,10 @@ export function usePieceSelection({
 
   const invalidPreview = Boolean(
     selectedPiece &&
-    placementCell &&
-    (!closestPlacementCell ||
-      getPlacementDistanceSquared(placementCell, closestPlacementCell) >
-        MAX_SNAP_DISTANCE ** 2),
+      placementCell &&
+      (!closestPlacementCell ||
+        getPlacementDistanceSquared(placementCell, closestPlacementCell) >
+          MAX_SNAP_DISTANCE ** 2),
   );
 
   const cursorAnchorOffset: AnchorOffset | null = anchorCell
@@ -271,47 +276,53 @@ export function usePieceSelection({
   const previewCells = placementPreview?.cells ?? NO_CELLS;
   const previewClearingCells = placementPreview?.clearingCells ?? NO_CELLS;
 
-  function handlePieceSelect(
-    piece: PieceInstance,
-    event: React.PointerEvent<HTMLButtonElement>,
-    nextAnchorCell: CellCoord,
-  ) {
-    if (
-      augmentChoiceOpen ||
-      !isPlaying ||
-      !event.isPrimary ||
-      event.button !== 0
-    )
-      return;
-    event.preventDefault();
+  const handlePieceSelect = useCallback(
+    (
+      piece: PieceInstance,
+      event: React.PointerEvent<HTMLButtonElement>,
+      nextAnchorCell: CellCoord,
+    ) => {
+      if (
+        augmentChoiceOpen ||
+        !isPlaying ||
+        !event.isPrimary ||
+        event.button !== 0
+      )
+        return;
+      event.preventDefault();
 
-    if (piece.uid === selectedId) {
+      if (piece.uid === selectedId) {
+        clearSelection();
+        return;
+      }
+
+      setSelectedId(piece.uid);
+      setCursorPiece(piece);
+      setAnchorCell(nextAnchorCell);
+      setHoverCell(null);
+      const point = { x: event.clientX, y: event.clientY };
+      setCursorPoint(event.pointerType === "touch" ? null : point);
+      dragRef.current = {
+        pointerId: event.pointerId,
+        start: point,
+        pointerType: event.pointerType,
+        moved: false,
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    [augmentChoiceOpen, isPlaying, selectedId, clearSelection],
+  );
+
+  const handlePieceActivate = useCallback(
+    (piece: PieceInstance) => {
+      if (augmentChoiceOpen || !isPlaying) return;
       clearSelection();
-      return;
-    }
-
-    setSelectedId(piece.uid);
-    setCursorPiece(piece);
-    setAnchorCell(nextAnchorCell);
-    setHoverCell(null);
-    const point = { x: event.clientX, y: event.clientY };
-    setCursorPoint(event.pointerType === "touch" ? null : point);
-    dragRef.current = {
-      pointerId: event.pointerId,
-      start: point,
-      pointerType: event.pointerType,
-      moved: false,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-
-  function handlePieceActivate(piece: PieceInstance) {
-    if (augmentChoiceOpen || !isPlaying) return;
-    clearSelection();
-    if (piece.uid === selectedId) return;
-    setSelectedId(piece.uid);
-    setAnchorCell(piece.cells[0]);
-  }
+      if (piece.uid === selectedId) return;
+      setSelectedId(piece.uid);
+      setAnchorCell(piece.cells[0]);
+    },
+    [augmentChoiceOpen, isPlaying, selectedId, clearSelection],
+  );
 
   return {
     anchorCell,

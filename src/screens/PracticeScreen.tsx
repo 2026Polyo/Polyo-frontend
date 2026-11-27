@@ -1,11 +1,19 @@
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ArrowLeft, Trophy } from "lucide-react";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { Board } from "../components/game";
 import { PieceShape } from "../components/piece";
+import PracticeBlockPalette from "../components/piece/PracticeBlockPalette";
 import { ThemeScope } from "../components/theme";
-import { CLEAR_HIGHLIGHT_MS } from "../constants/config";
-import { EMPTY_BOARD, PIECES, SIZE } from "../mocks/gameData";
+import { CLEAR_HIGHLIGHT_MS, MAX_SNAP_DISTANCE } from "../constants/config";
+import { EMPTY_BOARD, PIECES } from "../mocks/gameData";
 import { createBoardFeedback, type BoardFeedback } from "../features/themes";
 import {
   CAT_THEME,
@@ -16,12 +24,22 @@ import {
   type GameThemeId,
 } from "../features/themes";
 import { useThemeAudio } from "../hooks/useThemeAudio";
-import type { Board as BoardState, PlacementPosition } from "../types";
+import type { Board as BoardState, PieceInstance } from "../types";
 import { cloneBoard } from "../utils/boardUtils";
-import { blockName, createPieceInstance } from "../utils/pieceUtils";
-import { canPlace, getPlacementPreview, placePiece } from "../utils/placement";
+import { createPieceInstance } from "../utils/pieceUtils";
+import {
+  canPlace,
+  getClosestPlacement,
+  getPlacementDistanceSquared,
+  placePiece,
+} from "../utils/placement";
+import { usePieceSelection } from "../hooks/usePieceSelection";
 import "../styles/PracticeScreen.css";
-import { PracticeHeader } from "../styles/PracticeScreen.styles";
+import {
+  PracticeCursorLayer,
+  PracticeHeader,
+  PracticeStage,
+} from "../styles/PracticeScreen.styles";
 
 const THEMES = [
   CLASSIC_THEME,
@@ -31,7 +49,6 @@ const THEMES = [
   CAT_THEME,
 ];
 const BLOCKS = PIECES.filter((piece) => !piece.special);
-const SINGLE = BLOCKS.find((piece) => piece.id === "monomino-single")!;
 const NO_CELLS = new Set<string>();
 const PAPER_COLORS = ["#ffcf40", "#a368f8", "#97de2e", "#f34a91", "#2dd2f5"];
 
@@ -94,18 +111,44 @@ export default function PracticeScreen({
   const reducedMotion = useReducedMotion();
   const [showRoom, setShowRoom] = useState(reducedMotion);
   const [board, setBoard] = useState<BoardState>(() => cloneBoard(EMPTY_BOARD));
-  const [piece, setPiece] = useState(() =>
-    createPieceInstance({ ...SINGLE, color: "cyan" }),
-  );
-  const [hover, setHover] = useState<PlacementPosition | null>(null);
+  const pieces = useMemo(() => BLOCKS.map(createPieceInstance), []);
   const [clearing, setClearing] = useState(NO_CELLS);
   const [effect, setEffect] = useState<PracticeEffect | null>(null);
   const [notice, setNotice] = useState("");
   const [audioReady, setAudioReady] = useState(false);
-  const boardRef = useRef<HTMLDivElement>(null);
   const clearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const feedbackId = useRef(0);
   const audio = useThemeAudio(themeId, audioReady);
+  const selection = usePieceSelection({
+    augmentChoiceOpen: false,
+    availablePieces: pieces,
+    board,
+    isPlaying: showRoom && clearing.size === 0,
+    onPlace: place,
+    clearSelectionOnDrop: true,
+  });
+  const { boardRef, handlePieceActivate, selectedPiece } = selection;
+  const activatePiece = useCallback(
+    (piece: PieceInstance) => {
+      handlePieceActivate(piece);
+      if (piece.uid !== selectedPiece?.uid)
+        boardRef.current
+          ?.querySelector<HTMLButtonElement>(".board-cell")
+          ?.focus();
+    },
+    [handlePieceActivate, selectedPiece, boardRef],
+  );
+  useEffect(() => {
+    if (!selectedPiece) return;
+    const cancel = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        selection.clearSelection();
+      }
+    };
+    window.addEventListener("keydown", cancel);
+    return () => window.removeEventListener("keydown", cancel);
+  }, [selectedPiece, selection.clearSelection]);
   const playEffect = useEffectEvent(
     ({ boardFeedback, lines }: PracticeEffect) => {
       audio.playPlacement(boardFeedback.placed[0]?.color);
@@ -128,32 +171,17 @@ export default function PracticeScreen({
     [],
   );
 
-  const preview = useMemo(() => {
-    if (
-      !hover ||
-      clearing.size ||
-      !canPlace(board, piece, hover.row, hover.col)
-    )
-      return null;
-    return getPlacementPreview(board, piece, hover.row, hover.col);
-  }, [board, clearing, hover, piece]);
-
-  function resetBoard(prepareLine: boolean) {
+  function resetBoard() {
     if (clearTimer.current !== null) clearTimeout(clearTimer.current);
     clearTimer.current = null;
-    const next = cloneBoard(EMPTY_BOARD);
-    if (prepareLine) {
-      next[SIZE - 1].fill("cyan", 0, SIZE - 1);
-      setPiece(createPieceInstance({ ...SINGLE, color: "violet" }));
-    }
-    setBoard(next);
+    selection.clearSelection();
+    setBoard(cloneBoard(EMPTY_BOARD));
     setClearing(NO_CELLS);
     setEffect(null);
-    setHover(null);
-    setNotice(prepareLine ? "맨 아래 줄의 빈칸에 블록을 놓아보세요." : "");
+    setNotice("");
   }
 
-  function place(row: number, col: number) {
+  function place(piece: PieceInstance, row: number, col: number) {
     if (clearTimer.current !== null) return;
     if (!canPlace(board, piece, row, col)) {
       setNotice("이 칸에는 블록을 놓을 수 없어요.");
@@ -176,7 +204,7 @@ export default function PracticeScreen({
       lines: result.cleared,
     });
     setNotice("");
-    setHover(null);
+    selection.clearSelection();
     if (!cells.size) {
       setBoard(result.board);
       return;
@@ -190,104 +218,129 @@ export default function PracticeScreen({
     }, CLEAR_HIGHLIGHT_MS);
   }
 
+  function placeSelected(row: number, col: number) {
+    if (!selectedPiece || clearTimer.current !== null) return;
+    const target = {
+      row: row - (selection.anchorCell?.[0] ?? 0),
+      col: col - (selection.anchorCell?.[1] ?? 0),
+    };
+    const closest = getClosestPlacement(board, selectedPiece, target);
+    if (
+      !closest ||
+      getPlacementDistanceSquared(target, closest) > MAX_SNAP_DISTANCE ** 2
+    ) {
+      setNotice("이 칸에는 블록을 놓을 수 없어요.");
+      return;
+    }
+    place(selectedPiece, closest.row, closest.col);
+  }
+
   return (
     <ThemeScope themeId={themeId}>
       <main
-        className="app-shell play-shell has-cell-mode practice-shell"
+        className={`app-shell play-shell has-cell-mode practice-shell ${selection.cursorPiece ? "has-cursor-piece" : ""}`}
         data-game-theme={themeId}
       >
-        <section
+        <PracticeStage
           className="practice-stage"
           aria-labelledby="practice-title"
           inert={!showRoom}
         >
-          <PracticeHeader className="practice-header">
-            <button
-              className="secondary-action"
-              type="button"
-              onClick={onClose}
-            >
-              <ArrowLeft size={18} aria-hidden="true" /> 메인으로
-            </button>
-            <h1 id="practice-title">숨겨진 연습실</h1>
-          </PracticeHeader>
-          <div className="practice-controls">
-            <label>
-              <span id="practice-theme-label">테마</span>
-              <select
-                aria-labelledby="practice-theme-label"
-                value={themeId}
-                onChange={(event) => {
-                  setEffect(null);
-                  setThemeId(
-                    THEMES.find(({ id }) => id === event.target.value)?.id ??
-                      CLASSIC_THEME.id,
-                  );
-                }}
-              >
-                {THEMES.map(({ id, name }) => (
-                  <option key={id} value={id}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              <span id="practice-block-label">블록</span>
-              <select
-                aria-labelledby="practice-block-label"
-                value={piece.id}
-                onChange={(event) => {
-                  const next = BLOCKS.find(
-                    ({ id }) => id === event.target.value,
-                  );
-                  if (next) setPiece(createPieceInstance(next));
-                }}
-              >
-                {BLOCKS.map((block) => (
-                  <option key={block.id} value={block.id}>
-                    {blockName(block)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="practice-piece" aria-hidden="true">
-              <PieceShape piece={piece} cellSize={15} cellGap={2} />
+          <div className="practice-workspace">
+            <div className="practice-board-column">
+              <PracticeHeader className="practice-header">
+                <button
+                  className="secondary-action"
+                  type="button"
+                  onClick={onClose}
+                >
+                  <ArrowLeft size={18} aria-hidden="true" /> 메인으로
+                </button>
+                <h1 id="practice-title">숨겨진 연습실</h1>
+              </PracticeHeader>
+              <div className="practice-controls">
+                <label>
+                  <span id="practice-theme-label">테마</span>
+                  <select
+                    aria-labelledby="practice-theme-label"
+                    value={themeId}
+                    onChange={(event) => {
+                      selection.clearSelection();
+                      setEffect(null);
+                      setNotice("");
+                      setThemeId(
+                        THEMES.find(({ id }) => id === event.target.value)
+                          ?.id ?? CLASSIC_THEME.id,
+                      );
+                    }}
+                  >
+                    {THEMES.map(({ id, name }) => (
+                      <option key={id} value={id}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <Board
+                board={board}
+                boardRef={boardRef}
+                feedback={effect?.boardFeedback}
+                clearingCells={clearing}
+                hoverCell={selection.hoverCell}
+                selectedPiece={selectedPiece}
+                onCellClick={placeSelected}
+                onCellEnter={selection.setHoverCell}
+                onCellLeave={() => selection.setHoverCell(null)}
+                previewCells={selection.previewCells}
+                previewClearingCells={selection.previewClearingCells}
+              />
+              <p className="placement-hint" role="status">
+                {notice ||
+                  (selection.invalidPreview
+                    ? "이곳에는 블록을 놓을 수 없어요."
+                    : "목록의 블록을 보드로 드래그하세요.")}
+              </p>
+              <div className="practice-actions">
+                <button
+                  className="secondary-action"
+                  type="button"
+                  onClick={resetBoard}
+                >
+                  보드 비우기
+                </button>
+              </div>
             </div>
+            <PracticeBlockPalette
+              pieces={pieces}
+              selectedId={selectedPiece?.uid ?? null}
+              disabled={!showRoom || clearing.size > 0}
+              onPieceSelect={selection.handlePieceSelect}
+              onPieceActivate={activatePiece}
+            />
           </div>
-          <Board
-            board={board}
-            boardRef={boardRef}
-            feedback={effect?.boardFeedback}
-            clearingCells={clearing}
-            hoverCell={hover}
-            selectedPiece={piece}
-            onCellClick={place}
-            onCellEnter={setHover}
-            onCellLeave={() => setHover(null)}
-            previewCells={preview?.cells ?? NO_CELLS}
-            previewClearingCells={preview?.clearingCells ?? NO_CELLS}
-          />
-          <p className="placement-hint" role="status">
-            {notice || "보드에서 블록을 놓을 칸을 누르세요."}
-          </p>
-          <div className="practice-actions">
-            <button
-              className="secondary-action"
-              type="button"
-              onClick={() => resetBoard(false)}
-            >
-              보드 비우기
-            </button>
-            <button
-              className="primary-action"
-              type="button"
-              onClick={() => resetBoard(true)}
-            >
-              한 줄 채우기
-            </button>
-          </div>
-        </section>
+        </PracticeStage>
+        {selection.cursorPiece &&
+          selection.cursorPoint &&
+          selection.cursorAnchorOffset && (
+            <PracticeCursorLayer aria-hidden="true">
+              <div
+                className={`cursor-piece ${selection.invalidPreview ? "invalid" : ""}`}
+                style={{
+                  left: selection.cursorPoint.x,
+                  top: selection.cursorPoint.y,
+                  transform: `translate(-${selection.cursorAnchorOffset.x}px, -${selection.cursorAnchorOffset.y}px)`,
+                }}
+              >
+                <PieceShape
+                  piece={selection.cursorPiece}
+                  cellSize={selection.boardMetrics.cellSize}
+                  cellGap={selection.boardMetrics.cellGap}
+                  className="cursor-piece-grid"
+                />
+              </div>
+            </PracticeCursorLayer>
+          )}
         {!showRoom && (
           <div
             className="practice-transition practice-transition-in"
